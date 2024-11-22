@@ -1428,7 +1428,7 @@ createApp({
   template: \`
   <div class="container">
 
-  <a href="https://github.com/ling-drag0n" 
+  <a href="https://github.com/ling-drag0n/CloudPaste" 
      target="_blank" 
      class="github-link" 
      title="Visit GitHub">
@@ -1849,7 +1849,7 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
     <div id="app">
-        <a href="https://github.com/ling-drag0n" 
+        <a href="https://github.com/ling-drag0n/CloudPaste" 
             target="_blank" 
             class="github-link" 
             title="Visit GitHub">
