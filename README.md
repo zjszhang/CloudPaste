@@ -1,4 +1,4 @@
-# CloudPaste - 在线剪贴板 📋
+![image](https://github.com/user-attachments/assets/6fab3b1d-4653-40b5-9a88-4c6772cbd8a0)# CloudPaste - 在线剪贴板 📋
 
 ![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?style=flat-square&logo=cloudflare)
 ![Vue.js](https://img.shields.io/badge/Vue.js-3.x-green?style=flat-square&logo=vue.js)
@@ -8,12 +8,12 @@
 
 <table>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/df8cefb7-ca19-45ea-b449-13f0273435ff" width="400"/></td>
-    <td><img src="https://github.com/user-attachments/assets/6a01e4bb-5bda-4e68-a16e-55967ba64fec" width="400"/></td>
+    <td><img src="https://github.com/user-attachments/assets/8c2b0ac0-75ca-430d-a9fb-c2b94e00bf3c" width="400"/></td>
+    <td><img src="https://github.com/user-attachments/assets/313e54c5-d686-4cff-8985-e18c6d92dda1" width="400"/></td>
   </tr>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/ca03503c-e5bf-4919-bc76-0ed704fcb5bd" width="400"/></td>
-    <td><img src="https://github.com/user-attachments/assets/67e5a7f4-cfea-495f-832f-397114d819f5" width="400"/></td>
+    <td><img src="https://github.com/user-attachments/assets/f2cf3243-d01a-4e4b-9073-da88973eea10" width="400"/></td>
+    <td><img src="https://github.com/user-attachments/assets/abcf4219-ebde-4630-8666-f7de1834a28d" width="400"/></td>
   </tr>
 </table>
 
@@ -22,10 +22,17 @@
 
 ### 📝 文本分享
 - 支持普通文本和 Markdown 格式
-- Markdown 实时预览
-- 代码高亮显示
+- Markdown 实时预览和同步滚动
+- 完整的 Markdown 样式支持
+  - 优化的列表嵌套显示
+  - 美化的表格样式
+  - 代码块实时语法高亮
+  - 标准的任务列表样式
+  - 优化的引用块样式
+- 编辑器支持双向拉伸调整大小
 - 支持密码保护
 - 自定义过期时间
+- 自定义分享链接后缀
 - 同步滚动预览
 
 ### 📁 文件分享
@@ -38,7 +45,7 @@
 
 ### 👨‍💻 管理功能
 - 管理员登录
-- 查看所有分享内容
+- 查看所有分享链接
 - 分类过滤（文本/文件）
 - 删除分享（带确认提示）
 - 复制分享链接
@@ -49,6 +56,15 @@
 - 自动过期清理 （每当有请求访问时，检查当前时间，如果是整点（分钟为0），触发清理操作）
 - 访问权限控制
 - CORS 安全配置
+
+### 🎨 界面优化
+- 响应式布局设计
+- 优化的移动端适配
+- 美化的滚动条样式
+- 平滑的动画过渡效果
+- 优化的代码块显示
+- 完整的中文标点符号对齐
+- 列表项完美对齐
 
 ## 🚀 部署步骤
 
@@ -141,7 +157,7 @@
 
 ## ⚠️ 使用限制
 - 文件大小上限：25MB
-- 支持的过期时间：1小时、1天、7天、30天
+- 支持的过期时间：1小时、1天、7天、30天，永不过期
 - 并发请求受 Worker 限制
 
 ## 📝 注意事项
