@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/6fab3b1d-4653-40b5-9a88-4c6772cbd8a0)# CloudPaste - 在线剪贴板 📋
+# CloudPaste - 在线剪贴板 📋
 
 ![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?style=flat-square&logo=cloudflare)
 ![Vue.js](https://img.shields.io/badge/Vue.js-3.x-green?style=flat-square&logo=vue.js)
