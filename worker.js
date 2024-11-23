@@ -26,6 +26,8 @@ const utils = {
 
   // 计算过期时间
   calculateExpiryTime(duration) {
+    if (duration === 'never') return null; // 永久不过期返回 null
+
     const now = new Date();
     switch(duration) {
       case '1h': return new Date(now.getTime() + 60 * 60 * 1000);
@@ -36,10 +38,11 @@ const utils = {
     }
   },
 
-  // 检查是否过期
-  isExpired(expiryTime) {
-    return new Date() > new Date(expiryTime);
-  }
+    // 检查是否过期
+    isExpired(expiryTime) {
+      if (!expiryTime) return false; // 如果没有过期时间,则永不过期
+      return new Date() > new Date(expiryTime);
+    }
 };
 
 // CSS 样式
@@ -74,15 +77,20 @@ const styles = `
 
   .card {
     padding: 1rem;
+    width: 100%;
+    min-width: auto;
   }
 
   .editor-container {
     flex-direction: column;
     height: auto;
+    min-height: 200px;
+    resize: vertical;
   }
 
   .editor, .preview {
     height: 300px;
+    min-width: auto;
     width: 100%;
   }
 
@@ -142,6 +150,18 @@ const styles = `
   .admin-stats {
     grid-template-columns: 1fr;
   }
+
+  .editor-container {
+    min-height: 150px;
+  }
+
+  .editor, .preview {
+    height: 250px;
+  }
+
+  .card {
+    padding: 0.8rem;
+  }
 }
 
 :root {
@@ -164,9 +184,13 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px; /* 增加最大宽度 */
   margin: 0 auto;
   padding: 2rem;
+  min-height: 100vh; /* 添加最小高度 */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 水平居中 */
 }
 
 .card {
@@ -175,6 +199,9 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   padding: 2rem;
   margin-bottom: 1rem;
+  width: fit-content;
+  min-width: 1200px; /* 设置默认最小宽度 */
+  overflow: visible;
 }
 
 .tabs {
@@ -640,11 +667,12 @@ body {
 .editor-container {
   display: flex;
   gap: 1rem;
-  height: 400px;
+  height: 600px;
+  min-height: 400px;
   position: relative;
-  will-change: transform;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  resize: both;
+  overflow: auto;
+  margin: 1rem 0;
 }
 
 .editor, .preview {
@@ -656,10 +684,9 @@ body {
   position: relative;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  -webkit-overflow-scrolling: touch;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  perspective: 1000px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 .editor textarea {
@@ -668,21 +695,25 @@ body {
   border: none;
   resize: none;
   outline: none;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
   padding: 0;
   margin: 0;
   background: transparent;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
+}
+
+/* 拉伸手柄样式优化 */
+.editor-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 15px;
+  height: 15px;
+  cursor: nw-resize;
+  background: linear-gradient(135deg, transparent 50%, var(--border-color) 50%);
+  border-radius: 0 0 4px 0;
 }
 
 /* 优化滚动条样式 */
@@ -728,184 +759,578 @@ body {
     /* Markdown 内容样式优化 */
 .content {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
   line-height: 1.6;
   color: #2c3e50;
+  padding: 2rem;
   max-width: 100%;
   overflow-x: auto;
 }
 
-/* 标题样式 */
-.content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
-  margin-top: 1.5em;
-  margin-bottom: 1em;
-  font-weight: 600;
-  line-height: 1.25;
-  color: #1a202c;
-}
-
-.content h1 { font-size: 2em; border-bottom: 2px solid #eaecef; padding-bottom: 0.3em; }
-.content h2 { font-size: 1.5em; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
-.content h3 { font-size: 1.25em; }
-.content h4 { font-size: 1em; }
-.content h5 { font-size: 0.875em; }
-.content h6 { font-size: 0.85em; color: #6a737d; }
-
-/* 段落和列表样式 */
-.content p, .content ul, .content ol {
-  margin: 1em 0;
-  line-height: 1.7;
-}
-
-.content ul, .content ol {
+/* 列表样式优化 */
+.content ul {
+  list-style: none;
   padding-left: 2em;
+  margin: 1em 0;
 }
 
-.content li + li {
-  margin-top: 0.25em;
+.content ul li {
+  position: relative;
+  margin: 0.5em 0;
+  line-height: 1.8;
+  padding-left: 0.5em;
+  display: flex; /* 使用 flex 布局 */
+  flex-wrap: wrap; /* 允许内容换行 */
+  align-items: baseline; /* 基线对齐 */
+}
+
+.content ul li::before {
+  content: "•";
+  position: absolute;
+  left: -1em;
+  color: #666;
+  line-height: inherit;
+}
+
+/* 列表项内容样式 */
+.content li > * {
+  margin: 0;
+  line-height: inherit;
+}
+
+.content li p {
+  display: inline;
+  margin: 0;
+  line-height: inherit;
+}
+
+.content li strong {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-right: 0.25em; /* 加粗文本右侧添加小间距 */
+}
+
+/* 标点符号样式优化 */
+.content li strong + *,
+.content li p + * {
+  margin-left: 0; /* 移除标点符号前的间距 */
+}
+
+/* 中文标点符号对齐 */
+.content li:lang(zh),
+.content li:lang(zh) * {
+  text-align: justify;
+  text-justify: inter-ideograph;
+}
+
+/* 代码块在列表项中的样式 */
+.content li pre {
+  width: 100%; /* 确保代码块占满宽度 */
+  margin: 1em 0;
+  display: block;
+}
+
+/* 行内代码样式优化 */
+.content code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 0.9em;
+  background-color: rgba(27,31,35,0.05);
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: #476582;
+  vertical-align: baseline; /* 确保行内代码垂直对齐 */
+}
+
+/* 标点符号和特殊字符对齐 */
+.content li strong:last-child {
+  margin-right: 0;
+}
+
+.content li > p:first-child {
+  margin-right: 0;
+}
+
+/* 确保列表项内的所有元素垂直对齐 */
+.content li * {
+  vertical-align: baseline;
+}
+
+/* 优化中文冒号对齐 */
+.content li:lang(zh) strong + :not(pre):not(ul):not(ol)::before {
+  content: "";
+  white-space: normal;
+  display: inline;
+}
+
+/* 列表样式优化 */
+.content ul {
+  list-style: none;
+  padding-left: 2em;
+  margin: 1em 0;
+}
+
+.content ul li {
+  position: relative;
+  margin: 0.5em 0;
+  line-height: 1.8;
+  padding-left: 0.5em;
+}
+
+.content ul li::before {
+  content: "•";
+  position: absolute;
+  left: -1em;
+  color: #666;
+}
+
+/* 列表项内容样式 */
+.content li > * {
+  margin: 0.5em 0;
+}
+
+.content li p {
+  display: inline;
+  margin: 0;
+}
+
+.content li > pre {
+  display: block;
+  margin: 1em 0;
+}
+
+/* 加粗文本样式 */
+.content strong {
+  font-weight: 600;
+  color: #2c3e50;
+  display: inline;
+}
+
+/* 行内代码样式 */
+.content code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 0.9em;
+  background-color: rgba(27,31,35,0.05);
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: #476582;
 }
 
 /* 代码块样式 */
 .content pre {
-  margin: 1em 0;
-  padding: 1em;
+  margin: 1.5em 0;
+  padding: 1.5em;
   background: #f6f8fa;
   border-radius: 6px;
   overflow-x: auto;
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 0.9em;
-  line-height: 1.5;
-}
-
-.content code {
-  padding: 0.2em 0.4em;
-  margin: 0;
-  background-color: rgba(27, 31, 35, 0.05);
-  border-radius: 3px;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-size: 0.9em;
+  line-height: 1.6;
+  position: relative;
+  border: 1px solid #eaecef;
 }
 
 .content pre code {
   padding: 0;
+  margin: 0;
   background: none;
   border-radius: 0;
+  color: inherit;
   font-size: 1em;
+  white-space: pre;
 }
+
+/* 标题样式 */
+.content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
+  margin: 2em 0 1em;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1a202c;
+}
+
+.content h1 { 
+  font-size: 2em; 
+  border-bottom: 2px solid #eaecef; 
+  padding-bottom: 0.5em;
+  margin-top: 1em;
+}
+
+.content h2 { 
+  font-size: 1.5em; 
+  border-bottom: 1px solid #eaecef; 
+  padding-bottom: 0.4em;
+}
+
+.content h3 { font-size: 1.25em; }
+.content h4 { font-size: 1em; }
+.content h5 { font-size: 0.875em; }
+.content h6 { font-size: 0.85em; color: #6a737d; }
 
 /* 引用块样式 */
 .content blockquote {
-  margin: 1em 0;
-  padding: 0.5em 1em;
+  margin: 1.5em 0;
+  padding: 1em 1.5em;
   color: #6a737d;
-  border-left: 0.25em solid #dfe2e5;
-  background: #f6f8fa;
-  border-radius: 3px;
+  border-left: 0.25em solid #3498db;
+  background: #f8f9fa;
+  border-radius: 0 4px 4px 0;
 }
 
 .content blockquote > :first-child { margin-top: 0; }
 .content blockquote > :last-child { margin-bottom: 0; }
 
-/* 表格样式 */
+/* 表格样式优化 */
 .content table {
-  margin: 1em 0;
+  margin: 1.5em 0;
   border-collapse: collapse;
   width: 100%;
-  overflow: auto;
+  max-width: 100%;
+  border: 1px solid #dfe2e5;
+  display: table;
+  table-layout: fixed;
+  font-size: 0.95em;
+  line-height: 1.5;
 }
 
 .content table th,
 .content table td {
-  padding: 0.6em 1em;
+  padding: 0.8em 1em;
   border: 1px solid #dfe2e5;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
+/* 设置列宽比例 */
+.content table th:nth-child(1),
+.content table td:nth-child(1) {
+  width: 15%;
+}
+
+.content table th:nth-child(2),
+.content table td:nth-child(2) {
+  width: 25%;
+}
+
+.content table th:nth-child(3),
+.content table td:nth-child(3) {
+  width: 60%;
+}
+
+/* 表头样式 */
 .content table th {
   background-color: #f6f8fa;
   font-weight: 600;
+  color: #24292e;
+}
+
+/* 表格行样式 */
+.content table tr {
+  background-color: #ffffff;
+  border-top: 1px solid #dfe2e5;
 }
 
 .content table tr:nth-child(2n) {
   background-color: #f8f9fa;
 }
 
-/* 链接样式 */
-.content a {
+/* 表格单元格内容样式 */
+.content table td strong,
+.content table th strong {
+  font-weight: 600;
+  color: #24292e;
+}
+
+/* 确保表格内容紧凑 */
+.content table p {
+  margin: 0;
+  padding: 0;
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+  .content table {
+    font-size: 0.9em;
+  }
+  
+  .content table th,
+  .content table td {
+    padding: 0.6em 0.8em;
+  }
+  
+  .content table th:nth-child(1),
+  .content table td:nth-child(1),
+  .content table th:nth-child(2),
+  .content table td:nth-child(2),
+  .content table th:nth-child(3),
+  .content table td:nth-child(3) {
+    width: auto;
+  }
+}
+
+/* 暗色主题支持 */
+@media (prefers-color-scheme: dark) {
+  .content table {
+    border-color: #3a3a3a;
+  }
+  
+  .content table th,
+  .content table td {
+    border-color: #3a3a3a;
+  }
+  
+  .content table th {
+    background-color: #2a2a2a;
+    color: #e4e4e4;
+  }
+  
+  .content table tr {
+    background-color: #242424;
+  }
+  
+  .content table tr:nth-child(2n) {
+    background-color: #2a2a2a;
+  }
+  
+  .content table td strong,
+  .content table th strong {
+    color: #e4e4e4;
+  }
+}
+
+/* 表格滚动支持 */
+@media screen and (max-width: 480px) {
+  .content {
+    overflow-x: auto;
+  }
+  
+  .content table {
+    min-width: 100%;
+  }
+}
+
+/* 确保表格边框完整性 */
+.content table thead {
+  border-bottom: 2px solid #dfe2e5;
+}
+
+.content table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* 优化表格内链接样式 */
+.content table a {
   color: #0366d6;
   text-decoration: none;
 }
 
-.content a:hover {
+.content table a:hover {
   text-decoration: underline;
+}
+
+/* 链接样式 */
+.content a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.content a:hover {
+  border-bottom-color: #3498db;
 }
 
 /* 图片样式 */
 .content img {
   max-width: 100%;
   height: auto;
-  margin: 1em 0;
+  margin: 1.5em auto;
+  display: block;
   border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 /* 水平线样式 */
 .content hr {
   height: 2px;
-  margin: 2em 0;
+  margin: 2.5em 0;
   background-color: #eaecef;
   border: none;
 }
 
-/* 任务列表样式 */
-.content .task-list {
-  list-style: none;
-  padding-left: 0;
+/* 暗色主题支持 */
+@media (prefers-color-scheme: dark) {
+  .content {
+    background: #242424;
+    color: #e4e4e4;
+  }
+
+  .content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
+    color: #fff;
+  }
+
+  .content code {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #e4e4e4;
+  }
+
+  .content pre {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+  }
+
+  .content blockquote {
+    background: #2a2a2a;
+    color: #b4b4b4;
+  }
+
+  .content table th,
+  .content table td {
+    border-color: #3a3a3a;
+  }
+
+  .content table th {
+    background-color: #2a2a2a;
+  }
+
+  .content table tr:nth-child(2n) {
+    background-color: #2a2a2a;
+  }
+
+  .content hr {
+    background-color: #3a3a3a;
+  }
+
+  .content strong {
+    color: #fff;
+  }
+
+  .content li::before {
+    color: #b4b4b4;
+  }
 }
 
-.content .task-list-item {
-  display: flex;
-  align-items: flex-start;
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .content {
+    padding: 1rem;
+  }
+
+  .content pre {
+    padding: 1rem;
+    font-size: 0.85em;
+  }
+
+  .content table {
+    font-size: 0.9em;
+  }
+}
+
+/* 列表基础样式优化 */
+.content ul,
+.content ol {
+  padding-left: 2em;
+  margin: 1em 0;
+}
+
+/* 无序列表样式 */
+.content ul {
+  list-style: none;
+  padding-left: 2em;
+  margin: 1em 0;
+}
+
+.content ul li {
+  position: relative;
+  padding-left: 0.5em;
+  margin: 0.5em 0;
+  line-height: 1.8;
+}
+
+.content ul li::before {
+  content: "•";
+  position: absolute;
+  left: -1em;
+  color: #2c3e50;
+}
+
+/* 二级无序列表样式 */
+.content ul ul {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.content ul ul li::before {
+  content: "•";
+  font-size: 0.85em;
+  left: -1.2em;
+  top: 0.1em;
+}
+
+/* 有序列表样式 */
+.content ol {
+  list-style: none;
+  counter-reset: item;
+}
+
+.content ol li {
+  position: relative;
+  padding-left: 0.5em;
+  margin: 0.5em 0;
+  line-height: 1.8;
+  counter-increment: item;
+}
+
+.content ol li::before {
+  content: counter(item) ".";
+  position: absolute;
+  left: -2em;
+  width: 1.5em;
+  text-align: right;
+  color: #3498db;
+  font-weight: 600;
+}
+
+/* 二级有序列表样式 */
+.content ol ol {
+  counter-reset: subitem;
   margin: 0.5em 0;
 }
 
-.content .task-list-item input[type="checkbox"] {
-  margin: 0.3em 0.5em 0 0;
-  flex-shrink: 0;
+.content ol ol li {
+  counter-increment: subitem;
 }
 
-/* 代码高亮主题优化 */
-.content .hljs {
-  background: #f6f8fa;
-  border-radius: 6px;
-  padding: 1em;
-  tab-size: 4;
+.content ol ol li::before {
+  content: counter(subitem) ".";
+  left: -2em;
+  color: #666;
 }
 
-/* 管理员页面刷新按钮样式 */
-.admin-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+/* 确保列表项内容对齐 */
+.content li > * {
+  margin: 0;
+  line-height: inherit;
 }
 
-.refresh-btn {
-  padding: 0.5rem 1rem;
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: opacity 0.2s;
+.content li p {
+  display: inline;
+  margin: 0;
 }
 
-.refresh-btn:hover:not(:disabled) {
-  opacity: 0.9;
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    max-width: 100%;
+    min-width: auto;
+    padding: 1rem;
+  }
 }
-
-.refresh-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 `;
 
 // Vue 应用代码
@@ -943,6 +1368,7 @@ createApp({
     const showDeleteConfirm = ref(false);//确认删除
     const deleteTarget = ref(null);
     const isRefreshing = ref(false);  // 添加刷新状态
+    const customId = ref(''); // 添加自定义ID输入框的值
 
     // 修改刷新函数
     const refreshShares = async () => {
@@ -1046,18 +1472,13 @@ createApp({
     if (!content.value) return '';
     if (!isMarkdown.value) return content.value;
     
-    // 使用防抖处理代码高亮
-    const highlightCode = debounce(() => {
-        document.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightBlock(block);
-        });
-    }, 200);
-
     try {
         const rendered = marked.parse(content.value);
-        // 延迟执行代码高亮
+        // 使用 nextTick 确保在 DOM 更新后应用代码高亮
         nextTick(() => {
-        highlightCode();
+          document.querySelectorAll('.preview pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+          });
         });
         return rendered;
     } catch (err) {
@@ -1187,9 +1608,20 @@ createApp({
 
     // 格式化时间
     const formatDate = function(dateStr) {
+      // 如果日期为 null 或 undefined，返回"永不过期"
+      if (!dateStr) {
+        return '永不过期';
+      }
+      
       const date = new Date(dateStr);
+      // 检查是否为有效日期
+      if (isNaN(date.getTime())) {
+        return '永不过期';
+      }
+      
       return date.toLocaleString();
     };
+
 
 
     // 添加 isExpired 函数
@@ -1247,16 +1679,22 @@ createApp({
             password: password.value,
             expiresIn: expiresIn.value,
             isMarkdown: isMarkdown.value,
+            customId: customId.value // 添加自定义ID
           }),
         });
 
-        if (!response.ok) throw new Error('提交失败');
-        
         const data = await response.json();
+        
+        if (!response.ok) {
+          error.value = data.message || '提交失败';
+          return;
+        }
+        
         result.value = {
           type: 'paste',
           url: window.location.origin + '/share/paste/' + data.id,
         };
+        
         // 成功后立即刷新分享列表
         if (isAdmin.value) {
           await fetchShares();
@@ -1283,6 +1721,12 @@ createApp({
             return;
             }
 
+            // 如果是多文件上传但提供了自定义ID，显示错误
+            if (files.value.length > 1 && customId.value) {
+              error.value = '多文件上传时不支持自定义链接';
+              return;
+            }
+
             // 初始化上传列表
             uploadingFiles.value = files.value.map(file => ({
             name: file.name,
@@ -1297,6 +1741,9 @@ createApp({
             formData.append('password', password.value);
             }
             formData.append('expiresIn', expiresIn.value);
+            if (customId.value && files.value.length === 1) {
+              formData.append('customId', customId.value);
+            }
 
             const response = await fetch('/api/file', {
             method: 'POST',
@@ -1422,6 +1869,7 @@ createApp({
       executeDelete,
       isRefreshing,
       refreshShares,
+      customId,
     };
   },
 
@@ -1490,7 +1938,22 @@ createApp({
             <option value="1d">1天</option>
             <option value="7d">7天</option>
             <option value="30d">30天</option>
+            <option value="never">永不过期</option>
             </select>
+        </div>
+        <div class="input-group">
+          <label>自定义链接后缀 (可选)</label>
+          <input 
+            type="text" 
+            v-model="customId"
+            placeholder="留空则自动生成"
+            pattern="[a-zA-Z0-9-_]+"
+            title="只能使用字母、数字、横线和下划线"
+            :disabled="files.length > 1"
+          >
+          <small v-if="files.length > 1" style="color: #666;">
+            多文件上传时不支持自定义链接
+          </small>
         </div>
         </div>
 
@@ -1531,6 +1994,22 @@ createApp({
 
         <!-- 文件上传设置 -->
         <div class="settings">
+          <!-- 添加自定义链接后缀输入框 -->
+          <div class="input-group">
+            <label>自定义链接后缀 (可选)</label>
+            <input 
+              type="text" 
+              v-model="customId"
+              placeholder="留空则自动生成"
+              pattern="[a-zA-Z0-9-_]+"
+              title="只能使用字母、数字、横线和下划线"
+              :disabled="files.length > 1"
+            >
+            <small v-if="files.length > 1" style="color: #666;">
+              多文件上传时不支持自定义链接
+            </small>
+          </div>
+
           <div class="input-group">
             <label>密码保护</label>
             <input type="password" v-model="password" placeholder="可选">
@@ -1542,6 +2021,7 @@ createApp({
               <option value="1d">1天</option>
               <option value="7d">7天</option>
               <option value="30d">30天</option>
+              <option value="never">永不过期</option>
             </select>
           </div>
         </div>
@@ -1665,7 +2145,7 @@ createApp({
                 <div class="info">
                     <div>ID: {{ share.id }}</div>
                     <div>创建时间: {{ formatDate(share.createdAt) }}</div>
-                    <div>过期时间: {{ formatDate(share.expiresAt) }}</div>
+                    <div>过期时间: {{ share.expiresAt ? formatDate(share.expiresAt) : '永不过期' }}</div>
                     <div v-if="share.type === 'file'">文件名: {{ share.filename }}</div>
                 </div>
                 <div class="actions">
@@ -1789,7 +2269,7 @@ createApp({
     };
 
     const formatExpiryTime = computed(() => {
-      if (!expiresAt.value) return '';
+      if (!expiresAt.value) return '永不过期';
       const now = new Date();
       const diff = expiresAt.value - now;
       const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -1924,7 +2404,7 @@ async function handlePaste(request, env) {
   switch (request.method) {
     case 'POST': {
       const data = await request.json();
-      const { content, password: inputPassword, expiresIn, isMarkdown = false } = data;
+      const { content, password: inputPassword, expiresIn, isMarkdown = false, customId = '' } = data;
 
       if (!content) {
         return new Response(JSON.stringify({
@@ -1936,12 +2416,49 @@ async function handlePaste(request, env) {
         });
       }
 
-      const id = utils.generateId();
+      // 验证自定义ID的格式
+      if (customId && !/^[a-zA-Z0-9-_]+$/.test(customId)) {
+        return new Response(JSON.stringify({
+          message: '自定义链接后缀只能包含字母、数字、横线和下划线',
+          status: 'error'
+        }), { 
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      // 如果提供了自定义ID，先检查是否存在于文本分享中
+      if (customId) {
+        const existingPaste = await env.PASTE_STORE.get(customId);
+        if (existingPaste) {
+          return new Response(JSON.stringify({
+            message: '该链接后缀已被用于文本分享，请更换一个',
+            status: 'error'
+          }), { 
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+
+        // 检查是否存在于文件分享中
+        const existingFile = await env.FILE_STORE.get(customId);
+        if (existingFile) {
+          return new Response(JSON.stringify({
+            message: '该链接后缀已被用于文件分享，请更换一个',
+            status: 'error'
+          }), { 
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+      }
+
+      const id = customId || utils.generateId();
       const paste = {
         content,
         isMarkdown,
         createdAt: new Date().toISOString(),
-        expiresAt: utils.calculateExpiryTime(expiresIn).toISOString(),
+        expiresAt: expiresIn === 'never' ? null : utils.calculateExpiryTime(expiresIn)?.toISOString()
       };
 
       if (inputPassword) {
@@ -2057,7 +2574,6 @@ async function handlePaste(request, env) {
 }
 
 // 处理文件上传和下载
-// 处理文件上传和下载
 async function handleFile(request, env) {
   const url = new URL(request.url);
   const pathParts = url.pathname.split('/');
@@ -2066,12 +2582,54 @@ async function handleFile(request, env) {
   switch (request.method) {
     case 'POST': {
       try {
-        console.log('Starting file upload process');
         const formData = await request.formData();
         const files = formData.getAll('files');
-        const expiresIn = formData.get('expiresIn') || '1d';
-        const inputPassword = formData.get('password');
-        
+        const customId = formData.get('customId');
+        const expiresIn = formData.get('expiresIn') || '1d';  // 添加这行
+        const inputPassword = formData.get('password');  // 添加这行
+
+        // 如果提供了自定义ID，先检查是否存在于文本分享中
+        if (customId) {
+          const existingPaste = await env.PASTE_STORE.get(customId);
+          if (existingPaste) {
+            return new Response(JSON.stringify({
+              files: [{
+                filename: files[0].name,
+                error: '该链接后缀已被用于文本分享，请更换一个',
+                status: 'error'
+              }],
+              message: '链接后缀已被使用',
+              status: 'error'
+            }), { 
+              status: 400,
+              headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+              }
+            });
+          }
+
+          // 检查是否存在于文件分享中
+          const existingFile = await env.FILE_STORE.get(customId);
+          if (existingFile) {
+            return new Response(JSON.stringify({
+              files: [{
+                filename: files[0].name,
+                error: '该链接后缀已被用于文件分享，请更换一个',
+                status: 'error'
+              }],
+              message: '链接后缀已被使用',
+              status: 'error'
+            }), { 
+              status: 400,
+              headers: { 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+              }
+            });
+          }
+        }
+
         console.log('Files received:', {
           count: files.length,
           fileInfo: files.map(f => ({
@@ -2120,16 +2678,29 @@ async function handleFile(request, env) {
               continue;
             }
 
-            // 生成文件ID
-            const id = utils.generateId(12);
+            // 生成或使用自定义文件ID
+            const id = customId || utils.generateId(12);
             
+            // 检查自定义ID是否已存在
+            if (customId) {
+              const existing = await env.FILE_STORE.get(id);
+              if (existing) {
+                uploadResults.push({
+                  filename: file.name,
+                  error: '该链接后缀已被使用，请更换一个',
+                  status: 'error'
+                });
+                continue;
+              }
+            }
+
             // 准备元数据
             const metadata = {
               filename: file.name,
               type: file.type || 'application/octet-stream',
               size: file.size,
               uploadedAt: new Date().toISOString(),
-              expiresAt: utils.calculateExpiryTime(expiresIn).toISOString(),
+              expiresAt: expiresIn === 'never' ? null : utils.calculateExpiryTime(expiresIn)?.toISOString()
             };
 
             if (inputPassword) {
@@ -2180,27 +2751,17 @@ async function handleFile(request, env) {
           }
         }
 
-        // 检查是否有成功上传的文件
-        const successCount = uploadResults.filter(r => r.status === 'success').length;
-        console.log('Upload complete:', {
-          total: files.length,
-          success: successCount,
-          results: uploadResults
-        });
-
-        // 返回结果
         return new Response(JSON.stringify({
           files: uploadResults,
           status: hasSuccess ? 'success' : 'error',
           message: hasSuccess ? '上传成功' : '所有文件上传失败',
-          successCount,
+          successCount: uploadResults.filter(r => r.status === 'success').length,
           totalCount: files.length
         }), {
           status: hasSuccess ? 201 : 400,
           headers: { 
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Cache-Control': 'no-store'
+            'Access-Control-Allow-Origin': '*'
           }
         });
 
@@ -2218,14 +2779,12 @@ async function handleFile(request, env) {
           status: 500,
           headers: { 
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Cache-Control': 'no-store'
+            'Access-Control-Allow-Origin': '*'
           }
         });
       }
-      break;
     }
-          
+    
     case 'GET': {
       if (url.pathname === '/api/file') {
         return new Response('Invalid request', { status: 400 });
@@ -2235,41 +2794,97 @@ async function handleFile(request, env) {
         const file = await env.FILE_STORE.get(fileId);
         
         if (!file) {
-          return new Response('File not found', { status: 404 });
+          return new Response(JSON.stringify({
+            message: 'File not found',
+            status: 'error'
+          }), { 
+            status: 404,
+            headers: { 'Content-Type': 'application/json' }
+          });
         }
 
         const metadata = file.customMetadata;
 
         if (utils.isExpired(metadata.expiresAt)) {
           await env.FILE_STORE.delete(fileId);
-          return new Response('File has expired', { status: 404 });
+          return new Response(JSON.stringify({
+            message: 'File has expired',
+            status: 'error'
+          }), { 
+            status: 404,
+            headers: { 'Content-Type': 'application/json' }
+          });
         }
 
         const inputPassword = request.headers.get('X-Password');
         if (metadata.passwordHash) {
           if (!inputPassword) {
-            return new Response('Password required', { status: 401 });
+            return new Response(JSON.stringify({
+              message: 'Password required',
+              status: 'error'
+            }), { 
+              status: 401,
+              headers: { 'Content-Type': 'application/json' }
+            });
           }
           if (!await utils.verifyPassword(inputPassword, metadata.passwordHash)) {
-            return new Response('Invalid password', { status: 403 });
+            return new Response(JSON.stringify({
+              message: 'Invalid password',
+              status: 'error'
+            }), { 
+              status: 403,
+              headers: { 'Content-Type': 'application/json' }
+            });
           }
+        }
+
+        // 处理文件名
+        const filename = metadata.filename;
+        const isASCII = /^[\x00-\x7F]*$/.test(filename);
+        let contentDisposition;
+
+        if (isASCII) {
+          // ASCII文件名使用简单格式
+          contentDisposition = `attachment; filename="${filename}"`;
+        } else {
+          // 非ASCII文件名使用RFC 5987编码
+          const encodedFilename = encodeURIComponent(filename).replace(/['()]/g, escape);
+          contentDisposition = `attachment; filename*=UTF-8''${encodedFilename}`;
         }
 
         return new Response(file.body, {
           headers: {
             'Content-Type': metadata.type || 'application/octet-stream',
-            'Content-Disposition': `attachment; filename="${metadata.filename}"`,
-            'Content-Length': metadata.size
+            'Content-Disposition': contentDisposition,
+            'Content-Length': metadata.size,
+            'Access-Control-Allow-Origin': '*'
           }
         });
       } catch (error) {
-        return new Response('Download failed: ' + error.message, { status: 500 });
+        return new Response(JSON.stringify({
+          message: 'Download failed: ' + error.message,
+          status: 'error'
+        }), { 
+          status: 500,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        });
       }
-      break;
     }
 
     default:
-      return new Response('Method not allowed', { status: 405 });
+      return new Response(JSON.stringify({
+        message: 'Method not allowed',
+        status: 'error'
+      }), { 
+        status: 405,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
   }
 }
 
@@ -2309,7 +2924,7 @@ async function cleanupExpiredContent(env) {
     for (const key of pasteList.keys) {
       try {
         const paste = JSON.parse(await env.PASTE_STORE.get(key.name));
-        if (new Date(paste.expiresAt) < now) {
+        if (paste.expiresAt && new Date(paste.expiresAt) < now) { // 添加判断是否有过期时间
           await env.PASTE_STORE.delete(key.name);
           cleanedCount++;
           console.log('Deleted expired paste:', key.name);
@@ -2327,7 +2942,7 @@ async function cleanupExpiredContent(env) {
         if (!file) continue;
 
         const metadata = file.customMetadata;
-        if (metadata && new Date(metadata.expiresAt) < now) {
+        if (metadata && metadata.expiresAt && new Date(metadata.expiresAt) < now) { // 添加判断是否有过期时间
           await env.FILE_STORE.delete(object.key);
           cleanedCount++;
           console.log('Deleted expired file:', object.key);
@@ -2453,7 +3068,7 @@ export default {
         const fileList = await env.FILE_STORE.list();  // 获取文件列表
         console.log('R2 file list:', fileList);  // 添加调试日志
         
-        // 遍历所有文件，R2 存储桶的列表返回的是 objects 属性
+        // 遍历所有文件R2 存储桶的列表返回的是 objects 属性
         for (const object of fileList.objects || []) {
             try {
             // 获取文件的完整信息
