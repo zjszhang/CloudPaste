@@ -439,16 +439,111 @@ body {
 
 .admin-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.8rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-color);
 }
 
-.admin-header h3 {
-  margin: 0;
+.admin-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-header-top h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
   color: #2c3e50;
+  margin: 0;
+}
+
+.admin-controls {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.control-btn {
+  min-width: 100px;
+  height: 32px;
+  padding: 0 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  white-space: nowrap;
+}
+
+.control-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.control-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.control-btn.active:hover {
+  opacity: 0.9;
+  color: white;
+}
+
+.refresh-btn {
+  height: 32px;
+  padding: 0 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  white-space: nowrap;
+}
+
+.refresh-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.close-btn:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
 }
 
 .share-list {
@@ -483,22 +578,6 @@ body {
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.5rem;
-  color: #666;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.close-btn:hover {
-  background: #f1f1f1;
-  color: #333;
 }
 
 .admin-stats {
@@ -1331,6 +1410,42 @@ body {
     padding: 1rem;
   }
 }
+
+/* 在 styles 中添加新的样式 */
+.admin-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.control-btn {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.control-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.upload-disabled {
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #666;
+}
+
+.upload-disabled p {
+    margin: 0;
+    font-size: 1.1rem;
+}
 `;
 
 // Vue 应用代码
@@ -1369,6 +1484,9 @@ createApp({
     const deleteTarget = ref(null);
     const isRefreshing = ref(false);  // 添加刷新状态
     const customId = ref(''); // 添加自定义ID输入框的值
+    // 在 setup() 函数中添加新的状态变量
+    const allowTextUpload = ref(false);  // 控制文本上传
+    const allowFileUpload = ref(false);  // 控制文件上传
 
     // 修改刷新函数
     const refreshShares = async () => {
@@ -1389,7 +1507,10 @@ createApp({
         const credentials = localStorage.getItem('adminCredentials');
         if (credentials) {
             isAdmin.value = true;
-            refreshShares();  // 初始加载一次
+            refreshShares();// 初始加载一次
+            // 从 localStorage 获取上传控制状态
+            allowTextUpload.value = localStorage.getItem('allowTextUpload') === 'true';
+            allowFileUpload.value = localStorage.getItem('allowFileUpload') === 'true';
         }
     });
 
@@ -1624,6 +1745,7 @@ createApp({
 
 
 
+
     // 添加 isExpired 函数
     const isExpired = (expiryTime) => {
       return new Date() > new Date(expiryTime);
@@ -1667,6 +1789,10 @@ createApp({
 
     // 提交粘贴内容
     const submitPaste = async () => {
+      if (!isAdmin.value || !allowTextUpload.value) {
+        error.value = '文本上传功能已关闭';
+        return;
+      }
       try {
         error.value = null;
         const response = await fetch('/api/paste', {
@@ -1710,6 +1836,10 @@ createApp({
 
     // 上传文件
     const uploadFiles = async () => {
+        if (!isAdmin.value || !allowFileUpload.value) {
+            error.value = '文件上传功能已关闭';
+            return;
+        }
         try {
             error.value = null;
             uploadStatus.value = '正在上传...';
@@ -1822,6 +1952,17 @@ createApp({
       }
     };
 
+    // 添加控制函数
+    const toggleTextUpload = () => {
+        allowTextUpload.value = !allowTextUpload.value;
+        localStorage.setItem('allowTextUpload', allowTextUpload.value);
+    };
+
+    const toggleFileUpload = () => {
+        allowFileUpload.value = !allowFileUpload.value;
+        localStorage.setItem('allowFileUpload', allowFileUpload.value);
+    };
+
     return {
       activeTab,
       content,
@@ -1870,6 +2011,10 @@ createApp({
       isRefreshing,
       refreshShares,
       customId,
+      allowTextUpload,
+      allowFileUpload,
+      toggleTextUpload,
+      toggleFileUpload,
     };
   },
 
@@ -2101,15 +2246,36 @@ createApp({
 
       <!-- 管理员内容面板 -->
       <div v-if="isAdmin" class="admin-content">
-      <!-- 在管理员内容面板的 header 部分添加刷新按钮 -->
         <div class="admin-header">
-        <h3>分享管理</h3>
-            <div class="admin-actions">
-                <button class="refresh-btn" @click="refreshShares" :disabled="isRefreshing">
-                    {{ isRefreshing ? '刷新中...' : '刷新列表' }}
-                </button>
-                <button class="close-btn" @click="adminLogout">&times;</button>
-            </div>
+          <div class="admin-header-top">
+            <h3>分享管理</h3>
+            <button class="close-btn" @click="adminLogout">&times;</button>
+          </div>
+          <div class="admin-controls">
+            <button 
+              class="control-btn" 
+              :class="{ active: allowTextUpload }"
+              @click="toggleTextUpload"
+              title="允许/禁止文本上传"
+            >
+              文本上传: {{ allowTextUpload ? '开' : '关' }}
+            </button>
+            <button 
+              class="control-btn" 
+              :class="{ active: allowFileUpload }"
+              @click="toggleFileUpload"
+              title="允许/禁止文件上传"
+            >
+              文件上传: {{ allowFileUpload ? '开' : '关' }}
+            </button>
+            <button 
+              class="refresh-btn" 
+              @click="refreshShares" 
+              :disabled="isRefreshing"
+            >
+              {{ isRefreshing ? '刷新中...' : '刷新列表' }}
+            </button>
+          </div>
         </div>
 
         <!-- 统计信息 -->
