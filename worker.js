@@ -1508,7 +1508,7 @@ createApp({
         if (credentials) {
             isAdmin.value = true;
             refreshShares();// 初始加载一次
-            // 从 localStorage 获取上传控制状态
+            // 从 localStorage 获取上传控制状态,如果没有存储过就默认为 false
             allowTextUpload.value = localStorage.getItem('allowTextUpload') === 'true';
             allowFileUpload.value = localStorage.getItem('allowFileUpload') === 'true';
         }
@@ -1710,6 +1710,9 @@ createApp({
       shares.value = [];
       adminError.value = '';
       localStorage.removeItem('adminCredentials');
+      // 不要清除上传控制状态
+      // localStorage.removeItem('allowTextUpload');
+      // localStorage.removeItem('allowFileUpload');
     };
 
     // 检查是否已登录
@@ -1789,7 +1792,8 @@ createApp({
 
     // 提交粘贴内容
     const submitPaste = async () => {
-      if (!isAdmin.value || !allowTextUpload.value) {
+      // 检查是否允许上传
+      if (!allowTextUpload.value) {
         error.value = '文本上传功能已关闭';
         return;
       }
@@ -1836,89 +1840,70 @@ createApp({
 
     // 上传文件
     const uploadFiles = async () => {
-        if (!isAdmin.value || !allowFileUpload.value) {
-            error.value = '文件上传功能已关闭';
-            return;
+      // 检查是否允许上传,不再检查管理员状态
+      if (!allowFileUpload.value) {
+        error.value = '文件上传功能已关闭';
+        return;
+      }
+      try {
+        error.value = null;
+        uploadStatus.value = '正在上传...';
+        isUploading.value = true;
+        uploadProgress.value = 0;
+        
+        if (!files.value || files.value.length === 0) {
+        error.value = '请选择要上传的文件';
+        return;
         }
-        try {
-            error.value = null;
-            uploadStatus.value = '正在上传...';
-            isUploading.value = true;
-            uploadProgress.value = 0;
-            
-            if (!files.value || files.value.length === 0) {
-            error.value = '请选择要上传的文件';
-            return;
-            }
 
-            // 如果是多文件上传但提供了自定义ID，显示错误
-            if (files.value.length > 1 && customId.value) {
-              error.value = '多文件上传时不支持自定义链接';
-              return;
-            }
+        // 如果是多文件上传但提供了自定义ID，显示错误
+        if (files.value.length > 1 && customId.value) {
+          error.value = '多文件上传时不支持自定义链接';
+          return;
+        }
 
-            // 初始化上传列表
-            uploadingFiles.value = files.value.map(file => ({
-            name: file.name,
-            status: 'loading',
-            statusText: '准备上传...'
-            }));
+        // 初始化上传列表
+        uploadingFiles.value = files.value.map(file => ({
+        name: file.name,
+        status: 'loading',
+        statusText: '准备上传...'
+        }));
 
-            const formData = new FormData();
-            files.value.forEach(file => formData.append('files', file));
-            
-            if (password.value) {
-            formData.append('password', password.value);
-            }
-            formData.append('expiresIn', expiresIn.value);
-            if (customId.value && files.value.length === 1) {
-              formData.append('customId', customId.value);
-            }
+        const formData = new FormData();
+        files.value.forEach(file => formData.append('files', file));
+        
+        if (password.value) {
+        formData.append('password', password.value);
+        }
+        formData.append('expiresIn', expiresIn.value);
+        if (customId.value && files.value.length === 1) {
+          formData.append('customId', customId.value);
+        }
 
-            const response = await fetch('/api/file', {
-            method: 'POST',
-            body: formData
-            });
+        const response = await fetch('/api/file', {
+        method: 'POST',
+        body: formData
+        });
 
-            const data = await response.json();
-            
-            if (!response.ok || data.status === 'error') {
-            throw new Error(data.message || '上传失败');
-            }
+        const data = await response.json();
+        
+        if (!response.ok || data.status === 'error') {
+        throw new Error(data.message || '上传失败');
+        }
 
-            // 更新上传状态
-            data.files.forEach(file => {
-            const uploadingFile = uploadingFiles.value.find(f => f.name === file.filename);
-            if (uploadingFile) {
-                uploadingFile.status = file.status;
-                uploadingFile.statusText = file.status === 'success' ? '上传成功' : file.error;
-            }
-            });
+        // 更新上传状态
+        data.files.forEach(file => {
+        const uploadingFile = uploadingFiles.value.find(f => f.name === file.filename);
+        if (uploadingFile) {
+            uploadingFile.status = file.status;
+            uploadingFile.statusText = file.status === 'success' ? '上传成功' : file.error;
+        }
+        });
 
-            const successFiles = data.files.filter(f => f.status === 'success');
-            
+        const successFiles = data.files.filter(f => f.status === 'success');
+        
 
-            if (successFiles.length > 0) {
-                result.value = {
-                    type: 'files',
-                    files: successFiles.map(file => ({
-                        url: window.location.origin + '/share/file/' + file.fileId,
-                        filename: file.filename,
-                    }))
-                };
-            }
-
-            // 成功后立即刷新分享列表
-            if (isAdmin.value) {
-              await fetchShares();
-            }
-
-            if (successFiles.length === 0) {
-            throw new Error('没有文件上传成功');
-            }
-            
-            uploadStatus.value = '上传成功！';
-            
+        if (successFiles.length > 0) {
             result.value = {
                 type: 'files',
                 files: successFiles.map(file => ({
@@ -1926,20 +1911,40 @@ createApp({
                     filename: file.filename,
                 }))
             };
-
-            // 清空文件列表
-            setTimeout(() => {
-            files.value = [];
-            uploadingFiles.value = [];
-            uploadStatus.value = '';
-            }, 3000);
-
-        } catch (err) {
-            error.value = err.message;
-            uploadStatus.value = '上传失败: ' + err.message;
-        } finally {
-            isUploading.value = false;
         }
+
+        // 成功后立即刷新分享列表
+        if (isAdmin.value) {
+          await fetchShares();
+        }
+
+        if (successFiles.length === 0) {
+        throw new Error('没有文件上传成功');
+        }
+        
+        uploadStatus.value = '上传成功！';
+        
+        result.value = {
+            type: 'files',
+            files: successFiles.map(file => ({
+                url: window.location.origin + '/share/file/' + file.fileId,
+                filename: file.filename,
+            }))
+        };
+
+        // 清空文件列表
+        setTimeout(() => {
+        files.value = [];
+        uploadingFiles.value = [];
+        uploadStatus.value = '';
+        }, 3000);
+
+      } catch (err) {
+        error.value = err.message;
+        uploadStatus.value = '上传失败: ' + err.message;
+      } finally {
+        isUploading.value = false;
+      }
     };
 
     // 复制链接
@@ -1955,11 +1960,13 @@ createApp({
     // 添加控制函数
     const toggleTextUpload = () => {
         allowTextUpload.value = !allowTextUpload.value;
+        // 保存到 localStorage
         localStorage.setItem('allowTextUpload', allowTextUpload.value);
     };
 
     const toggleFileUpload = () => {
         allowFileUpload.value = !allowFileUpload.value;
+        // 保存到 localStorage
         localStorage.setItem('allowFileUpload', allowFileUpload.value);
     };
 
