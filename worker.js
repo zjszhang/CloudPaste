@@ -1446,6 +1446,130 @@ body {
     margin: 0;
     font-size: 1.1rem;
 }
+
+/* 复制提示样式 */
+.copy-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.copy-toast.show {
+  opacity: 1;
+}
+
+// 在 styles 中添加进度条样式
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress-bar-inner {
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+}
+
+/* 在 styles 中添加更细致的响应式断点 */
+/* 超大屏幕 */
+@media (min-width: 1400px) {
+  .card {
+    min-width: 1200px;
+  }
+}
+
+/* 大屏幕 */
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .card {
+    min-width: 1000px;
+  }
+}
+
+/* 中等屏幕 */
+@media (max-width: 1199px) and (min-width: 992px) {
+  .card {
+    min-width: 900px;
+  }
+}
+
+/* 小屏幕 */
+@media (max-width: 991px) and (min-width: 768px) {
+  .card {
+    min-width: 700px;
+  }
+  
+  .editor-container {
+    height: 500px;
+  }
+}
+
+/* 平板 */
+@media (max-width: 767px) and (min-width: 576px) {
+  .card {
+    min-width: auto;
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .editor-container {
+    height: 400px;
+  }
+}
+
+/* 手机横屏 */
+@media (max-width: 575px) and (min-width: 481px) {
+  .card {
+    min-width: auto;
+    width: 95%;
+    padding: 1.2rem;
+  }
+
+  .editor-container {
+    height: 350px;
+  }
+}
+
+/* 手机竖屏 */
+@media (max-width: 480px) {
+  .card {
+    min-width: auto;
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .editor-container {
+    height: 300px;
+  }
+}
+
+/* 确保基础容器在所有尺寸下都能正常工作 */
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+}
 `;
 
 // Vue 应用代码
@@ -1595,11 +1719,21 @@ createApp({
     
     try {
         const rendered = marked.parse(content.value);
-        // 使用 nextTick 确保在 DOM 更新后应用代码高亮
+        // 使用 nextTick 确保在 DOM 更新后应用代码高亮和数学公式渲染
         nextTick(() => {
-          document.querySelectorAll('.preview pre code').forEach((block) => {
-            hljs.highlightBlock(block);
-          });
+            // 代码高亮
+            document.querySelectorAll('.preview pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+            
+            // 渲染数学公式
+            renderMathInElement(document.querySelector('.preview'), {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
         });
         return rendered;
     } catch (err) {
@@ -1880,9 +2014,31 @@ createApp({
           formData.append('customId', customId.value);
         }
 
-        const response = await fetch('/api/file', {
-        method: 'POST',
-        body: formData
+        // 创建 XMLHttpRequest 来监控上传进度
+        const xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            uploadProgress.value = (e.loaded / e.total) * 100;
+          }
+        };
+
+        // 包装成 Promise
+        const response = await new Promise((resolve, reject) => {
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(new Response(xhr.response, {
+                status: xhr.status,
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              }));
+            } else {
+              reject(new Error('Upload failed'));
+            }
+          };
+          xhr.onerror = () => reject(new Error('Network error'));
+          xhr.open('POST', '/api/file');
+          xhr.send(formData);
         });
 
         const data = await response.json();
@@ -1951,8 +2107,23 @@ createApp({
     const copyUrl = async (url) => {
       try {
         await navigator.clipboard.writeText(url);
-        alert('链接已复制到剪贴板');
+        
+        // 创建提示元素
+        const toast = document.createElement('div');
+        toast.className = 'copy-toast';
+        toast.textContent = '链接已复制到剪贴板';
+        document.body.appendChild(toast);
+        
+        // 显示提示
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        // 2秒后隐藏并移除提示
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => document.body.removeChild(toast), 300);
+        }, 2000);
       } catch (err) {
+        // 复制失败时仍然使用 alert
         alert('复制失败，请手动复制');
       }
     };
@@ -2183,6 +2354,14 @@ createApp({
           {{ uploadStatus }}
         </div>
 
+        <!-- 在 uploadStatus 下方添加进度条 -->
+        <div v-if="isUploading" class="progress-bar">
+          <div class="progress-bar-inner" :style="{ width: uploadProgress + '%' }"></div>
+        </div>
+        <div v-if="isUploading" class="progress-text">
+          {{ uploadProgress.toFixed(1) }}%
+        </div>
+
         <button class="btn" @click="uploadFiles" :disabled="!files.length">
           上传文件
         </button>
@@ -2198,9 +2377,9 @@ createApp({
           </div>
         </div>
         <div v-else>
-          <p>文件链接：</p>
+          <p>分享链接：</p>
           <div v-for="file in result.files" :key="file.url" class="link">
-            <a :href="file.url" target="_blank">{{ file.filename }}</a>
+            <a :href="file.url" target="_blank">{{ file.url }}</a>
             <button class="btn" @click="copyUrl(file.url)">复制链接</button>
           </div>
         </div>
@@ -2345,8 +2524,7 @@ createApp({
     </div>
   </div>
   \`
-}).mount('#app');
-`;
+}).mount('#app');`;
    
 
 // 分享页面的 Vue 应用代码
@@ -2459,9 +2637,19 @@ createApp({
       try {
         const rendered = marked.parse(content.value);
         setTimeout(() => {
-          document.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightBlock(block);
-          });
+            // 代码高亮
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+            
+            // 渲染数学公式
+            renderMathInElement(document.querySelector('.content'), {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
         }, 0);
         return rendered;
       } catch (err) {
@@ -2498,6 +2686,10 @@ const html = `<!DOCTYPE html>
     <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
     <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/11.4.0/styles/github.min.css">
     <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/11.4.0/highlight.min.js"></script>
+    <!-- 添加 KaTeX 支持 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>${styles}</style>
 </head>
 <body>
@@ -2526,6 +2718,10 @@ const shareHtml = `<!DOCTYPE html>
     <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
     <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/11.4.0/styles/github.min.css">
     <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/11.4.0/highlight.min.js"></script>
+    <!-- 添加 KaTeX 支持 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>${styles}</style>
 </head>
 <body>
@@ -3025,14 +3221,34 @@ async function handleFile(request, env) {
           contentDisposition = `attachment; filename*=UTF-8''${encodedFilename}`;
         }
 
-        return new Response(file.body, {
+        // 在返回文件响应前添加
+        const stream = file.body;
+        const contentLength = metadata.size;
+
+        // 创建 TransformStream 来监控下载进度
+        const progress = new TransformStream({
+          start(controller) {
+            this.loaded = 0;
+          },
+          transform(chunk, controller) {
+            this.loaded += chunk.byteLength;
+            const progress = (this.loaded / contentLength) * 100;
+            
+            // 通过 response header 传递进度信息
+            controller.enqueue(chunk);
+          }
+        });
+
+        return new Response(stream.pipeThrough(progress), {
           headers: {
             'Content-Type': metadata.type || 'application/octet-stream',
             'Content-Disposition': contentDisposition,
-            'Content-Length': metadata.size,
-            'Access-Control-Allow-Origin': '*'
+            'Content-Length': contentLength,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Expose-Headers': 'Download-Progress'
           }
         });
+
       } catch (error) {
         return new Response(JSON.stringify({
           message: 'Download failed: ' + error.message,
@@ -3349,9 +3565,8 @@ export default {
           });
         }
       }
-    }
+    }  // 删除多余的大括号,只保留这一个
 
-    
     // 处理CORS预检请求
     if (request.method === 'OPTIONS') {
       return new Response(null, {
