@@ -53,6 +53,25 @@
 - 删除分享（带确认提示）
 - 复制分享链接
 - 查看分享统计
+- 修改分享密码（支持文本和文件分享）
+- 编辑文本分享内容
+  - 支持实时 Markdown 预览
+  - 可切换 Markdown 开关
+  - 与主页编辑器相同的编辑体验
+  - 分屏预览模式
+
+### 🔐 访问控制
+- 密码保护
+  - 支持文本和文件分享设置密码
+  - 管理员可随时修改或移除密码
+  - 密码加密存储
+- 文本内容控制
+  - 仅管理员可编辑已分享的文本内容
+  - 普通用户只能查看
+- 上传控制
+  - 管理员可开启/关闭文本上传功能
+  - 管理员可开启/关闭文件上传功能
+  - 防止恶意上传占用资源
 
 ### 🛡️ 安全特性
 - 密码加密存储
@@ -147,15 +166,19 @@
 2. 文件相关
    ```http
    POST /api/file      # 上传文件
-   GET  /api/file/:id  # 下载文件
+   GET  /api/file/:id  # 获取文件信息
+   GET  /api/file/:id?download=true # 下载文件
    ```
 
 3. 管理相关
    ```http
-   POST   /api/admin/login      # 管理员登录
-   GET    /api/admin/shares     # 获取分享列表
-   DELETE /api/admin/paste/:id  # 删除文本分享
-   DELETE /api/admin/file/:id   # 删除文件分享
+   POST   /api/admin/login                    # 管理员登录
+   GET    /api/admin/shares                   # 获取分享列表
+   DELETE /api/admin/paste/:id                # 删除文本分享
+   DELETE /api/admin/file/:id                 # 删除文件分享
+   PUT    /api/admin/paste/:id/content        # 更新文本内容
+   PUT    /api/admin/paste/:id/password       # 修改文本分享密码
+   PUT    /api/admin/file/:id/password        # 修改文件分享密码
    ```
 
 ## 🔄 自动化功能
