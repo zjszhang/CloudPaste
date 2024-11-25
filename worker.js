@@ -1612,6 +1612,58 @@ createApp({
     const allowTextUpload = ref(false);  // 控制文本上传
     const allowFileUpload = ref(false);  // 控制文件上传
 
+    // 在 appScript 的 setup 函数中添加以下状态和方法
+    const showPasswordDialog = ref(false);
+    const passwordTarget = ref(null);
+    const newPassword = ref('');
+    const passwordError = ref('');
+
+    // 打开修改密码对话框
+    const showChangePassword = (share) => {
+      passwordTarget.value = share;
+      newPassword.value = '';
+      passwordError.value = '';
+      showPasswordDialog.value = true;
+    };
+
+    // 修改密码
+    const changePassword = async () => {
+      if (!passwordTarget.value) return;
+      
+      try {
+        const credentials = localStorage.getItem('adminCredentials');
+        if (!credentials) {
+          throw new Error('未登录');
+        }
+
+        const response = await fetch('/api/admin/' + passwordTarget.value.type + '/' + passwordTarget.value.id + '/password', {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Basic ' + credentials,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            password: newPassword.value
+          })
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            isAdmin.value = false;
+            localStorage.removeItem('adminCredentials');
+            throw new Error('登录已过期，请重新登录');
+          }
+          throw new Error('修改密码失败');
+        }
+
+        showPasswordDialog.value = false;
+        passwordTarget.value = null;
+        await fetchShares();
+      } catch (err) {
+        passwordError.value = err.message;
+      }
+    };
+
     // 修改刷新函数
     const refreshShares = async () => {
         if (isRefreshing.value) return;
@@ -1707,7 +1759,7 @@ createApp({
     return function(...args) {
         if (timer) clearTimeout(timer);
         timer = setTimeout(() => {
-        fn.apply(this, args);
+            fn.apply(this, args);
         }, delay);
     };
     };
@@ -2185,7 +2237,6 @@ createApp({
       showDeleteConfirm,
       deleteTarget,
       confirmDelete,
-      executeDelete,
       isRefreshing,
       refreshShares,
       customId,
@@ -2193,6 +2244,13 @@ createApp({
       allowFileUpload,
       toggleTextUpload,
       toggleFileUpload,
+      showPasswordDialog,
+      passwordTarget,
+      newPassword,
+      passwordError,
+      showChangePassword,
+      changePassword,
+      executeDelete,
     };
   },
 
@@ -2502,6 +2560,7 @@ createApp({
                 </div>
                 <div class="actions">
                     <button class="btn" @click="copyUrl(share.url)">复制链接</button>
+                    <button class="btn" @click="showChangePassword(share)">修改密码</button>
                     <button class="btn delete-btn" @click="confirmDelete(share)">删除</button>
                 </div>
             </div>
@@ -2522,6 +2581,27 @@ createApp({
 
       </div>
     </div>
+
+    <!-- 在管理员面板的最后添加修改密码对话框 -->
+    <div v-if="showPasswordDialog" class="confirm-dialog">
+      <div class="confirm-content">
+        <h3>修改密码</h3>
+        <p>{{ passwordTarget?.type === 'paste' ? '文本' : '文件' }}分享: {{ passwordTarget?.id }}</p>
+        <div class="input-group">
+          <label>新密码 (留空则移除密码保护)</label>
+          <input 
+            type="password" 
+            v-model="newPassword"
+            placeholder="输入新密码"
+          >
+        </div>
+        <div v-if="passwordError" class="error" style="margin: 10px 0;">{{ passwordError }}</div>
+        <div class="confirm-actions">
+          <button class="btn" @click="changePassword">确定</button>
+          <button class="btn cancel" @click="showPasswordDialog = false">取消</button>
+        </div>
+      </div>
+    </div>
   </div>
   \`
 }).mount('#app');`;
@@ -2540,10 +2620,106 @@ createApp({
     const error = ref(null);
     const loading = ref(true);
     const expiresAt = ref(null);
-    const isFile = ref(false);  // 添加文件标识
+    const isFile = ref(false);
+    const fileInfo = ref(null); // 添加文件信息
     const uploadProgress = ref(0);
     const isUploading = ref(false);
     const uploadingFiles = ref([]);
+    // 添加管理员状态
+    const isAdmin = ref(false);
+    const isEditing = ref(false); // 添加编辑状态
+    const editContent = ref(''); // 添加编辑内容
+    const editMarkdown = ref(false); // 添加编辑时的 Markdown 开关状态
+
+    // 添加检查管理员状态的方法
+    const checkAdmin = () => {
+      const credentials = localStorage.getItem('adminCredentials');
+      isAdmin.value = !!credentials;
+      return credentials;
+    };
+
+    // 添加开始编辑方法
+    const startEdit = () => {
+      editContent.value = content.value;
+      editMarkdown.value = isMarkdown.value; // 继承原有的 Markdown 状态
+      isEditing.value = true;
+    };
+
+    // 添加保存编辑方法
+    const saveEdit = async () => {
+      try {
+        error.value = null;
+        const pathParts = window.location.pathname.split('/');
+        const id = pathParts[pathParts.length - 1];
+        const credentials = localStorage.getItem('adminCredentials');
+        
+        const response = await fetch('/api/admin/paste/' + id + '/content', {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Basic ' + credentials,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            content: editContent.value,
+            isMarkdown: editMarkdown.value // 添加 Markdown 状态
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('保存失败');
+        }
+
+        content.value = editContent.value;
+        isMarkdown.value = editMarkdown.value; // 更新 Markdown 状态
+        isEditing.value = false;
+      } catch (err) {
+        error.value = err.message;
+      }
+    };
+
+    // 添加取消编辑方法
+    const cancelEdit = () => {
+      isEditing.value = false;
+      editContent.value = '';
+    };
+
+    // 修改 onMounted,添加管理员检查
+    onMounted(() => {
+      checkAdmin();
+      fetchContent();
+    });
+
+    // 添加下载文件的方法
+    const downloadFile = async () => {
+      try {
+        error.value = null;
+        const pathParts = window.location.pathname.split('/');
+        const id = pathParts[pathParts.length - 1];
+        
+        const response = await fetch('/api/file/' + id + '?download=true', {
+          headers: password.value ? {
+            'X-Password': password.value
+          } : {}
+        });
+
+        if (!response.ok) {
+          throw new Error('下载失败');
+        }
+
+        // 触发浏览器下载
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileInfo.value.filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (err) {
+        error.value = err.message;
+      }
+    };
 
     const fetchContent = async () => {
       try {
@@ -2553,7 +2729,6 @@ createApp({
         const isFilePath = window.location.pathname.includes('/share/file/');
         isFile.value = isFilePath;
         
-        // 构建 API URL
         const apiUrl = isFilePath ? '/api/file/' + id : '/api/paste/' + id;
         
         const response = await fetch(apiUrl, {
@@ -2583,27 +2758,17 @@ createApp({
         }
 
         if (isFilePath) {
-          // 如果是文件，直接触发下载
-          const blob = await response.blob();
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = response.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') || 'download';
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-          document.body.removeChild(a);
-          loading.value = false;
-          content.value = '文件下载已开始...';
+          const data = await response.json();
+          fileInfo.value = data;
+          content.value = '文件信息已加载';
         } else {
-          // 如果是文本内容
           const data = await response.json();
           content.value = data.content;
           isMarkdown.value = data.isMarkdown;
           expiresAt.value = new Date(data.expiresAt);
-          loading.value = false;
-          needPassword.value = false;
         }
+        loading.value = false;
+        needPassword.value = false;
       } catch (err) {
         error.value = err.message;
         loading.value = false;
@@ -2657,7 +2822,33 @@ createApp({
       }
     });
 
-    onMounted(fetchContent);
+    // 添加编辑预览计算属性
+    const editPreview = computed(() => {
+      if (!editContent.value) return '';
+      if (!editMarkdown.value) return editContent.value;
+      
+      try {
+        const rendered = marked.parse(editContent.value);
+        // 使用 nextTick 确保在 DOM 更新后应用代码高亮
+        setTimeout(() => {
+          document.querySelectorAll('.preview pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+          });
+          
+          // 渲染数学公式
+          renderMathInElement(document.querySelector('.preview'), {
+            delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+          });
+        }, 0);
+        return rendered;
+      } catch (err) {
+        return '渲染出错: ' + err.message;
+      }
+    });
 
     return {
       content,
@@ -2670,6 +2861,16 @@ createApp({
       formatExpiryTime,
       submitPassword,
       isFile,
+      fileInfo,
+      downloadFile, // 导出下载方法
+      isAdmin,
+      isEditing,
+      editContent,
+      startEdit,
+      saveEdit,
+      cancelEdit,
+      editMarkdown,
+      editPreview,
     };
   }
 }).mount('#app');
@@ -2745,9 +2946,50 @@ const shareHtml = `<!DOCTYPE html>
           <div v-else>
             <div v-if="error" class="error">{{ error }}</div>
             <template v-else>
-              <div class="content">
-                <div v-if="isMarkdown" v-html="renderedContent"></div>
-                <pre v-else>{{ content }}</pre>
+              <div v-if="isFile && fileInfo" class="content">
+                <h3>文件信息</h3>
+                <p>文件名: {{ fileInfo.filename }}</p>
+                <p>文件大小: {{ (fileInfo.size / 1024 / 1024).toFixed(2) }} MB</p>
+                <p>上传时间: {{ new Date(fileInfo.uploadedAt).toLocaleString() }}</p>
+                <p>过期时间: {{ fileInfo.expiresAt ? new Date(fileInfo.expiresAt).toLocaleString() : '永不过期' }}</p>
+                <button class="btn" @click="downloadFile" style="margin-top: 1rem;">下载文件</button>
+              </div>
+              <div v-else class="content">
+                <!-- 修改编辑界面 -->
+                <div v-if="isAdmin && !isFile" class="edit-controls" style="margin-bottom: 1rem;">
+                  <button v-if="!isEditing" class="btn" @click="startEdit">编辑内容</button>
+                  <template v-else>
+                    <button class="btn" @click="saveEdit" style="margin-right: 0.5rem;">保存</button>
+                    <button class="btn" style="background: #95a5a6;" @click="cancelEdit">取消</button>
+                  </template>
+                </div>
+                
+                <div v-if="isEditing">
+                  <!-- 添加 Markdown 开关 -->
+                  <div class="markdown-toggle" style="margin-bottom: 1rem;">
+                    <input type="checkbox" id="edit-markdown-toggle" v-model="editMarkdown">
+                    <label for="edit-markdown-toggle">启用 Markdown</label>
+                  </div>
+                  <!-- 添加编辑器容器 -->
+                  <div class="editor-container">
+                    <div class="editor">
+                      <textarea
+                        v-model="editContent"
+                        style="width: 100%; height: 100%; padding: 1rem; border: none; outline: none; resize: none;"
+                      ></textarea>
+                    </div>
+                    <!-- Markdown 预览区域 -->
+                    <div 
+                      v-if="editMarkdown" 
+                      class="preview"
+                      v-html="editPreview"
+                    ></div>
+                  </div>
+                </div>
+                <div v-else>
+                  <div v-if="isMarkdown" v-html="renderedContent"></div>
+                  <pre v-else>{{ content }}</pre>
+                </div>
               </div>
               <div class="expiry-info">
                 {{ formatExpiryTime }}
@@ -3207,6 +3449,30 @@ async function handleFile(request, env) {
           }
         }
 
+        // 添加一个查询参数来区分是获取文件信息还是下载文件
+        const isDownload = url.searchParams.get('download') === 'true';
+        
+        if (!isDownload) {
+          // 返回文件信息
+          return new Response(JSON.stringify({
+            filename: metadata.filename,
+            type: metadata.type,
+            size: metadata.size,
+            uploadedAt: metadata.uploadedAt,
+            expiresAt: metadata.expiresAt,
+            status: 'success'
+          }), {
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
+        }
+
+        // 处理文件下载...
+        const stream = file.body;
+        const contentLength = metadata.size;
+
         // 处理文件名
         const filename = metadata.filename;
         const isASCII = /^[\x00-\x7F]*$/.test(filename);
@@ -3221,20 +3487,12 @@ async function handleFile(request, env) {
           contentDisposition = `attachment; filename*=UTF-8''${encodedFilename}`;
         }
 
-        // 在返回文件响应前添加
-        const stream = file.body;
-        const contentLength = metadata.size;
-
-        // 创建 TransformStream 来监控下载进度
         const progress = new TransformStream({
           start(controller) {
             this.loaded = 0;
           },
           transform(chunk, controller) {
             this.loaded += chunk.byteLength;
-            const progress = (this.loaded / contentLength) * 100;
-            
-            // 通过 response header 传递进度信息
             controller.enqueue(chunk);
           }
         });
@@ -3571,10 +3829,10 @@ export default {
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, X-Password, Authorization',  // 添加 Authorization
-        'Access-Control-Max-Age': '86400',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, DELETE, PUT, OPTIONS', // 添加 PUT 方法
+          'Access-Control-Allow-Headers': 'Content-Type, X-Password, Authorization',
+          'Access-Control-Max-Age': '86400',
         }
       });
     }
@@ -3583,19 +3841,159 @@ export default {
     if (url.pathname.startsWith("/api/")) {
       try {
         let response;
+        const corsHeaders = {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, DELETE, PUT, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, X-Password, Authorization',
+        };
+
         if (url.pathname.startsWith("/api/paste")) {
           response = await handlePaste(request, env);
         } else if (url.pathname.startsWith("/api/file")) {
           response = await handleFile(request, env);
-        } else {
+        } else if (url.pathname.startsWith("/api/admin/")) {
+          // 添加对管理员 API 的处理
+          if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9-_]+\/password$/)) {
+            if (request.method !== 'PUT') {
+              return new Response('Method not allowed', { 
+                status: 405,
+                headers: corsHeaders
+              });
+            }
+
+            // 验证管理员权限
+            if (!await verifyAdmin(request, env)) {
+              return new Response('Unauthorized', { 
+                status: 401,
+                headers: corsHeaders
+              });
+            }
+
+            try {
+              const pathParts = url.pathname.split('/');
+              const type = pathParts[pathParts.length - 3];
+              const id = pathParts[pathParts.length - 2];
+              const { password } = await request.json();
+
+              if (type === 'paste') {
+                const storedPaste = await env.PASTE_STORE.get(id);
+                if (!storedPaste) {
+                  return new Response(JSON.stringify({
+                    status: 'error',
+                    message: '分享不存在'
+                  }), {
+                    status: 404,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                  });
+                }
+
+                const paste = JSON.parse(storedPaste);
+                if (password) {
+                  paste.passwordHash = await utils.hashPassword(password);
+                } else {
+                  delete paste.passwordHash;
+                }
+
+                await env.PASTE_STORE.put(id, JSON.stringify(paste));
+              } else {
+                const file = await env.FILE_STORE.get(id);
+                if (!file) {
+                  return new Response(JSON.stringify({
+                    status: 'error',
+                    message: '分享不存在'
+                  }), {
+                    status: 404,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                  });
+                }
+
+                const metadata = file.customMetadata;
+                if (password) {
+                  metadata.passwordHash = await utils.hashPassword(password);
+                } else {
+                  delete metadata.passwordHash;
+                }
+
+                await env.FILE_STORE.put(id, await file.arrayBuffer(), {
+                  customMetadata: metadata
+                });
+              }
+
+              return new Response(JSON.stringify({
+                status: 'success',
+                message: '密码修改成功'
+              }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            } catch (error) {
+              return new Response(JSON.stringify({
+                status: 'error',
+                message: '修改密码失败'
+              }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            }
+          }
+
+          // 添加处理更新文本内容的路由
+          if (url.pathname.match(/^\/api\/admin\/paste\/[a-zA-Z0-9-_]+\/content$/)) {
+            if (request.method !== 'PUT') {
+              return new Response('Method not allowed', { 
+                status: 405,
+                headers: corsHeaders
+              });
+            }
+
+            // 验证管理员权限
+            if (!await verifyAdmin(request, env)) {
+              return new Response('Unauthorized', { 
+                status: 401,
+                headers: corsHeaders
+              });
+            }
+
+            try {
+              const pathParts = url.pathname.split('/');
+              const id = pathParts[pathParts.length - 2];
+              const { content, isMarkdown } = await request.json();
+
+              const storedPaste = await env.PASTE_STORE.get(id);
+              if (!storedPaste) {
+                return new Response(JSON.stringify({
+                  status: 'error',
+                  message: '分享不存在'
+                }), {
+                  status: 404,
+                  headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                });
+              }
+
+              const paste = JSON.parse(storedPaste);
+              paste.content = content;
+              paste.isMarkdown = isMarkdown; // 更新 Markdown 状态
+
+              await env.PASTE_STORE.put(id, JSON.stringify(paste));
+
+              return new Response(JSON.stringify({
+                status: 'success',
+                message: '内容已更新'
+              }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            } catch (error) {
+              return new Response(JSON.stringify({
+                status: 'error',
+                message: '更新失败'
+              }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            }
+          }
+
           response = new Response("Not Found", { status: 404 });
         }
-
-        const corsHeaders = {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, X-Password',
-        };
 
         return new Response(response.body, {
           status: response.status,
