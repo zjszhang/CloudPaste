@@ -1,3 +1,7 @@
+// 在文件开头添加常量声明
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 文件大小限制 (25MB)
+const MAX_TOTAL_STORAGE = 5 * 1024 * 1024 * 1024; // 总存储限制 (5GB)
+
 // 工具函数
 const utils = {
   // 生成随机ID
@@ -202,6 +206,7 @@ body {
   width: fit-content;
   min-width: 1200px; /* 设置默认最小宽度 */
   overflow: visible;
+  transition: width 0.3s ease; /* 添加过渡效果 */
 }
 
 .tabs {
@@ -1570,6 +1575,45 @@ body {
   margin: 0 auto;
   padding: clamp(1rem, 3vw, 2rem);
 }
+
+// 在 styles 中添加
+.storage-info {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.storage-progress {
+  width: 100%;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.storage-progress-inner {
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease, background-color 0.3s ease;
+  border-radius: 10px;
+}
+
+.storage-progress-inner.warning {
+  background-color: #f1c40f;
+}
+
+.storage-progress-inner.danger {
+  background-color: #e74c3c;
+}
+
+.storage-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+}
 `;
 
 // Vue 应用代码
@@ -1617,6 +1661,38 @@ createApp({
     const passwordTarget = ref(null);
     const newPassword = ref('');
     const passwordError = ref('');
+
+    // 在 setup() 函数中添加新的状态
+    const storageInfo = ref({
+      used: 0,
+      total: ${MAX_TOTAL_STORAGE},
+      percentage: 0
+    });
+
+    // 添加计算存储空间的方法
+    const calculateStorage = async () => {
+      try {
+        const credentials = localStorage.getItem('adminCredentials');
+        if (!credentials) {
+          throw new Error('未登录');
+        }
+
+        const response = await fetch('/api/admin/storage', {
+          headers: {
+            'Authorization': 'Basic ' + credentials
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('获取存储信息失败');
+        }
+
+        const data = await response.json();
+        storageInfo.value = data.storage;
+      } catch (e) {
+        console.error('Error calculating storage:', e);
+      }
+    };
 
     // 打开修改密码对话框
     const showChangePassword = (share) => {
@@ -1854,6 +1930,7 @@ createApp({
         const data = await response.json();
         console.log('Shares data:', data);  // 添加调试日志
         shares.value = data.shares;
+        await calculateStorage(); // 计算存储空间
       } catch (err) {
         console.error('Fetch shares error:', err);  // 添加调试日志
         adminError.value = err.message;
@@ -1899,6 +1976,7 @@ createApp({
       // 不要清除上传控制状态
       // localStorage.removeItem('allowTextUpload');
       // localStorage.removeItem('allowFileUpload');
+      showAdminPanel.value = false; // 关闭面板
     };
 
     // 检查是否已登录
@@ -2042,7 +2120,7 @@ createApp({
         return;
         }
 
-        // 如果是多文件上传但提供了自定义ID，显示错误
+        // 如果是多文件上传提供了自定义ID，显示错误
         if (files.value.length > 1 && customId.value) {
           error.value = '多文件上传时不支持自定义链接';
           return;
@@ -2085,7 +2163,17 @@ createApp({
                 }
               }));
             } else {
-              reject(new Error('Upload failed'));
+              // 解析错误响应
+              try {
+                const errorData = JSON.parse(xhr.response);
+                if(errorData.message && errorData.message.includes('存储空间')) {
+                  reject(new Error(errorData.message));
+                } else {
+                  reject(new Error('Upload failed'));
+                }
+              } catch(e) {
+                reject(new Error('Upload failed'));
+              }
             }
           };
           xhr.onerror = () => reject(new Error('Network error'));
@@ -2147,6 +2235,10 @@ createApp({
         uploadStatus.value = '';
         }, 3000);
 
+        if (successFiles.length > 0) {
+          await calculateStorage(); // 计算存储空间
+        }
+
       } catch (err) {
         error.value = err.message;
         uploadStatus.value = '上传失败: ' + err.message;
@@ -2192,6 +2284,21 @@ createApp({
         // 保存到 localStorage
         localStorage.setItem('allowFileUpload', allowFileUpload.value);
     };
+
+    // 添加格式化存储空间的方法
+    const formatStorageSize = (bytes) => {
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let size = bytes;
+      let unitIndex = 0;
+      while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+      }
+      return size.toFixed(2) + ' ' + units[unitIndex];
+    };
+
+    // 在 setup() 中添加新的状态
+    const showAdminPanel = ref(false); // 默认不显示面板
 
     return {
       activeTab,
@@ -2251,6 +2358,9 @@ createApp({
       showChangePassword,
       changePassword,
       executeDelete,
+      storageInfo,
+      formatStorageSize,
+      showAdminPanel,
     };
   },
 
@@ -2452,10 +2562,16 @@ createApp({
     <!-- 管理员面板 -->
     <div class="admin-panel">
       <!-- 管理员登录按钮 -->
-      <button v-if="!isAdmin && !showAdminLogin" 
+      <button v-if="(!isAdmin || !showAdminPanel) && !showAdminLogin" 
               class="btn" 
-              @click="showAdminLogin = true">
-        管理员登录
+              @click="() => {
+                if(isAdmin) {
+                  showAdminPanel = true;
+                } else {
+                  showAdminLogin = true;
+                }
+              }">
+        {{ isAdmin ? '管理面板' : '管理员登录' }}
       </button>
 
       <!-- 管理员登录表单 -->
@@ -2489,11 +2605,11 @@ createApp({
       </div>
 
       <!-- 管理员内容面板 -->
-      <div v-if="isAdmin" class="admin-content">
+      <div v-if="isAdmin && showAdminPanel" class="admin-content">
         <div class="admin-header">
           <div class="admin-header-top">
             <h3>分享管理</h3>
-            <button class="close-btn" @click="adminLogout">&times;</button>
+            <button class="close-btn" @click="showAdminPanel = false">&times;</button>
           </div>
           <div class="admin-controls">
             <button 
@@ -2533,6 +2649,26 @@ createApp({
               {{ shares.filter(s => !isExpired(s.expiresAt)).length }}
             </div>
             <div class="stat-label">有效分享</div>
+          </div>
+        </div>
+
+        <!-- 在 admin-stats 后面添加 -->
+        <div class="storage-info">
+          <h4 style="margin: 0 0 0.5rem 0;">R2存储空间使用情况</h4>
+          <div class="storage-progress">
+            <div 
+              class="storage-progress-inner"
+              :class="{
+                'warning': storageInfo.percentage >= 70 && storageInfo.percentage < 90,
+                'danger': storageInfo.percentage >= 90
+              }"
+              :style="{ width: storageInfo.percentage + '%' }"
+            ></div>
+          </div>
+          <div class="storage-details">
+            <span>已用: {{ formatStorageSize(storageInfo.used) }}</span>
+            <span>总容量: {{ formatStorageSize(storageInfo.total) }}</span>
+            <span>使用率: {{ storageInfo.percentage.toFixed(1) }}%</span>
           </div>
         </div>
 
@@ -3003,9 +3139,6 @@ const shareHtml = `<!DOCTYPE html>
 </body>
 </html>`;
 
-// 文件大小限制 (25MB)
-const MAX_FILE_SIZE = 25 * 1024 * 1024;
-
 // 处理粘贴内容
 async function handlePaste(request, env) {
   const url = new URL(request.url);
@@ -3193,8 +3326,47 @@ async function handleFile(request, env) {
   switch (request.method) {
     case 'POST': {
       try {
+        // 计算当前已使用的存储空间
+        let currentStorage = 0;
+        const fileList = await env.FILE_STORE.list();
+        for (const object of fileList.objects || []) {
+          try {
+            const file = await env.FILE_STORE.get(object.key);
+            if (file && file.customMetadata) {
+              currentStorage += parseInt(file.customMetadata.size) || 0;
+            }
+          } catch (e) {
+            console.error('Error calculating storage for file:', object.key, e);
+          }
+        }
+
         const formData = await request.formData();
         const files = formData.getAll('files');
+        
+        // 计算新文件的总大小
+        const newFilesSize = files.reduce((total, file) => total + file.size, 0);
+        
+        // 检查是否会超出总存储限制
+        if (currentStorage + newFilesSize > MAX_TOTAL_STORAGE) {
+          return new Response(JSON.stringify({
+            files: files.map(file => ({
+              filename: file.name,
+              error: `上传失败: 总存储空间将超出限制(${(MAX_TOTAL_STORAGE / 1024 / 1024 / 1024).toFixed(1)}GB)`,
+              status: 'error'
+            })),
+            message: '存储空间不足',
+            status: 'error',
+            currentStorage: currentStorage,
+            maxStorage: MAX_TOTAL_STORAGE
+          }), { 
+            status: 400,
+            headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
+        }
+
         const customId = formData.get('customId');
         const expiresIn = formData.get('expiresIn') || '1d';  // 添加这行
         const inputPassword = formData.get('password');  // 添加这行
@@ -3988,6 +4160,68 @@ export default {
               }), {
                 status: 500,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            }
+          }
+
+          // 在 Worker 中添加一个新的 API 路由来获取存储信息
+          if (url.pathname === '/api/admin/storage') {
+            if (request.method !== 'GET') {
+              return new Response('Method not allowed', { status: 405 });
+            }
+
+            try {
+              // 验证管理员权限
+              if (!await verifyAdmin(request, env)) {
+                return new Response(JSON.stringify({
+                  status: 'error',
+                  message: '未授权访问'
+                }), {
+                  status: 401,
+                  headers: { 
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                  }
+                });
+              }
+
+              // 计算当前已使用的存储空间
+              let currentStorage = 0;
+              const fileList = await env.FILE_STORE.list();
+              for (const object of fileList.objects || []) {
+                try {
+                  const file = await env.FILE_STORE.get(object.key);
+                  if (file && file.customMetadata) {
+                    currentStorage += parseInt(file.customMetadata.size) || 0;
+                  }
+                } catch (e) {
+                  console.error('Error calculating storage for file:', object.key, e);
+                }
+              }
+
+              return new Response(JSON.stringify({
+                status: 'success',
+                storage: {
+                  used: currentStorage,
+                  total: MAX_TOTAL_STORAGE,
+                  percentage: (currentStorage / MAX_TOTAL_STORAGE) * 100
+                }
+              }), {
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Access-Control-Allow-Origin': '*'
+                }
+              });
+            } catch (error) {
+              return new Response(JSON.stringify({
+                status: 'error',
+                message: '获取存储信息失败: ' + error.message
+              }), {
+                status: 500,
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Access-Control-Allow-Origin': '*'
+                }
               });
             }
           }
