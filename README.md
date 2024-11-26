@@ -58,8 +58,12 @@
 - 删除分享（带确认提示）
 - 复制分享链接
 - 查看分享统计
+- 监控存储空间使用情况
+  - 已用空间
+  - 总容量
+  - 使用率百分比
+  - 存储空间预警提示
 - 修改分享密码（支持文本和文件分享）
-- 实时查看R2存储桶容量（自己可设置最大容量）
 - 编辑文本分享内容
   - 支持实时 Markdown 预览
   - 可切换 Markdown 开关
@@ -180,6 +184,7 @@
    ```http
    POST   /api/admin/login                    # 管理员登录
    GET    /api/admin/shares                   # 获取分享列表
+   GET    /api/admin/storage                  # 获取存储空间使用情况
    DELETE /api/admin/paste/:id                # 删除文本分享
    DELETE /api/admin/file/:id                 # 删除文件分享
    PUT    /api/admin/paste/:id/content        # 更新文本内容
@@ -203,6 +208,9 @@
 ## 📝 注意事项
 1. 确保正确配置环境变量
 2. 定期检查存储使用量
+   - 通过管理面板监控存储空间
+   - 注意存储空间使用率预警
+   - 及时清理不需要的内容
 3. 监控错误日志
 4. 注意 Worker 使用配额
 
@@ -228,3 +236,4 @@ MIT License
 - [Cloudflare Workers 文档](https://developers.cloudflare.com/workers/)
 - [Vue 3 文档](https://v3.vuejs.org/)
 - [Marked 文档](https://marked.js.org/)
+
