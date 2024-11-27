@@ -106,15 +106,15 @@
 - 完整的中文标点符号对齐
 - 列表项完美对齐
 
-## 🚀 部署步骤（自动）
+## 🚀 部署（自动）
 
-### 1. 修改环境变量(可选)
+### 1. Actions - Deploy Worker(可选)
 
 1. **Fork 本仓库**
    - 点击右上角的 Fork 按钮
    - 等待仓库克隆完成
 
-2 **设置 GitHub Secrets**
+2. **设置 GitHub Secrets**
    
    在你的 GitHub 仓库中，转到 Settings -> Secrets and variables -> Actions，添加以下 secrets：
 
@@ -130,12 +130,17 @@
    
    - `ADMIN_PASSWORD`: 管理员密码
      * 设置你的管理员密码
+     
+3. **运行工作流**
 
 ### 2. 一键部署
 
+默认无密码,需在cloudflare的对于worker下的变量和机密中设置：
+
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/ling-drag0n/CloudPaste)
 
-## 🚀 部署步骤（手动）
+
+## 🚀 部署（手动）
 
 ### 1. 准备工作
 1. 注册 [Cloudflare](https://dash.cloudflare.com) 账号
