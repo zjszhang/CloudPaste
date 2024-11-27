@@ -2377,6 +2377,23 @@ body {
   font-size: 0.9rem;
   color: #666;
 }
+
+// 在 styles 中添加取消按钮样式
+.cancel-btn {
+  background: #95a5a6;
+  margin-left: 10px;
+  padding: 0.3rem 0.8rem;
+}
+
+.cancel-btn:hover {
+  background: #7f8c8d;
+}
+
+.upload-progress-wrapper {
+  position: relative;
+  margin: 1rem 0;
+  text-align: center;
+}
 `;
 
 // Vue 应用代码
@@ -2803,8 +2820,26 @@ createApp({
     const handleDrop = (e) => {
       e.preventDefault();
       isDragging.value = false;
+      
+      // 在添加新文件前先清理当前预览
+      clearPreview();
+      
       const droppedFiles = Array.from(e.dataTransfer.files);
       files.value = [...files.value, ...droppedFiles];
+      
+      // 生成预览
+      droppedFiles.forEach(file => {
+        if (file.type.startsWith('image/')) {
+          previewUrl.value = URL.createObjectURL(file);
+          previewType.value = 'image';
+        } else if (file.type.startsWith('audio/')) {
+          previewUrl.value = URL.createObjectURL(file);
+          previewType.value = 'audio';
+        } else if (file.type.startsWith('video/')) {
+          previewUrl.value = URL.createObjectURL(file);
+          previewType.value = 'video';
+        }
+      });
     };
 
     // 在 setup() 函数中添加检查文件大小的函数
@@ -2821,6 +2856,10 @@ createApp({
     // 修改 handleFileSelect 函数
     const handleFileSelect = (e) => {
       const selectedFiles = Array.from(e.target.files);
+      
+      // 在添加新文件前先清理当前预览
+      clearPreview();
+      
       files.value = [...files.value, ...selectedFiles];
       
       // 生成预览
@@ -2909,7 +2948,7 @@ createApp({
 
     // 上传文件
     const uploadFiles = async () => {
-      // 检查是否允许上传,不再检查管理员状态
+      // 检查是否允许上传
       if (!allowFileUpload.value) {
         error.value = '文件上传功能已关闭';
         return;
@@ -2925,13 +2964,9 @@ createApp({
           return;
         }
 
-        uploadStatus.value = '正在上传...';
-        isUploading.value = true;
-        uploadProgress.value = 0;
-        
         if (!files.value || files.value.length === 0) {
-        error.value = '请选择要上传的文件';
-        return;
+          error.value = '请选择要上传的文件';
+          return;
         }
 
         // 如果是多文件上传提供了自定义ID，显示错误
@@ -2940,18 +2975,56 @@ createApp({
           return;
         }
 
+        // 添加: 如果提供了自定义ID，先检查是否已存在
+        if (customId.value) {
+          try {
+            // 先检查文本分享
+            const pasteCheckResponse = await fetch('/api/paste/' + customId.value);
+            if (pasteCheckResponse.ok) {
+              error.value = '该链接后缀已被用于文本分享，请更换一个';
+              isUploading.value = false;
+              uploadStatus.value = '';
+              uploadProgress.value = 0;
+              return;
+            }
+            
+            // 再检查文件分享
+            const fileCheckResponse = await fetch('/api/file/' + customId.value);
+            if (fileCheckResponse.ok) {
+              error.value = '该链接后缀已被用于文件分享，请更换一个';
+              isUploading.value = false;
+              uploadStatus.value = '';
+              uploadProgress.value = 0;
+              return;
+            }
+          } catch (e) {
+            // 如果是404错误，说明ID不存在，可以继续
+            if (e.response && e.response.status !== 404) {
+              error.value = '检查链接后缀时出错，请重试';
+              isUploading.value = false;
+              uploadStatus.value = '';
+              uploadProgress.value = 0;
+              return;
+            }
+          }
+        }
+
+        uploadStatus.value = '正在上传...';
+        isUploading.value = true;
+        uploadProgress.value = 0;
+
         // 初始化上传列表
         uploadingFiles.value = files.value.map(file => ({
-        name: file.name,
-        status: 'loading',
-        statusText: '准备上传...'
+          name: file.name,
+          status: 'loading',
+          statusText: '准备上传...'
         }));
 
         const formData = new FormData();
         files.value.forEach(file => formData.append('files', file));
         
         if (password.value) {
-        formData.append('password', password.value);
+          formData.append('password', password.value);
         }
         formData.append('expiresIn', expiresIn.value);
         if (customId.value && files.value.length === 1) {
@@ -2960,6 +3033,18 @@ createApp({
 
         // 创建 XMLHttpRequest 来监控上传进度
         const xhr = new XMLHttpRequest();
+        uploadXHR.value = xhr; // 保存 xhr 引用以便取消上传
+        
+        // 添加取消上传的处理
+        xhr.upload.addEventListener('abort', () => {
+          isUploading.value = false;
+          uploadStatus.value = '已取消上传';
+          uploadProgress.value = 0;
+          setTimeout(() => {
+            uploadStatus.value = '';
+          }, 2000);
+        });
+
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable) {
             if (uploadStartTime.value === 0) {
@@ -2981,7 +3066,6 @@ createApp({
                 }
               }));
             } else {
-              // 解析错误响应
               try {
                 const errorData = JSON.parse(xhr.response);
                 if(errorData.message && errorData.message.includes('存储空间')) {
@@ -3064,6 +3148,7 @@ createApp({
         isUploading.value = false;
         uploadStartTime.value = 0;
         uploadSpeed.value = 0;
+        uploadXHR.value = null; // 清除 xhr 引用
       }
     };
 
@@ -3220,6 +3305,25 @@ createApp({
       }
     });
 
+    // 在 setup() 函数中添加状态
+    const abortController = ref(null); // 添加用于取消上传的控制器
+
+    // 添加取消上传的方法
+    const cancelUpload = () => {
+      if (uploadXHR.value) {
+        uploadXHR.value.abort();
+        uploadStatus.value = '已取消上传';
+        isUploading.value = false;
+        uploadProgress.value = 0;
+        setTimeout(() => {
+          uploadStatus.value = '';
+        }, 2000);
+      }
+    };
+
+    // 在 setup() 中添加 uploadXHR ref
+    const uploadXHR = ref(null);
+
     return {
       activeTab,
       content,
@@ -3288,6 +3392,9 @@ createApp({
       uploadSpeed,
       formatSpeed,
       setError,
+      abortController,
+      cancelUpload,
+      uploadXHR,
     };
   },
 
@@ -3474,11 +3581,14 @@ createApp({
           <div class="upload-progress-info">
             <span>{{ uploadProgress.toFixed(1) }}%</span>
             <span>{{ formatSpeed(uploadSpeed) }}</span>
+            <button class="btn cancel-btn" @click="cancelUpload">
+              取消上传
+            </button>
           </div>
         </div>
 
-        <button class="btn" @click="uploadFiles" :disabled="!files.length">
-          上传文件
+        <button class="btn" @click="uploadFiles" :disabled="!files.length || isUploading">
+          {{ isUploading ? '上传中...' : '上传文件' }}
         </button>
       </div>
 
@@ -3675,7 +3785,7 @@ createApp({
           <input 
             type="password" 
             v-model="newPassword"
-            placeholder="输入新密码"
+            placeholder="输入密码"
           >
         </div>
         <div v-if="passwordError" class="error" style="margin: 10px 0;">{{ passwordError }}</div>
@@ -3847,7 +3957,7 @@ createApp({
           const data = await response.json();
           content.value = data.content;
           isMarkdown.value = data.isMarkdown;
-          expiresAt.value = new Date(data.expiresAt);
+          expiresAt.value = data.expiresAt ? new Date(data.expiresAt) : null;
         }
         loading.value = false;
         needPassword.value = false;
@@ -3867,15 +3977,48 @@ createApp({
     };
 
     const formatExpiryTime = computed(() => {
-      if (!expiresAt.value) return '永不过期';
-      const now = new Date();
-      const diff = expiresAt.value - now;
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      if (hours < 24) {
-        return '将在 ' + hours + ' 小时后过期';
+      // 文件分享的处理
+      if (isFile.value && fileInfo.value) {
+        if (!fileInfo.value.expiresAt) return '永不过期';
+        
+        try {
+          const now = new Date();
+          const expiry = new Date(fileInfo.value.expiresAt);
+          if (isNaN(expiry.getTime())) return '永不过期';
+          
+          const diff = expiry - now;
+          if (diff <= 0) return '已过期';
+          
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          if (hours < 24) {
+            return '将在 ' + hours + ' 小时后过期';
+          }
+          const days = Math.floor(hours / 24);
+          return '将在 ' + days + ' 天后过期';
+        } catch (e) {
+          return '永不过期';
+        }
       }
-      const days = Math.floor(hours / 24);
-      return '将在 ' + days + ' 天后过期';
+      
+      // 文本分享的处理
+      // 如果 expiresAt.value 为 null，直接返回永不过期
+      if (expiresAt.value === null) return '永不过期';
+      
+      try {
+        const now = new Date();
+        const diff = expiresAt.value - now;
+        
+        if (diff <= 0) return '已过期';
+        
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        if (hours < 24) {
+          return '将在 ' + hours + ' 小时后过期';
+        }
+        const days = Math.floor(hours / 24);
+        return '将在 ' + days + ' 天后过期';
+      } catch (e) {
+        return '永不过期';
+      }
     });
 
     const renderedContent = computed(() => {
@@ -4138,6 +4281,7 @@ async function handlePaste(request, env) {
             JSON.stringify({
               message: "该链接后缀已被用于文本分享，请更换一个",
               status: "error",
+              usedBy: "paste",
             }),
             {
               status: 400,
@@ -4153,6 +4297,7 @@ async function handlePaste(request, env) {
             JSON.stringify({
               message: "该链接后缀已被用于文件分享，请更换一个",
               status: "error",
+              usedBy: "file",
             }),
             {
               status: 400,
@@ -4360,8 +4505,8 @@ async function handleFile(request, env) {
         }
 
         const customId = formData.get("customId");
-        const expiresIn = formData.get("expiresIn") || "1d"; // 添加这行
-        const inputPassword = formData.get("password"); // 添加这行
+        const expiresIn = formData.get("expiresIn") || "1d";
+        const inputPassword = formData.get("password");
 
         // 如果提供了自定义ID，先检查是否存在于文本分享中
         if (customId) {
@@ -4374,6 +4519,7 @@ async function handleFile(request, env) {
                     filename: files[0].name,
                     error: "该链接后缀已被用于文本分享，请更换一个",
                     status: "error",
+                    usedBy: "paste",
                   },
                 ],
                 message: "链接后缀已被使用",
@@ -4399,6 +4545,7 @@ async function handleFile(request, env) {
                     filename: files[0].name,
                     error: "该链接后缀已被用于文件分享，请更换一个",
                     status: "error",
+                    usedBy: "file",
                   },
                 ],
                 message: "链接后缀已被使用",
@@ -4471,11 +4618,23 @@ async function handleFile(request, env) {
 
             // 检查自定义ID是否已存在
             if (customId) {
-              const existing = await env.FILE_STORE.get(id);
-              if (existing) {
+              // 检查是否存在于文本分享中
+              const existingPaste = await env.PASTE_STORE.get(id);
+              if (existingPaste) {
                 uploadResults.push({
                   filename: file.name,
-                  error: "该链接后缀已被使用，请更换一个",
+                  error: "该链接后缀已被用于文本分享，请更换一个",
+                  status: "error",
+                });
+                continue;
+              }
+
+              // 检查是否存在于文件分享中
+              const existingFile = await env.FILE_STORE.get(id);
+              if (existingFile) {
+                uploadResults.push({
+                  filename: file.name,
+                  error: "该链接后缀已被用于文件分享，请更换一个",
                   status: "error",
                 });
                 continue;
