@@ -6,7 +6,6 @@
 
 一个基于 Cloudflare Workers 的在线剪贴板和文件分享服务。支持 Markdown、密码保护、文件上传等功能。
 
-
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/8c2b0ac0-75ca-430d-a9fb-c2b94e00bf3c" width="400"/></td>
@@ -21,7 +20,6 @@
     <td><img src="https://github.com/user-attachments/assets/abcf4219-ebde-4630-8666-f7de1834a28d" width="400"/></td>
   </tr>
 </table>
-
 
 ## ✨ 功能特点
 
@@ -48,7 +46,6 @@
 - 密码保护
 - 自定义过期时间
 - 实时上传进度显示
-
 
 ### 👨‍💻 管理功能
 - 管理员登录
@@ -108,43 +105,22 @@
 
 ## 🚀 部署步骤
 
-### 1. 准备工作
-1. 注册 [Cloudflare](https://dash.cloudflare.com) 账号
-2. 进入 Cloudflare 控制台
+### 1. 修改环境变量(可选)
 
-### 2. 创建存储资源
-1. 创建 KV 命名空间
-   - 名称：`PASTE_STORE`
-   - 用于存储文本内容
+修改 `wrangler.toml` 文件中的环境变量:
 
-2. 创建 R2 存储桶
-   - 名称：`cloudpaste-files`
-   - 用于存储上传的文件
+```toml
+[vars]
+ADMIN_USERNAME = "你的管理员用户名"
+ADMIN_PASSWORD = "你的管理员密码" 
+```
 
-### 3. 创建 Worker
-1. 创建新的 Worker
-2. 配置环境变量：
-   ```env
-   ADMIN_USERNAME=你的管理员用户名
-   ADMIN_PASSWORD=你的管理员密码
-   ```
+如不修改，默认为 `admin` 和 `admin`
 
-3. 绑定存储：
-   - KV 绑定：
-     ```toml
-     变量名：PASTE_STORE
-     选择创建的 KV 命名空间
-     ```
-   - R2 绑定：
-     ```toml
-     变量名：FILE_STORE
-     选择创建的 R2 存储桶
-     ```
+### 2. 一键部署
 
-### 4. 部署代码
-1. 复制 `worker.js` 的完整代码
-2. 粘贴到 Worker 的编辑器中
-3. 保存并部署
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/ling-drag0n/CloudPaste)
+
 
 ## 🔧 代码结构说明
 
@@ -236,4 +212,3 @@ MIT License
 - [Cloudflare Workers 文档](https://developers.cloudflare.com/workers/)
 - [Vue 3 文档](https://v3.vuejs.org/)
 - [Marked 文档](https://marked.js.org/)
-
