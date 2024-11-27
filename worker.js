@@ -1,13 +1,13 @@
 // 在文件开头添加常量声明
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 文件大小限制 (25MB)
+const MAX_FILE_SIZE = 98 * 1024 * 1024; // 文件大小限制 (98MB)
 const MAX_TOTAL_STORAGE = 5 * 1024 * 1024 * 1024; // 总存储限制 (5GB)
 
 // 工具函数
 const utils = {
   // 生成随机ID
   generateId(length = 8) {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
     for (let i = 0; i < length; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -18,7 +18,7 @@ const utils = {
   async hashPassword(password) {
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
-    const hash = await crypto.subtle.digest('SHA-256', data);
+    const hash = await crypto.subtle.digest("SHA-256", data);
     return btoa(String.fromCharCode(...new Uint8Array(hash)));
   },
 
@@ -30,23 +30,28 @@ const utils = {
 
   // 计算过期时间
   calculateExpiryTime(duration) {
-    if (duration === 'never') return null; // 永久不过期返回 null
+    if (duration === "never") return null; // 永久不过期返回 null
 
     const now = new Date();
-    switch(duration) {
-      case '1h': return new Date(now.getTime() + 60 * 60 * 1000);
-      case '1d': return new Date(now.getTime() + 24 * 60 * 60 * 1000);
-      case '7d': return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      case '30d': return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-      default: return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    switch (duration) {
+      case "1h":
+        return new Date(now.getTime() + 60 * 60 * 1000);
+      case "1d":
+        return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      case "7d":
+        return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      case "30d":
+        return new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      default:
+        return new Date(now.getTime() + 24 * 60 * 60 * 1000);
     }
   },
 
-    // 检查是否过期
-    isExpired(expiryTime) {
-      if (!expiryTime) return false; // 如果没有过期时间,则永不过期
-      return new Date() > new Date(expiryTime);
-    }
+  // 检查是否过期
+  isExpired(expiryTime) {
+    if (!expiryTime) return false; // 如果没有过期时间,则永不过期
+    return new Date() > new Date(expiryTime);
+  },
 };
 
 // CSS 样式
@@ -2226,11 +2231,157 @@ body {
     rgba(255,255,255,0.1) 10px
   );
 }
+
+/* 文件预览样式 */
+.file-preview {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.file-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.file-preview audio,
+.file-preview video {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* 文件类型图标 */
+.file-type-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f2f6;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* 优化上传进度显示 */
+.upload-progress-container {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.upload-progress-bar {
+  height: 4px;
+  background: var(--primary-color);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.upload-progress-text {
+  position: absolute;
+  right: 0;
+  top: -20px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* 移动端优化 */
+@media (max-width: 480px) {
+  .file-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .file-item .actions {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  .file-preview {
+    padding: 0.5rem;
+  }
+}
+
+/* 文件预览样式 */
+.file-preview {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.file-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.file-preview audio,
+.file-preview video {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* 文件类型图标 */
+.file-type-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f2f6;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* 上传进度条样式 */
+.upload-progress-wrapper {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.upload-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.upload-progress-inner {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.upload-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+}
 `;
 
 // Vue 应用代码
 const appScript = `
-const { createApp, ref, computed, onMounted, nextTick  } = Vue;  // 添加 onMounted
+const { createApp, ref, computed, onMounted, nextTick, onUnmounted, watch } = Vue;  // 添加 onMounted, onUnmounted 和 watch
 
 createApp({
   setup() {
@@ -2377,6 +2528,7 @@ createApp({
             allowFileUpload.value = localStorage.getItem('allowFileUpload') === 'true';
         }
     });
+
 
 
 
@@ -2655,15 +2807,56 @@ createApp({
       files.value = [...files.value, ...droppedFiles];
     };
 
-    // 处理文件选择
+    // 在 setup() 函数中添加检查文件大小的函数
+    const checkFilesSize = (fileList) => {
+      const totalSize = fileList.reduce((sum, file) => sum + file.size, 0);
+      if (totalSize > MAX_FILE_SIZE) {
+        const maxSizeMB = (MAX_FILE_SIZE / 1024 / 1024).toFixed(1);
+        error.value = '文件总大小超过限制(' + maxSizeMB + 'MB)';
+        return false;
+      }
+      return true;
+    };
+
+    // 修改 handleFileSelect 函数
     const handleFileSelect = (e) => {
       const selectedFiles = Array.from(e.target.files);
       files.value = [...files.value, ...selectedFiles];
+      
+      // 生成预览
+      selectedFiles.forEach(file => {
+        if (file.type.startsWith('image/')) {
+          previewUrl.value = URL.createObjectURL(file);
+          previewType.value = 'image';
+        } else if (file.type.startsWith('audio/')) {
+          previewUrl.value = URL.createObjectURL(file);
+          previewType.value = 'audio';
+        } else if (file.type.startsWith('video/')) {
+          previewUrl.value = URL.createObjectURL(file);
+          previewType.value = 'video';
+        }
+      });
     };
 
     // 移除文件
     const removeFile = (index) => {
+      // 如果要移除的是当前正在预览的文件,清理预览
+      const file = files.value[index];
+      if (file && (
+        (file.type.startsWith('image/') && previewType.value === 'image') ||
+        (file.type.startsWith('audio/') && previewType.value === 'audio') ||
+        (file.type.startsWith('video/') && previewType.value === 'video')
+      )) {
+        clearPreview();
+      }
+      
+      // 移除文件
       files.value.splice(index, 1);
+      
+      // 如果没有文件了,确保清理预览
+      if (files.value.length === 0) {
+        clearPreview();
+      }
     };
 
     // 提交粘贴内容
@@ -2723,6 +2916,15 @@ createApp({
       }
       try {
         error.value = null;
+        
+        // 检查文件总大小
+        const totalSize = files.value.reduce((sum, file) => sum + file.size, 0);
+        if (totalSize > window.APP_CONFIG.MAX_FILE_SIZE) {
+          const maxSizeMB = (window.APP_CONFIG.MAX_FILE_SIZE / 1024 / 1024).toFixed(1);
+          error.value = '文件总大小超过限制(' + maxSizeMB + 'MB)';
+          return;
+        }
+
         uploadStatus.value = '正在上传...';
         isUploading.value = true;
         uploadProgress.value = 0;
@@ -2760,7 +2962,11 @@ createApp({
         const xhr = new XMLHttpRequest();
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable) {
+            if (uploadStartTime.value === 0) {
+              uploadStartTime.value = Date.now();
+            }
             uploadProgress.value = (e.loaded / e.total) * 100;
+            calculateSpeed(e.loaded);
           }
         };
 
@@ -2856,6 +3062,8 @@ createApp({
         uploadStatus.value = '上传失败: ' + err.message;
       } finally {
         isUploading.value = false;
+        uploadStartTime.value = 0;
+        uploadSpeed.value = 0;
       }
     };
 
@@ -2911,6 +3119,106 @@ createApp({
 
     // 在 setup() 中添加新的状态
     const showAdminPanel = ref(false); // 默认不显示面板
+
+    // 添加文件预览相关状态
+    const previewUrl = ref('');
+    const previewType = ref('');
+    
+    // 获取文件类型图标
+    const getFileTypeIcon = (file) => {
+      const type = file.type.split('/')[0];
+      switch(type) {
+        case 'image': return '🖼️';
+        case 'audio': return '🎵';
+        case 'video': return '🎬';
+        case 'text': return '📄';
+        case 'application': return '📦';
+        default: return '📎';
+      }
+    };
+    
+    // 清理预览
+    const clearPreview = () => {
+      if (previewUrl.value) {
+        URL.revokeObjectURL(previewUrl.value);
+        previewUrl.value = '';
+        previewType.value = '';
+      }
+    };
+    
+    onUnmounted(() => {
+      clearPreview();
+    });
+
+    // 在 setup() 函数中添加上传速率相关的状态
+    const uploadSpeed = ref(0);
+    const uploadStartTime = ref(0);
+    const uploadedSize = ref(0);
+
+    // 在 setup() 函数中添加计算上传速率的函数
+    const calculateSpeed = (loaded) => {
+      const now = Date.now();
+      const duration = (now - uploadStartTime.value) / 1000; // 转换为秒
+      if (duration > 0) {
+        // 计算这个时间段内的平均速度
+        uploadSpeed.value = loaded / duration;
+      }
+    };
+
+    // 在 setup() 函数中添加格式化速率的函数
+    const formatSpeed = function(bytesPerSecond) {
+      if (bytesPerSecond < 1024) {
+        return bytesPerSecond.toFixed(1) + ' B/s';
+      }
+      if (bytesPerSecond < 1024 * 1024) {
+        return (bytesPerSecond / 1024).toFixed(1) + ' KB/s';
+      }
+      return (bytesPerSecond / (1024 * 1024)).toFixed(1) + ' MB/s';
+    };
+
+    // 在 setup() 函数中添加错误提示计时器
+    const errorTimer = ref(null);
+
+    // 添加设置错误信息的函数
+    const setError = (message) => {
+      // 清除之前的计时器
+      if (errorTimer.value) {
+        clearTimeout(errorTimer.value);
+      }
+      
+      // 设置错误信息
+      error.value = message;
+      
+      // 3秒后自动清除错误信息
+      errorTimer.value = setTimeout(() => {
+        error.value = null;
+        errorTimer.value = null;
+      }, 3000);
+    };
+
+
+    // 在组件卸载时清理计时器
+    onUnmounted(() => {
+      if (errorTimer.value) {
+        clearTimeout(errorTimer.value);
+      }
+    });
+
+    // 修改 error 的定义，添加 watch
+    watch(error, (newError) => {
+      if (newError) {
+        // 清除之前的计时器
+        if (errorTimer.value) {
+          clearTimeout(errorTimer.value);
+        }
+        
+        // 设置新的计时器，3秒后清除错误信息
+        errorTimer.value = setTimeout(() => {
+          error.value = null;
+          errorTimer.value = null;
+        }, 3000);
+      }
+    });
 
     return {
       activeTab,
@@ -2973,6 +3281,13 @@ createApp({
       storageInfo,
       formatStorageSize,
       showAdminPanel,
+      previewUrl,
+      previewType,
+      getFileTypeIcon,
+      clearPreview,
+      uploadSpeed,
+      formatSpeed,
+      setError,
     };
   },
 
@@ -3094,10 +3409,20 @@ createApp({
 
         <!-- 文件列表 -->
         <div class="file-list" v-if="files.length">
+          <!-- 添加预览区域 -->
+          <div v-if="previewUrl" class="file-preview">
+            <img v-if="previewType === 'image'" :src="previewUrl" alt="预览">
+            <audio v-if="previewType === 'audio'" :src="previewUrl" controls></audio>
+            <video v-if="previewType === 'video'" :src="previewUrl" controls></video>
+          </div>
+          
           <div v-for="(file, index) in files" :key="index" class="file-item">
+            <span class="file-type-icon">{{ getFileTypeIcon(file) }}</span>
             <span class="name">{{ file.name }}</span>
             <span class="size">{{ formatSize(file.size) }}</span>
-            <button class="btn" @click="removeFile(index)">移除</button>
+            <div class="actions">
+              <button class="btn" @click="removeFile(index)">移除</button>
+            </div>
           </div>
         </div>
 
@@ -3141,12 +3466,15 @@ createApp({
           {{ uploadStatus }}
         </div>
 
-        <!-- 在 uploadStatus 下方添加进度条 -->
-        <div v-if="isUploading" class="progress-bar">
-          <div class="progress-bar-inner" :style="{ width: uploadProgress + '%' }"></div>
-        </div>
-        <div v-if="isUploading" class="progress-text">
-          {{ uploadProgress.toFixed(1) }}%
+        <!-- 上传进度显示 -->
+        <div v-if="isUploading" class="upload-progress-wrapper">
+          <div class="upload-progress-bar">
+            <div class="upload-progress-inner" :style="{ width: uploadProgress + '%' }"></div>
+          </div>
+          <div class="upload-progress-info">
+            <span>{{ uploadProgress.toFixed(1) }}%</span>
+            <span>{{ formatSpeed(uploadSpeed) }}</span>
+          </div>
         </div>
 
         <button class="btn" @click="uploadFiles" :disabled="!files.length">
@@ -3360,7 +3688,6 @@ createApp({
   </div>
   \`
 }).mount('#app');`;
-   
 
 // 分享页面的 Vue 应用代码
 const shareAppScript = `
@@ -3650,7 +3977,7 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
     <div id="app">
-        <a href="https://github.com/ling-drag0n/CloudPaste" 
+       <a href="https://github.com/ling-drag0n/CloudPaste" 
             target="_blank" 
             class="github-link" 
             title="Visit GitHub">
@@ -3659,6 +3986,13 @@ const html = `<!DOCTYPE html>
             </svg>
         </a>
     </div>
+    <script>
+        // 注入常量
+        window.APP_CONFIG = {
+            MAX_FILE_SIZE: ${MAX_FILE_SIZE},
+            MAX_TOTAL_STORAGE: ${MAX_TOTAL_STORAGE}
+        };
+    </script>
     <script>${appScript}</script>
 </body>
 </html>`;
@@ -3761,58 +4095,70 @@ const shareHtml = `<!DOCTYPE html>
 // 处理粘贴内容
 async function handlePaste(request, env) {
   const url = new URL(request.url);
-  const pathParts = url.pathname.split('/');
+  const pathParts = url.pathname.split("/");
   const pasteId = pathParts[pathParts.length - 1];
-  
+
   switch (request.method) {
-    case 'POST': {
+    case "POST": {
       const data = await request.json();
-      const { content, password: inputPassword, expiresIn, isMarkdown = false, customId = '' } = data;
+      const { content, password: inputPassword, expiresIn, isMarkdown = false, customId = "" } = data;
 
       if (!content) {
-        return new Response(JSON.stringify({
-          message: 'Content is required',
-          status: 'error'
-        }), { 
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return new Response(
+          JSON.stringify({
+            message: "Content is required",
+            status: "error",
+          }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       }
 
       // 验证自定义ID的格式
       if (customId && !/^[a-zA-Z0-9-_]+$/.test(customId)) {
-        return new Response(JSON.stringify({
-          message: '自定义链接后缀只能包含字母、数字、横线和下划线',
-          status: 'error'
-        }), { 
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return new Response(
+          JSON.stringify({
+            message: "自定义链接后缀只能包含字母、数字、横线和下划线",
+            status: "error",
+          }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       }
 
       // 如果提供了自定义ID，先检查是否存在于文本分享中
       if (customId) {
         const existingPaste = await env.PASTE_STORE.get(customId);
         if (existingPaste) {
-          return new Response(JSON.stringify({
-            message: '该链接后缀已被用于文本分享，请更换一个',
-            status: 'error'
-          }), { 
-            status: 400,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return new Response(
+            JSON.stringify({
+              message: "该链接后缀已被用于文本分享，请更换一个",
+              status: "error",
+            }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
 
         // 检查是否存在于文件分享中
         const existingFile = await env.FILE_STORE.get(customId);
         if (existingFile) {
-          return new Response(JSON.stringify({
-            message: '该链接后缀已被用于文件分享，请更换一个',
-            status: 'error'
-          }), { 
-            status: 400,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return new Response(
+            JSON.stringify({
+              message: "该链接后缀已被用于文件分享，请更换一个",
+              status: "error",
+            }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
       }
 
@@ -3821,7 +4167,7 @@ async function handlePaste(request, env) {
         content,
         isMarkdown,
         createdAt: new Date().toISOString(),
-        expiresAt: expiresIn === 'never' ? null : utils.calculateExpiryTime(expiresIn)?.toISOString()
+        expiresAt: expiresIn === "never" ? null : utils.calculateExpiryTime(expiresIn)?.toISOString(),
       };
 
       if (inputPassword) {
@@ -3830,120 +4176,144 @@ async function handlePaste(request, env) {
 
       await env.PASTE_STORE.put(id, JSON.stringify(paste));
 
-      return new Response(JSON.stringify({ 
-        id,
-        status: 'success'
-      }), {
-        headers: { 'Content-Type': 'application/json' },
-        status: 201
-      });
+      return new Response(
+        JSON.stringify({
+          id,
+          status: "success",
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 201,
+        }
+      );
     }
 
-    case 'GET': {
-      if (url.pathname === '/api/paste') {
-        return new Response(JSON.stringify({ 
-          message: 'Invalid request',
-          status: 'error'
-        }), {
-          status: 400,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store'
+    case "GET": {
+      if (url.pathname === "/api/paste") {
+        return new Response(
+          JSON.stringify({
+            message: "Invalid request",
+            status: "error",
+          }),
+          {
+            status: 400,
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+            },
           }
-        });
+        );
       }
 
       const storedPaste = await env.PASTE_STORE.get(pasteId);
       if (!storedPaste) {
-        return new Response(JSON.stringify({ 
-          message: 'Paste not found',
-          status: 'error'
-        }), {
-          status: 404,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store'
+        return new Response(
+          JSON.stringify({
+            message: "Paste not found",
+            status: "error",
+          }),
+          {
+            status: 404,
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+            },
           }
-        });
+        );
       }
 
       const paste = JSON.parse(storedPaste);
 
       if (utils.isExpired(paste.expiresAt)) {
         await env.PASTE_STORE.delete(pasteId);
-        return new Response(JSON.stringify({ 
-          message: 'Paste has expired',
-          status: 'error'
-        }), {
-          status: 404,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store'
+        return new Response(
+          JSON.stringify({
+            message: "Paste has expired",
+            status: "error",
+          }),
+          {
+            status: 404,
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+            },
           }
-        });
+        );
       }
 
-      const inputPassword = request.headers.get('X-Password');
+      const inputPassword = request.headers.get("X-Password");
       if (paste.passwordHash) {
         if (!inputPassword) {
-          return new Response(JSON.stringify({ 
-            message: 'Password required',
-            status: 'error'
-          }), {
-            status: 401,
-            headers: { 
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-store'
+          return new Response(
+            JSON.stringify({
+              message: "Password required",
+              status: "error",
+            }),
+            {
+              status: 401,
+              headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store",
+              },
             }
-          });
+          );
         }
-        if (!await utils.verifyPassword(inputPassword, paste.passwordHash)) {
-          return new Response(JSON.stringify({ 
-            message: 'Invalid password',
-            status: 'error'
-          }), {
-            status: 403,
-            headers: { 
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-store'
+        if (!(await utils.verifyPassword(inputPassword, paste.passwordHash))) {
+          return new Response(
+            JSON.stringify({
+              message: "Invalid password",
+              status: "error",
+            }),
+            {
+              status: 403,
+              headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store",
+              },
             }
-          });
+          );
         }
       }
 
-      return new Response(JSON.stringify({
-        content: paste.content,
-        isMarkdown: paste.isMarkdown,
-        createdAt: paste.createdAt,
-        expiresAt: paste.expiresAt,
-        status: 'success'
-      }), {
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-store'
+      return new Response(
+        JSON.stringify({
+          content: paste.content,
+          isMarkdown: paste.isMarkdown,
+          createdAt: paste.createdAt,
+          expiresAt: paste.expiresAt,
+          status: "success",
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store",
+          },
         }
-      });
+      );
     }
 
     default:
-      return new Response(JSON.stringify({
-        message: 'Method not allowed',
-        status: 'error'
-      }), { 
-        status: 405,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          message: "Method not allowed",
+          status: "error",
+        }),
+        {
+          status: 405,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
   }
 }
 
 // 处理文件上传和下载
 async function handleFile(request, env) {
   const url = new URL(request.url);
-  const pathParts = url.pathname.split('/');
+  const pathParts = url.pathname.split("/");
   const fileId = pathParts[pathParts.length - 1];
 
   switch (request.method) {
-    case 'POST': {
+    case "POST": {
       try {
         // 计算当前已使用的存储空间
         let currentStorage = 0;
@@ -3955,104 +4325,120 @@ async function handleFile(request, env) {
               currentStorage += parseInt(file.customMetadata.size) || 0;
             }
           } catch (e) {
-            console.error('Error calculating storage for file:', object.key, e);
+            console.error("Error calculating storage for file:", object.key, e);
           }
         }
 
         const formData = await request.formData();
-        const files = formData.getAll('files');
-        
+        const files = formData.getAll("files");
+
         // 计算新文件的总大小
         const newFilesSize = files.reduce((total, file) => total + file.size, 0);
-        
+
         // 检查是否会超出总存储限制
         if (currentStorage + newFilesSize > MAX_TOTAL_STORAGE) {
-          return new Response(JSON.stringify({
-            files: files.map(file => ({
-              filename: file.name,
-              error: `上传失败: 总存储空间将超出限制(${(MAX_TOTAL_STORAGE / 1024 / 1024 / 1024).toFixed(1)}GB)`,
-              status: 'error'
-            })),
-            message: '存储空间不足',
-            status: 'error',
-            currentStorage: currentStorage,
-            maxStorage: MAX_TOTAL_STORAGE
-          }), { 
-            status: 400,
-            headers: { 
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
+          return new Response(
+            JSON.stringify({
+              files: files.map((file) => ({
+                filename: file.name,
+                error: `上传失败: 总存储空间将超出限制(${(MAX_TOTAL_STORAGE / 1024 / 1024 / 1024).toFixed(1)}GB)`,
+                status: "error",
+              })),
+              message: "存储空间不足",
+              status: "error",
+              currentStorage: currentStorage,
+              maxStorage: MAX_TOTAL_STORAGE,
+            }),
+            {
+              status: 400,
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              },
             }
-          });
+          );
         }
 
-        const customId = formData.get('customId');
-        const expiresIn = formData.get('expiresIn') || '1d';  // 添加这行
-        const inputPassword = formData.get('password');  // 添加这行
+        const customId = formData.get("customId");
+        const expiresIn = formData.get("expiresIn") || "1d"; // 添加这行
+        const inputPassword = formData.get("password"); // 添加这行
 
         // 如果提供了自定义ID，先检查是否存在于文本分享中
         if (customId) {
           const existingPaste = await env.PASTE_STORE.get(customId);
           if (existingPaste) {
-            return new Response(JSON.stringify({
-              files: [{
-                filename: files[0].name,
-                error: '该链接后缀已被用于文本分享，请更换一个',
-                status: 'error'
-              }],
-              message: '链接后缀已被使用',
-              status: 'error'
-            }), { 
-              status: 400,
-              headers: { 
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+            return new Response(
+              JSON.stringify({
+                files: [
+                  {
+                    filename: files[0].name,
+                    error: "该链接后缀已被用于文本分享，请更换一个",
+                    status: "error",
+                  },
+                ],
+                message: "链接后缀已被使用",
+                status: "error",
+              }),
+              {
+                status: 400,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Access-Control-Allow-Origin": "*",
+                },
               }
-            });
+            );
           }
 
           // 检查是否存在于文件分享中
           const existingFile = await env.FILE_STORE.get(customId);
           if (existingFile) {
-            return new Response(JSON.stringify({
-              files: [{
-                filename: files[0].name,
-                error: '该链接后缀已被用于文件分享，请更换一个',
-                status: 'error'
-              }],
-              message: '链接后缀已被使用',
-              status: 'error'
-            }), { 
-              status: 400,
-              headers: { 
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+            return new Response(
+              JSON.stringify({
+                files: [
+                  {
+                    filename: files[0].name,
+                    error: "该链接后缀已被用于文件分享，请更换一个",
+                    status: "error",
+                  },
+                ],
+                message: "链接后缀已被使用",
+                status: "error",
+              }),
+              {
+                status: 400,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Access-Control-Allow-Origin": "*",
+                },
               }
-            });
+            );
           }
         }
 
-        console.log('Files received:', {
+        console.log("Files received:", {
           count: files.length,
-          fileInfo: files.map(f => ({
+          fileInfo: files.map((f) => ({
             name: f.name,
             size: f.size,
-            type: f.type
-          }))
+            type: f.type,
+          })),
         });
 
         if (!files || files.length === 0) {
-          return new Response(JSON.stringify({
-            files: [],
-            message: '请选择要上传的文件',
-            status: 'error'
-          }), { 
-            status: 400,
-            headers: { 
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
+          return new Response(
+            JSON.stringify({
+              files: [],
+              message: "请选择要上传的文件",
+              status: "error",
+            }),
+            {
+              status: 400,
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              },
             }
-          });
+          );
         }
 
         const uploadResults = [];
@@ -4061,36 +4447,36 @@ async function handleFile(request, env) {
         for (const file of files) {
           try {
             if (!file || !(file instanceof File)) {
-              console.log('Invalid file object:', file);
+              console.log("Invalid file object:", file);
               continue;
             }
 
-            console.log('Processing file:', {
+            console.log("Processing file:", {
               name: file.name,
               size: file.size,
-              type: file.type
+              type: file.type,
             });
 
             if (file.size > MAX_FILE_SIZE) {
               uploadResults.push({
                 filename: file.name,
                 error: `文件大小超过限制(${MAX_FILE_SIZE / 1024 / 1024}MB)`,
-                status: 'error'
+                status: "error",
               });
               continue;
             }
 
             // 生成或使用自定义文件ID
             const id = customId || utils.generateId(12);
-            
+
             // 检查自定义ID是否已存在
             if (customId) {
               const existing = await env.FILE_STORE.get(id);
               if (existing) {
                 uploadResults.push({
                   filename: file.name,
-                  error: '该链接后缀已被使用，请更换一个',
-                  status: 'error'
+                  error: "该链接后缀已被使用，请更换一个",
+                  status: "error",
                 });
                 continue;
               }
@@ -4099,10 +4485,10 @@ async function handleFile(request, env) {
             // 准备元数据
             const metadata = {
               filename: file.name,
-              type: file.type || 'application/octet-stream',
+              type: file.type || "application/octet-stream",
               size: file.size,
               uploadedAt: new Date().toISOString(),
-              expiresAt: expiresIn === 'never' ? null : utils.calculateExpiryTime(expiresIn)?.toISOString()
+              expiresAt: expiresIn === "never" ? null : utils.calculateExpiryTime(expiresIn)?.toISOString(),
             };
 
             if (inputPassword) {
@@ -4111,153 +4497,172 @@ async function handleFile(request, env) {
 
             // 读取文件内容
             const arrayBuffer = await file.arrayBuffer();
-            
+
             // 检查文件内容是否有效
             if (!arrayBuffer || arrayBuffer.byteLength === 0) {
-              throw new Error('文件内容无效');
+              throw new Error("文件内容无效");
             }
 
-            console.log('Uploading file to R2:', {
+            console.log("Uploading file to R2:", {
               id,
               size: arrayBuffer.byteLength,
-              metadata
+              metadata,
             });
 
             // 上传到 R2
             await env.FILE_STORE.put(id, arrayBuffer, {
-              customMetadata: metadata
+              customMetadata: metadata,
             });
 
-            console.log('File uploaded successfully:', id);
+            console.log("File uploaded successfully:", id);
 
             uploadResults.push({
               fileId: id,
               filename: file.name,
               expiresAt: metadata.expiresAt,
-              status: 'success'
+              status: "success",
             });
             hasSuccess = true;
-
           } catch (uploadError) {
-            console.error('File upload error:', {
+            console.error("File upload error:", {
               filename: file.name,
               error: uploadError.message,
-              stack: uploadError.stack
+              stack: uploadError.stack,
             });
-            
+
             uploadResults.push({
               filename: file.name,
               error: uploadError.message,
-              status: 'error'
+              status: "error",
             });
           }
         }
 
-        return new Response(JSON.stringify({
-          files: uploadResults,
-          status: hasSuccess ? 'success' : 'error',
-          message: hasSuccess ? '上传成功' : '所有文件上传失败',
-          successCount: uploadResults.filter(r => r.status === 'success').length,
-          totalCount: files.length
-        }), {
-          status: hasSuccess ? 201 : 400,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+        return new Response(
+          JSON.stringify({
+            files: uploadResults,
+            status: hasSuccess ? "success" : "error",
+            message: hasSuccess ? "上传成功" : "所有文件上传失败",
+            successCount: uploadResults.filter((r) => r.status === "success").length,
+            totalCount: files.length,
+          }),
+          {
+            status: hasSuccess ? 201 : 400,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
           }
+        );
+      } catch (error) {
+        console.error("Upload handler error:", {
+          message: error.message,
+          stack: error.stack,
         });
 
-      } catch (error) {
-        console.error('Upload handler error:', {
-          message: error.message,
-          stack: error.stack
-        });
-        
-        return new Response(JSON.stringify({
-          files: [],
-          message: '上传失败: ' + error.message,
-          status: 'error'
-        }), { 
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+        return new Response(
+          JSON.stringify({
+            files: [],
+            message: "上传失败: " + error.message,
+            status: "error",
+          }),
+          {
+            status: 500,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
           }
-        });
+        );
       }
     }
-    
-    case 'GET': {
-      if (url.pathname === '/api/file') {
-        return new Response('Invalid request', { status: 400 });
+
+    case "GET": {
+      if (url.pathname === "/api/file") {
+        return new Response("Invalid request", { status: 400 });
       }
 
       try {
         const file = await env.FILE_STORE.get(fileId);
-        
+
         if (!file) {
-          return new Response(JSON.stringify({
-            message: 'File not found',
-            status: 'error'
-          }), { 
-            status: 404,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return new Response(
+            JSON.stringify({
+              message: "File not found",
+              status: "error",
+            }),
+            {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
 
         const metadata = file.customMetadata;
 
         if (utils.isExpired(metadata.expiresAt)) {
           await env.FILE_STORE.delete(fileId);
-          return new Response(JSON.stringify({
-            message: 'File has expired',
-            status: 'error'
-          }), { 
-            status: 404,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return new Response(
+            JSON.stringify({
+              message: "File has expired",
+              status: "error",
+            }),
+            {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
 
-        const inputPassword = request.headers.get('X-Password');
+        const inputPassword = request.headers.get("X-Password");
         if (metadata.passwordHash) {
           if (!inputPassword) {
-            return new Response(JSON.stringify({
-              message: 'Password required',
-              status: 'error'
-            }), { 
-              status: 401,
-              headers: { 'Content-Type': 'application/json' }
-            });
+            return new Response(
+              JSON.stringify({
+                message: "Password required",
+                status: "error",
+              }),
+              {
+                status: 401,
+                headers: { "Content-Type": "application/json" },
+              }
+            );
           }
-          if (!await utils.verifyPassword(inputPassword, metadata.passwordHash)) {
-            return new Response(JSON.stringify({
-              message: 'Invalid password',
-              status: 'error'
-            }), { 
-              status: 403,
-              headers: { 'Content-Type': 'application/json' }
-            });
+          if (!(await utils.verifyPassword(inputPassword, metadata.passwordHash))) {
+            return new Response(
+              JSON.stringify({
+                message: "Invalid password",
+                status: "error",
+              }),
+              {
+                status: 403,
+                headers: { "Content-Type": "application/json" },
+              }
+            );
           }
         }
 
         // 添加一个查询参数来区分是获取文件信息还是下载文件
-        const isDownload = url.searchParams.get('download') === 'true';
-        
+        const isDownload = url.searchParams.get("download") === "true";
+
         if (!isDownload) {
           // 返回文件信息
-          return new Response(JSON.stringify({
-            filename: metadata.filename,
-            type: metadata.type,
-            size: metadata.size,
-            uploadedAt: metadata.uploadedAt,
-            expiresAt: metadata.expiresAt,
-            status: 'success'
-          }), {
-            headers: {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
+          return new Response(
+            JSON.stringify({
+              filename: metadata.filename,
+              type: metadata.type,
+              size: metadata.size,
+              uploadedAt: metadata.uploadedAt,
+              expiresAt: metadata.expiresAt,
+              status: "success",
+            }),
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              },
             }
-          });
+          );
         }
 
         // 处理文件下载...
@@ -4285,71 +4690,75 @@ async function handleFile(request, env) {
           transform(chunk, controller) {
             this.loaded += chunk.byteLength;
             controller.enqueue(chunk);
-          }
+          },
         });
 
         return new Response(stream.pipeThrough(progress), {
           headers: {
-            'Content-Type': metadata.type || 'application/octet-stream',
-            'Content-Disposition': contentDisposition,
-            'Content-Length': contentLength,
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Expose-Headers': 'Download-Progress'
-          }
+            "Content-Type": metadata.type || "application/octet-stream",
+            "Content-Disposition": contentDisposition,
+            "Content-Length": contentLength,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Expose-Headers": "Download-Progress",
+          },
         });
-
       } catch (error) {
-        return new Response(JSON.stringify({
-          message: 'Download failed: ' + error.message,
-          status: 'error'
-        }), { 
-          status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+        return new Response(
+          JSON.stringify({
+            message: "Download failed: " + error.message,
+            status: "error",
+          }),
+          {
+            status: 500,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
           }
-        });
+        );
       }
     }
 
     default:
-      return new Response(JSON.stringify({
-        message: 'Method not allowed',
-        status: 'error'
-      }), { 
-        status: 405,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+      return new Response(
+        JSON.stringify({
+          message: "Method not allowed",
+          status: "error",
+        }),
+        {
+          status: 405,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
         }
-      });
+      );
   }
 }
 
 // 验证管理员权限的辅助函数
 async function verifyAdmin(request, env) {
   try {
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Basic ')) {
-      console.log('Missing or invalid Authorization header');
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Basic ")) {
+      console.log("Missing or invalid Authorization header");
       return false;
     }
 
     const credentials = atob(authHeader.slice(6));
-    const [username, password] = credentials.split(':');
-    
-    console.log('Verifying admin credentials:', { username });
-    
+    const [username, password] = credentials.split(":");
+
+    console.log("Verifying admin credentials:", { username });
+
     const isValid = username === env.ADMIN_USERNAME && password === env.ADMIN_PASSWORD;
-    console.log('Admin verification result:', isValid);
-    
+    console.log("Admin verification result:", isValid);
+
     return isValid;
   } catch (error) {
-    console.error('Admin verification error:', error);
+    console.error("Admin verification error:", error);
     return false;
   }
 }
-
 
 // 添加清理过期内容的函数
 async function cleanupExpiredContent(env) {
@@ -4362,13 +4771,14 @@ async function cleanupExpiredContent(env) {
     for (const key of pasteList.keys) {
       try {
         const paste = JSON.parse(await env.PASTE_STORE.get(key.name));
-        if (paste.expiresAt && new Date(paste.expiresAt) < now) { // 添加判断是否有过期时间
+        if (paste.expiresAt && new Date(paste.expiresAt) < now) {
+          // 添加判断是否有过期时间
           await env.PASTE_STORE.delete(key.name);
           cleanedCount++;
-          console.log('Deleted expired paste:', key.name);
+          console.log("Deleted expired paste:", key.name);
         }
       } catch (e) {
-        console.error('Error cleaning paste:', key.name, e);
+        console.error("Error cleaning paste:", key.name, e);
       }
     }
 
@@ -4380,251 +4790,273 @@ async function cleanupExpiredContent(env) {
         if (!file) continue;
 
         const metadata = file.customMetadata;
-        if (metadata && metadata.expiresAt && new Date(metadata.expiresAt) < now) { // 添加判断是否有过期时间
+        if (metadata && metadata.expiresAt && new Date(metadata.expiresAt) < now) {
+          // 添加判断是否有过期时间
           await env.FILE_STORE.delete(object.key);
           cleanedCount++;
-          console.log('Deleted expired file:', object.key);
+          console.log("Deleted expired file:", object.key);
         }
       } catch (e) {
-        console.error('Error cleaning file:', object.key, e);
+        console.error("Error cleaning file:", object.key, e);
       }
     }
 
     console.log(`Cleanup completed: ${cleanedCount} items removed`);
     return cleanedCount;
   } catch (e) {
-    console.error('Cleanup error:', e);
+    console.error("Cleanup error:", e);
     return 0;
   }
 }
-
-
 
 // Worker 导出
 // Worker 导出
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-        
+
     // 获取当前时间
-    const now = new Date();    
+    const now = new Date();
     // 每小时检查一次过期内容（在整点时执行）
     if (now.getMinutes() === 0) {
       // 使用 waitUntil 确保清理操作在响应返回后继续执行
-      ctx.waitUntil(cleanupExpiredContent(env).then(count => {
-        console.log(`Cleaned up ${count} expired items at ${now.toISOString()}`);
-      }));
-    }    
+      ctx.waitUntil(
+        cleanupExpiredContent(env).then((count) => {
+          console.log(`Cleaned up ${count} expired items at ${now.toISOString()}`);
+        })
+      );
+    }
 
     // 处理管理员 API
     if (url.pathname.startsWith("/api/admin/")) {
-    // 处理管理员登录
-    if (url.pathname === '/api/admin/login') {
-        if (request.method !== 'POST') {
-        return new Response('Method not allowed', { status: 405 });
+      // 处理管理员登录
+      if (url.pathname === "/api/admin/login") {
+        if (request.method !== "POST") {
+          return new Response("Method not allowed", { status: 405 });
         }
 
         const { username, password } = await request.json();
         if (username === env.ADMIN_USERNAME && password === env.ADMIN_PASSWORD) {
-        return new Response(JSON.stringify({ 
-            status: 'success',
-            message: '登录成功',
-            credentials: btoa(`${username}:${password}`)  // 添加这行
-        }), {
-            headers: { 
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+          return new Response(
+            JSON.stringify({
+              status: "success",
+              message: "登录成功",
+              credentials: btoa(`${username}:${password}`), // 添加这行
+            }),
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+              },
             }
-        });
-        }
-        
-        return new Response(JSON.stringify({
-        status: 'error',
-        message: '用户名或密码错误'
-        }), {
-        status: 401,
-        headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        }
-        });
-    }
-
-    // 获取所有分享列表
-    if (url.pathname === '/api/admin/shares') {
-        if (request.method !== 'GET') {
-        return new Response('Method not allowed', { status: 405 });
+          );
         }
 
-    try {
-        // 验证管理员权限
-        if (!await verifyAdmin(request, env)) {
-        return new Response(JSON.stringify({
-            status: 'error',
-            message: '未授权访问'
-        }), {
+        return new Response(
+          JSON.stringify({
+            status: "error",
+            message: "用户名或密码错误",
+          }),
+          {
             status: 401,
-            headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-            }
-        });
-        }
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
+        );
+      }
 
-        const shares = [];
-        
-        try {
-        // 获取文本分享
-        const pasteList = await env.PASTE_STORE.list();
-        for (const key of pasteList.keys) {
-            try {
-            const paste = JSON.parse(await env.PASTE_STORE.get(key.name));
-            shares.push({
-                id: key.name,
-                type: 'paste',
-                content: paste.content?.substring(0, 100) + '...',
-                createdAt: paste.createdAt,
-                expiresAt: paste.expiresAt,
-                hasPassword: !!paste.passwordHash,
-                isMarkdown: paste.isMarkdown,
-                url: `${url.origin}/share/paste/${key.name}`
-            });
-            } catch (e) {
-            console.error('Error processing paste:', key.name, e);
-            continue;
-            }
-        }
-        } catch (e) {
-        console.error('Error listing pastes:', e);
+      // 获取所有分享列表
+      if (url.pathname === "/api/admin/shares") {
+        if (request.method !== "GET") {
+          return new Response("Method not allowed", { status: 405 });
         }
 
         try {
-        // 获取文件分享
-        const fileList = await env.FILE_STORE.list();  // 获取文件列表
-        console.log('R2 file list:', fileList);  // 添加调试日志
-        
-        // 遍历所有文件R2 存储桶的列表返回的是 objects 属性
-        for (const object of fileList.objects || []) {
-            try {
-            // 获取文件的完整信息
-            const file = await env.FILE_STORE.get(object.key);
-            if (!file) {
-                console.log('File not found:', object.key);
+          // 验证管理员权限
+          if (!(await verifyAdmin(request, env))) {
+            return new Response(
+              JSON.stringify({
+                status: "error",
+                message: "未授权访问",
+              }),
+              {
+                status: 401,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Access-Control-Allow-Origin": "*",
+                  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                },
+              }
+            );
+          }
+
+          const shares = [];
+
+          try {
+            // 获取文本分享
+            const pasteList = await env.PASTE_STORE.list();
+            for (const key of pasteList.keys) {
+              try {
+                const paste = JSON.parse(await env.PASTE_STORE.get(key.name));
+                shares.push({
+                  id: key.name,
+                  type: "paste",
+                  content: paste.content?.substring(0, 100) + "...",
+                  createdAt: paste.createdAt,
+                  expiresAt: paste.expiresAt,
+                  hasPassword: !!paste.passwordHash,
+                  isMarkdown: paste.isMarkdown,
+                  url: `${url.origin}/share/paste/${key.name}`,
+                });
+              } catch (e) {
+                console.error("Error processing paste:", key.name, e);
                 continue;
+              }
             }
+          } catch (e) {
+            console.error("Error listing pastes:", e);
+          }
 
-            const metadata = file.customMetadata;
-            if (!metadata) {
-                console.log('No metadata for file:', object.key);
-                continue;
+          try {
+            // 获取文件分享
+            const fileList = await env.FILE_STORE.list(); // 获取文件列表
+            console.log("R2 file list:", fileList); // 添加调试日志
+
+            // 遍历所有文件R2 存储桶的列表返回的是 objects 属性
+            for (const object of fileList.objects || []) {
+              try {
+                // 获取文件的完整信息
+                const file = await env.FILE_STORE.get(object.key);
+                if (!file) {
+                  console.log("File not found:", object.key);
+                  continue;
+                }
+
+                const metadata = file.customMetadata;
+                if (!metadata) {
+                  console.log("No metadata for file:", object.key);
+                  continue;
+                }
+
+                shares.push({
+                  id: object.key,
+                  type: "file",
+                  filename: metadata.filename || object.key,
+                  size: metadata.size || object.size,
+                  createdAt: metadata.uploadedAt || object.uploaded,
+                  expiresAt: metadata.expiresAt,
+                  hasPassword: !!metadata.passwordHash,
+                  url: `${url.origin}/share/file/${object.key}`,
+                });
+
+                console.log("Added file share:", object.key);
+              } catch (e) {
+                console.error("Error processing file:", {
+                  key: object.key,
+                  error: e.message,
+                  stack: e.stack,
+                });
+              }
             }
-
-            shares.push({
-                id: object.key,
-                type: 'file',
-                filename: metadata.filename || object.key,
-                size: metadata.size || object.size,
-                createdAt: metadata.uploadedAt || object.uploaded,
-                expiresAt: metadata.expiresAt,
-                hasPassword: !!metadata.passwordHash,
-                url: `${url.origin}/share/file/${object.key}`
+          } catch (e) {
+            console.error("Error listing R2 files:", {
+              error: e.message,
+              stack: e.stack,
             });
+          }
 
-            console.log('Added file share:', object.key);
-            } catch (e) {
-            console.error('Error processing file:', {
-                key: object.key,
-                error: e.message,
-                stack: e.stack
-            });
+          return new Response(
+            JSON.stringify({
+              status: "success",
+              shares: shares.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+            }),
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Cache-Control": "no-store",
+              },
             }
+          );
+        } catch (error) {
+          console.error("Get shares error:", error);
+          return new Response(
+            JSON.stringify({
+              status: "error",
+              message: "获取分享列表失败: " + error.message,
+            }),
+            {
+              status: 500,
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+              },
+            }
+          );
         }
-        } catch (e) {
-        console.error('Error listing R2 files:', {
-            error: e.message,
-            stack: e.stack
-        });
-        }
-
-        return new Response(JSON.stringify({
-        status: 'success',
-        shares: shares.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        }), {
-        headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Cache-Control': 'no-store'
-        }
-        });
-    } catch (error) {
-        console.error('Get shares error:', error);
-        return new Response(JSON.stringify({
-        status: 'error',
-        message: '获取分享列表失败: ' + error.message
-        }), {
-        status: 500,
-        headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        }
-        });
-    }
-    }
+      }
 
       // 删除分享
       if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9]+$/)) {
-        if (request.method !== 'DELETE') {
-          return new Response('Method not allowed', { status: 405 });
+        if (request.method !== "DELETE") {
+          return new Response("Method not allowed", { status: 405 });
         }
 
         // 验证管理员权限
-        if (!await verifyAdmin(request, env)) {
-          return new Response('Unauthorized', { status: 401 });
+        if (!(await verifyAdmin(request, env))) {
+          return new Response("Unauthorized", { status: 401 });
         }
 
         try {
-          const pathParts = url.pathname.split('/');
+          const pathParts = url.pathname.split("/");
           const type = pathParts[pathParts.length - 2];
           const id = pathParts[pathParts.length - 1];
 
-          if (type === 'paste') {
+          if (type === "paste") {
             await env.PASTE_STORE.delete(id);
           } else {
             await env.FILE_STORE.delete(id);
           }
 
-          return new Response(JSON.stringify({
-            status: 'success',
-            message: '删除成功'
-          }), {
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return new Response(
+            JSON.stringify({
+              status: "success",
+              message: "删除成功",
+            }),
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         } catch (error) {
-          return new Response(JSON.stringify({
-            status: 'error',
-            message: '删除失败'
-          }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return new Response(
+            JSON.stringify({
+              status: "error",
+              message: "删除失败",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
       }
-    }  // 删除多余的大括号,只保留这一个
+    } // 删除多余的大括号,只保留这一个
 
     // 处理CORS预检请求
-    if (request.method === 'OPTIONS') {
+    if (request.method === "OPTIONS") {
       return new Response(null, {
         headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, DELETE, PUT, OPTIONS', // 添加 PUT 方法
-          'Access-Control-Allow-Headers': 'Content-Type, X-Password, Authorization',
-          'Access-Control-Max-Age': '86400',
-        }
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, OPTIONS", // 添加 PUT 方法
+          "Access-Control-Allow-Headers": "Content-Type, X-Password, Authorization",
+          "Access-Control-Max-Age": "86400",
+        },
       });
     }
 
@@ -4633,9 +5065,9 @@ export default {
       try {
         let response;
         const corsHeaders = {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, DELETE, PUT, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, X-Password, Authorization',
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, X-Password, Authorization",
         };
 
         if (url.pathname.startsWith("/api/paste")) {
@@ -4645,37 +5077,40 @@ export default {
         } else if (url.pathname.startsWith("/api/admin/")) {
           // 添加对管理员 API 的处理
           if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9-_]+\/password$/)) {
-            if (request.method !== 'PUT') {
-              return new Response('Method not allowed', { 
+            if (request.method !== "PUT") {
+              return new Response("Method not allowed", {
                 status: 405,
-                headers: corsHeaders
+                headers: corsHeaders,
               });
             }
 
             // 验证管理员权限
-            if (!await verifyAdmin(request, env)) {
-              return new Response('Unauthorized', { 
+            if (!(await verifyAdmin(request, env))) {
+              return new Response("Unauthorized", {
                 status: 401,
-                headers: corsHeaders
+                headers: corsHeaders,
               });
             }
 
             try {
-              const pathParts = url.pathname.split('/');
+              const pathParts = url.pathname.split("/");
               const type = pathParts[pathParts.length - 3];
               const id = pathParts[pathParts.length - 2];
               const { password } = await request.json();
 
-              if (type === 'paste') {
+              if (type === "paste") {
                 const storedPaste = await env.PASTE_STORE.get(id);
                 if (!storedPaste) {
-                  return new Response(JSON.stringify({
-                    status: 'error',
-                    message: '分享不存在'
-                  }), {
-                    status: 404,
-                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-                  });
+                  return new Response(
+                    JSON.stringify({
+                      status: "error",
+                      message: "分享不存在",
+                    }),
+                    {
+                      status: 404,
+                      headers: { ...corsHeaders, "Content-Type": "application/json" },
+                    }
+                  );
                 }
 
                 const paste = JSON.parse(storedPaste);
@@ -4689,13 +5124,16 @@ export default {
               } else {
                 const file = await env.FILE_STORE.get(id);
                 if (!file) {
-                  return new Response(JSON.stringify({
-                    status: 'error',
-                    message: '分享不存在'
-                  }), {
-                    status: 404,
-                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-                  });
+                  return new Response(
+                    JSON.stringify({
+                      status: "error",
+                      message: "分享不存在",
+                    }),
+                    {
+                      status: 404,
+                      headers: { ...corsHeaders, "Content-Type": "application/json" },
+                    }
+                  );
                 }
 
                 const metadata = file.customMetadata;
@@ -4706,58 +5144,67 @@ export default {
                 }
 
                 await env.FILE_STORE.put(id, await file.arrayBuffer(), {
-                  customMetadata: metadata
+                  customMetadata: metadata,
                 });
               }
 
-              return new Response(JSON.stringify({
-                status: 'success',
-                message: '密码修改成功'
-              }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-              });
+              return new Response(
+                JSON.stringify({
+                  status: "success",
+                  message: "密码修改成功",
+                }),
+                {
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                }
+              );
             } catch (error) {
-              return new Response(JSON.stringify({
-                status: 'error',
-                message: '修改密码失败'
-              }), {
-                status: 500,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-              });
+              return new Response(
+                JSON.stringify({
+                  status: "error",
+                  message: "修改密码失败",
+                }),
+                {
+                  status: 500,
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                }
+              );
             }
           }
 
           // 添加处理更新文本内容的路由
           if (url.pathname.match(/^\/api\/admin\/paste\/[a-zA-Z0-9-_]+\/content$/)) {
-            if (request.method !== 'PUT') {
-              return new Response('Method not allowed', { 
+            if (request.method !== "PUT") {
+              return new Response("Method not allowed", {
                 status: 405,
-                headers: corsHeaders
+                headers: corsHeaders,
               });
             }
 
             // 验证管理员权限
-            if (!await verifyAdmin(request, env)) {
-              return new Response('Unauthorized', { 
+            if (!(await verifyAdmin(request, env))) {
+              return new Response("Unauthorized", {
                 status: 401,
-                headers: corsHeaders
+                headers: corsHeaders,
               });
             }
 
             try {
-              const pathParts = url.pathname.split('/');
+              const pathParts = url.pathname.split("/");
               const id = pathParts[pathParts.length - 2];
               const { content, isMarkdown } = await request.json();
 
               const storedPaste = await env.PASTE_STORE.get(id);
               if (!storedPaste) {
-                return new Response(JSON.stringify({
-                  status: 'error',
-                  message: '分享不存在'
-                }), {
-                  status: 404,
-                  headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-                });
+                return new Response(
+                  JSON.stringify({
+                    status: "error",
+                    message: "分享不存在",
+                  }),
+                  {
+                    status: 404,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" },
+                  }
+                );
               }
 
               const paste = JSON.parse(storedPaste);
@@ -4766,42 +5213,51 @@ export default {
 
               await env.PASTE_STORE.put(id, JSON.stringify(paste));
 
-              return new Response(JSON.stringify({
-                status: 'success',
-                message: '内容已更新'
-              }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-              });
+              return new Response(
+                JSON.stringify({
+                  status: "success",
+                  message: "内容已更新",
+                }),
+                {
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                }
+              );
             } catch (error) {
-              return new Response(JSON.stringify({
-                status: 'error',
-                message: '更新失败'
-              }), {
-                status: 500,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-              });
+              return new Response(
+                JSON.stringify({
+                  status: "error",
+                  message: "更新失败",
+                }),
+                {
+                  status: 500,
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                }
+              );
             }
           }
 
           // 在 Worker 中添加一个新的 API 路由来获取存储信息
-          if (url.pathname === '/api/admin/storage') {
-            if (request.method !== 'GET') {
-              return new Response('Method not allowed', { status: 405 });
+          if (url.pathname === "/api/admin/storage") {
+            if (request.method !== "GET") {
+              return new Response("Method not allowed", { status: 405 });
             }
 
             try {
               // 验证管理员权限
-              if (!await verifyAdmin(request, env)) {
-                return new Response(JSON.stringify({
-                  status: 'error',
-                  message: '未授权访问'
-                }), {
-                  status: 401,
-                  headers: { 
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
+              if (!(await verifyAdmin(request, env))) {
+                return new Response(
+                  JSON.stringify({
+                    status: "error",
+                    message: "未授权访问",
+                  }),
+                  {
+                    status: 401,
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Access-Control-Allow-Origin": "*",
+                    },
                   }
-                });
+                );
               }
 
               // 计算当前已使用的存储空间
@@ -4814,34 +5270,40 @@ export default {
                     currentStorage += parseInt(file.customMetadata.size) || 0;
                   }
                 } catch (e) {
-                  console.error('Error calculating storage for file:', object.key, e);
+                  console.error("Error calculating storage for file:", object.key, e);
                 }
               }
 
-              return new Response(JSON.stringify({
-                status: 'success',
-                storage: {
-                  used: currentStorage,
-                  total: MAX_TOTAL_STORAGE,
-                  percentage: (currentStorage / MAX_TOTAL_STORAGE) * 100
+              return new Response(
+                JSON.stringify({
+                  status: "success",
+                  storage: {
+                    used: currentStorage,
+                    total: MAX_TOTAL_STORAGE,
+                    percentage: (currentStorage / MAX_TOTAL_STORAGE) * 100,
+                  },
+                }),
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                  },
                 }
-              }), {
-                headers: { 
-                  'Content-Type': 'application/json',
-                  'Access-Control-Allow-Origin': '*'
-                }
-              });
+              );
             } catch (error) {
-              return new Response(JSON.stringify({
-                status: 'error',
-                message: '获取存储信息失败: ' + error.message
-              }), {
-                status: 500,
-                headers: { 
-                  'Content-Type': 'application/json',
-                  'Access-Control-Allow-Origin': '*'
+              return new Response(
+                JSON.stringify({
+                  status: "error",
+                  message: "获取存储信息失败: " + error.message,
+                }),
+                {
+                  status: 500,
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                  },
                 }
-              });
+              );
             }
           }
 
@@ -4851,46 +5313,49 @@ export default {
         return new Response(response.body, {
           status: response.status,
           statusText: response.statusText,
-          headers: { ...Object.fromEntries(response.headers), ...corsHeaders }
+          headers: { ...Object.fromEntries(response.headers), ...corsHeaders },
         });
       } catch (err) {
-        return new Response(JSON.stringify({
-          message: err.message,
-          status: 'error'
-        }), { 
-          status: 500,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return new Response(
+          JSON.stringify({
+            message: err.message,
+            status: "error",
+          }),
+          {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       }
     }
 
     // 处理分享页面
     if (url.pathname.startsWith("/share/paste/") || url.pathname.startsWith("/share/file/")) {
       return new Response(shareHtml, {
-        headers: { 
+        headers: {
           "Content-Type": "text/html",
-          "Access-Control-Allow-Origin": "*"
+          "Access-Control-Allow-Origin": "*",
         },
       });
     }
 
     // 重定向 API 直接访问到分享页面
     if (url.pathname.match(/^\/paste\/[a-zA-Z0-9]+$/)) {
-      const id = url.pathname.split('/').pop();
+      const id = url.pathname.split("/").pop();
       return Response.redirect(`${url.origin}/share/paste/${id}`, 301);
     }
 
     if (url.pathname.match(/^\/file\/[a-zA-Z0-9]+$/)) {
-      const id = url.pathname.split('/').pop();
+      const id = url.pathname.split("/").pop();
       return Response.redirect(`${url.origin}/share/file/${id}`, 301);
     }
-    
+
     // 处理主页
     return new Response(html, {
-      headers: { 
+      headers: {
         "Content-Type": "text/html",
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
       },
     });
-  }
+  },
 };
