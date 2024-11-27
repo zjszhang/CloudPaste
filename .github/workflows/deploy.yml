@@ -88,5 +88,5 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           command: deploy --var ADMIN_USERNAME:${{ secrets.ADMIN_USERNAME }} --var ADMIN_PASSWORD:${{ secrets.ADMIN_PASSWORD }}
         env:
-          ADMIN_USERNAME: ${{ github.repository_owner }}
-          ADMIN_PASSWORD: ${{ github.repository_owner }}-cloudpaste
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
