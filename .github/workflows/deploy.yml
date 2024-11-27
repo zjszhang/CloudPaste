@@ -87,3 +87,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           command: deploy
+          secrets: |
+            ADMIN_USERNAME
+            ADMIN_PASSWORD
+        env:
+          ADMIN_USERNAME: ${{ github.repository_owner }}
+          ADMIN_PASSWORD: ${{ github.repository_owner }}-cloudpaste

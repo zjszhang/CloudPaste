@@ -5,8 +5,7 @@ compatibility_date = "2024-11-27"
 workers_dev = true
 
 [vars]
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "admin" 
+{{ ... }}
 
 [[kv_namespaces]]
 binding = "PASTE_STORE"
