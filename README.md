@@ -10,7 +10,7 @@
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/8c2b0ac0-75ca-430d-a9fb-c2b94e00bf3c" width="400"/></td>
-    <td><img src="https://github.com/user-attachments/assets/313e54c5-d686-4cff-8985-e18c6d92dda1" width="400"/></td>
+    <td><img src="https://github.com/user-attachments/assets/919e9c41-d209-48cc-a7fd-589b90921ba6" width="400"/></td>
   </tr>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/50fc8f8d-4fcb-4b20-9487-ad9998a4ede7" width="400"/></td>
