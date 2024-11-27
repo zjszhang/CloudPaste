@@ -62,7 +62,7 @@ jobs:
           
           if [ -z "$BUCKET_EXISTS" ]; then
               echo "R2 bucket $R2_BUCKET does not exist. Creating..."
-              CREATE_OUTPUT=$(wrangler r2 bucket create "$R2_BUCKET")
+              CREATE_OUTPUT=$(wrangler r2 bucket create "$R2_BUCKET" --location apac)
               echo "R2 bucket $R2_BUCKET created successfully"
           else
               echo "R2 bucket $R2_BUCKET already exists"
@@ -86,10 +86,7 @@ jobs:
         uses: cloudflare/wrangler-action@2.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          command: deploy
-          secrets: |
-            ADMIN_USERNAME
-            ADMIN_PASSWORD
+          command: deploy --var ADMIN_USERNAME:${{ secrets.ADMIN_USERNAME }} --var ADMIN_PASSWORD:${{ secrets.ADMIN_PASSWORD }}
         env:
           ADMIN_USERNAME: ${{ github.repository_owner }}
           ADMIN_PASSWORD: ${{ github.repository_owner }}-cloudpaste
