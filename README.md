@@ -289,3 +289,9 @@ MIT License
 - [Cloudflare Workers 文档](https://developers.cloudflare.com/workers/)
 - [Vue 3 文档](https://v3.vuejs.org/)
 - [Marked 文档](https://marked.js.org/)
+
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ling-drag0n/CloudPaste&type=Date)](https://star-history.com/#ling-drag0n/CloudPaste&Date)
