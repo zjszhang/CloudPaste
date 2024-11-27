@@ -106,24 +106,74 @@
 - 完整的中文标点符号对齐
 - 列表项完美对齐
 
-## 🚀 部署步骤
+## 🚀 部署步骤（自动）
 
 ### 1. 修改环境变量(可选)
 
-修改 `wrangler.toml` 文件中的环境变量:
+1. **Fork 本仓库**
+   - 点击右上角的 Fork 按钮
+   - 等待仓库克隆完成
 
-```toml
-[vars]
-ADMIN_USERNAME = "你的管理员用户名"
-ADMIN_PASSWORD = "你的管理员密码" 
-```
+2 **设置 GitHub Secrets**
+   
+   在你的 GitHub 仓库中，转到 Settings -> Secrets and variables -> Actions，添加以下 secrets：
 
-如不修改，默认为 `admin` 和 `admin`
+   - `CF_API_TOKEN`: Cloudflare API 令牌
+     * 访问 [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)
+     * 创建新的 API 令牌 -选择"编辑 Cloudflare Workers"
+   
+   - `CF_ACCOUNT_ID`: Cloudflare 账户 ID
+     * 在 Cloudflare 仪表板右侧可以找到
+   
+   - `ADMIN_USERNAME`: 管理员用户名
+     * 设置你的管理员账号
+   
+   - `ADMIN_PASSWORD`: 管理员密码
+     * 设置你的管理员密码
 
 ### 2. 一键部署
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/ling-drag0n/CloudPaste)
 
+## 🚀 部署步骤（手动）
+
+### 1. 准备工作
+1. 注册 [Cloudflare](https://dash.cloudflare.com) 账号
+2. 进入 Cloudflare 控制台
+
+### 2. 创建存储资源
+1. 创建 KV 命名空间
+   - 名称：`PASTE_STORE`
+   - 用于存储文本内容
+
+2. 创建 R2 存储桶
+   - 名称：`cloudpaste-files`
+   - 用于存储上传的文件
+
+### 3. 创建 Worker
+1. 创建新的 Worker
+2. 配置环境变量：
+   ```env
+   ADMIN_USERNAME=你的管理员用户名
+   ADMIN_PASSWORD=你的管理员密码
+   ```
+
+3. 绑定存储：
+   - KV 绑定：
+     ```toml
+     变量名：PASTE_STORE
+     选择创建的 KV 命名空间
+     ```
+   - R2 绑定：
+     ```toml
+     变量名：FILE_STORE
+     选择创建的 R2 存储桶
+     ```
+
+### 4. 部署代码
+1. 复制 `worker.js` 的完整代码
+2. 粘贴到 Worker 的编辑器中
+3. 保存并部署
 
 ## 🔧 代码结构说明
 
