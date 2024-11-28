@@ -10,7 +10,7 @@
 <table>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/8c2b0ac0-75ca-430d-a9fb-c2b94e00bf3c" width="400"/></td>
-    <td><img src="https://github.com/user-attachments/assets/919e9c41-d209-48cc-a7fd-589b90921ba6" width="400"/></td>
+    <td><img src="https://github.com/user-attachments/assets/98b91043-f1e2-4d29-a4c6-3ed53ca37387" width="400"/></td>
   </tr>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/50fc8f8d-4fcb-4b20-9487-ad9998a4ede7" width="400"/></td>
@@ -38,7 +38,6 @@
 - 编辑器支持双向拉伸调整大小
 - 支持密码保护
 - 可选过期时间
-- 自定义分享链接后缀
 - 同步滚动预览
 - 支持自定义链接后缀（仅单文件上传时可用）
 
@@ -135,7 +134,7 @@
 
 2. **设置 GitHub Secrets**
    
-   在你的 GitHub 仓库中，转到 Settings -> Secrets and variables -> Actions，添加以下 secrets：
+   在你的 GitHub 仓库中，转到 Settings -> Secrets and variables -> Actions ，添加以下 secrets：
 
    - `CF_API_TOKEN`: Cloudflare API 令牌
      * 访问 [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)
@@ -154,7 +153,7 @@
 
 ### 2. 一键部署
 
-默认无密码,需在cloudflare的对于worker下的变量和机密中设置：
+部署后默认无密码,需在cloudflare的对应worker下的变量和机密中设置：
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/ling-drag0n/CloudPaste)
 
