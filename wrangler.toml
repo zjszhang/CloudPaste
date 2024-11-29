@@ -6,7 +6,11 @@ workers_dev = true
 
 [[kv_namespaces]]
 binding = "PASTE_STORE"
-id = "placeholder-id"
+id = "temporary-id-12345"
+
+[[kv_namespaces]]
+binding = "UPLOAD_STATUS"
+id = "temporary-id-67890"
 
 [[r2_buckets]]
 bucket_name = "cloudpaste-files"
