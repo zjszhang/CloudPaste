@@ -78,101 +78,6 @@ const styles = `
   transform: scale(1.1);
 }
 
-/* 移动端适配 */
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .card {
-    padding: 1rem;
-    width: 100%;
-    min-width: auto;
-  }
-
-  .editor-container {
-    flex-direction: column;
-    height: auto;
-    min-height: 200px;
-    resize: vertical;
-  }
-
-  .editor, .preview {
-    height: 300px;
-    min-width: auto;
-    width: 100%;
-  }
-
-  .settings {
-    grid-template-columns: 1fr;
-  }
-
-  .file-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .file-item .size {
-    margin: 0;
-  }
-
-  .admin-panel {
-    right: 70px;  
-  }
-
-  .admin-content {
-    width: 100%;
-  }
-
-  .link {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .link button {
-    width: 100%;
-  }
-
-  .github-link {
-    top: 10px;
-    right: 10px;
-  }
-}
-
-/* 超小屏幕适配 */
-@media (max-width: 480px) {
-  .tabs {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .tab {
-    width: 100%;
-    text-align: center;
-  }
-
-  .file-drop {
-    padding: 1rem;
-  }
-
-  .admin-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .editor-container {
-    min-height: 150px;
-  }
-
-  .editor, .preview {
-    height: 250px;
-  }
-
-  .card {
-    padding: 0.8rem;
-  }
-}
-
 :root {
   --primary-color: #3498db;
   --bg-color: #f5f6fa;
@@ -190,16 +95,6 @@ body {
   background: var(--bg-color);
   color: #2d3436;
   line-height: 1.6;
-}
-
-.container {
-  max-width: 1400px; /* 增加最大宽度 */
-  margin: 0 auto;
-  padding: 2rem;
-  min-height: 100vh; /* 添加最小高度 */
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* 水平居中 */
 }
 
 .card {
@@ -483,28 +378,7 @@ body {
   font-size: 0.9rem;
 }
 
-// github链接
-.github-link {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  color: #333;
-  transition: color 0.3s ease;
-}
-
-.github-link:hover {
-  color: var(--primary-color);
-}
-
-.github-icon {
-  transition: transform 0.3s ease;
-}
-
-.github-link:hover .github-icon {
-  transform: scale(1.1);
-}
-
+/* 管理面板组件 */
 .admin-panel {
   position: fixed;
   top: 20px;
@@ -532,6 +406,7 @@ body {
   overflow-y: auto;
 }
 
+/* 管理面板头部 */
 .admin-header {
   display: flex;
   flex-direction: column;
@@ -554,6 +429,7 @@ body {
   margin: 0;
 }
 
+/* 管理面板控制��钮 */
 .admin-controls {
   display: flex;
   gap: 0.8rem;
@@ -641,6 +517,7 @@ body {
   color: #e74c3c;
 }
 
+/* 分享列表 */
 .share-list {
   margin-top: 1rem;
 }
@@ -675,6 +552,7 @@ body {
   margin-top: 1rem;
 }
 
+/* 统计卡片 */
 .admin-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -700,6 +578,7 @@ body {
   color: #666;
 }
 
+/* 筛选和状态 */
 .filter-bar {
   margin-bottom: 1rem;
   display: flex;
@@ -727,7 +606,8 @@ body {
   color: #c62828;
 }
 
-/* 在 styles 中添加 */
+
+/* 密码输入组件 */
 .password-input-group {
   position: relative;
   display: flex;
@@ -750,6 +630,7 @@ body {
   opacity: 1;
 }
 
+/* 管理员登录按钮 */
 .admin-login .actions {
   display: flex;
   gap: 1rem;  /* 添加按钮之间的间距 */
@@ -765,7 +646,7 @@ body {
 }
 
 
-/* 添加确认对话框样式 */
+/* 确认对话框样式 */
 .confirm-dialog {
   position: fixed;
   top: 0;
@@ -822,7 +703,7 @@ body {
 }
 
 
-// markdown复选框对齐
+/* Markdown 复选框 */
 .markdown-toggle {
   display: flex;
   align-items: center;
@@ -845,6 +726,8 @@ body {
   gap: 1rem;
   height: 600px;
   min-height: 400px;
+  width: 100%;         /* 限制最大宽度 */
+  max-width: 100%;     /* 限制最大宽度 */
   position: relative;
   resize: both;
   overflow: auto;
@@ -860,9 +743,13 @@ body {
   position: relative;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  white-space: pre-wrap;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.6;
+  width: 0;             /* 强制flex子项不超出容器 */
+  min-width: 0;         /* 允许flex子项收缩 */
+  min-width: calc(50% - 0.5rem); /* 确保最小宽度不会小于容器的一半减去间距 */
 }
 
 .editor textarea {
@@ -877,6 +764,9 @@ body {
   padding: 0;
   margin: 0;
   background: transparent;
+  white-space: pre-wrap;       /*  保留换行符并自动换行 */
+  word-wrap: break-word;       /*  允许单词内换行 */
+  overflow-wrap: break-word;   /*  确保长单词会换行 */
 }
 
 /* 拉伸手柄样式优化 */
@@ -885,8 +775,8 @@ body {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 15px;
-  height: 15px;
+  width: 25px;
+  height: 25px;
   cursor: nw-resize;
   background: linear-gradient(135deg, transparent 50%, var(--border-color) 50%);
   border-radius: 0 0 4px 0;
@@ -932,7 +822,7 @@ body {
 }
 
 
-    /* Markdown 内容样式优化 */
+/* Markdown 内容样式优化 */
 .content {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
@@ -1082,17 +972,6 @@ body {
   display: inline;
 }
 
-/* 行内代码样式 */
-.content code {
-  padding: 0.2em 0.4em;
-  margin: 0;
-  font-size: 0.9em;
-  background-color: rgba(27,31,35,0.05);
-  border-radius: 3px;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  color: #476582;
-}
-
 /* 代码块样式 */
 .content pre {
   margin: 1.5em 0;
@@ -1226,68 +1105,6 @@ body {
   padding: 0;
 }
 
-/* 移动端适配 */
-@media screen and (max-width: 768px) {
-  .content table {
-    font-size: 0.9em;
-  }
-  
-  .content table th,
-  .content table td {
-    padding: 0.6em 0.8em;
-  }
-  
-  .content table th:nth-child(1),
-  .content table td:nth-child(1),
-  .content table th:nth-child(2),
-  .content table td:nth-child(2),
-  .content table th:nth-child(3),
-  .content table td:nth-child(3) {
-    width: auto;
-  }
-}
-
-/* 暗色主题支持 */
-@media (prefers-color-scheme: dark) {
-  .content table {
-    border-color: #3a3a3a;
-  }
-  
-  .content table th,
-  .content table td {
-    border-color: #3a3a3a;
-  }
-  
-  .content table th {
-    background-color: #2a2a2a;
-    color: #e4e4e4;
-  }
-  
-  .content table tr {
-    background-color: #242424;
-  }
-  
-  .content table tr:nth-child(2n) {
-    background-color: #2a2a2a;
-  }
-  
-  .content table td strong,
-  .content table th strong {
-    color: #e4e4e4;
-  }
-}
-
-/* 表格滚动支持 */
-@media screen and (max-width: 480px) {
-  .content {
-    overflow-x: auto;
-  }
-  
-  .content table {
-    min-width: 100%;
-  }
-}
-
 /* 确保表格边框完整性 */
 .content table thead {
   border-bottom: 2px solid #dfe2e5;
@@ -1336,74 +1153,6 @@ body {
   margin: 2.5em 0;
   background-color: #eaecef;
   border: none;
-}
-
-/* 暗色主题支持 */
-@media (prefers-color-scheme: dark) {
-  .content {
-    background: #242424;
-    color: #e4e4e4;
-  }
-
-  .content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
-    color: #fff;
-  }
-
-  .content code {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #e4e4e4;
-  }
-
-  .content pre {
-    background: #2a2a2a;
-    border-color: #3a3a3a;
-  }
-
-  .content blockquote {
-    background: #2a2a2a;
-    color: #b4b4b4;
-  }
-
-  .content table th,
-  .content table td {
-    border-color: #3a3a3a;
-  }
-
-  .content table th {
-    background-color: #2a2a2a;
-  }
-
-  .content table tr:nth-child(2n) {
-    background-color: #2a2a2a;
-  }
-
-  .content hr {
-    background-color: #3a3a3a;
-  }
-
-  .content strong {
-    color: #fff;
-  }
-
-  .content li::before {
-    color: #b4b4b4;
-  }
-}
-
-/* 移动端适配 */
-@media (max-width: 768px) {
-  .content {
-    padding: 1rem;
-  }
-
-  .content pre {
-    padding: 1rem;
-    font-size: 0.85em;
-  }
-
-  .content table {
-    font-size: 0.9em;
-  }
 }
 
 /* 列表基础样式优化 */
@@ -1498,23 +1247,14 @@ body {
   margin: 0;
 }
 
-/* 移动端适配 */
-@media (max-width: 768px) {
-  .card {
-    width: 100%;
-    max-width: 100%;
-    min-width: auto;
-    padding: 1rem;
-  }
-}
-
-/* 在 styles 中添加新的样式 */
+/* 管理面板操作按钮 */
 .admin-actions {
     display: flex;
     gap: 0.5rem;
     align-items: center;
 }
 
+/* 控制按钮基础样式 */
 .control-btn {
     padding: 0.4rem 0.8rem;
     border: 1px solid var(--border-color);
@@ -1531,6 +1271,7 @@ body {
     border-color: var(--primary-color);
 }
 
+/* 上传禁用状态 */
 .upload-disabled {
     text-align: center;
     padding: 2rem;
@@ -1567,111 +1308,7 @@ body {
   transform: translate(-50%, 0);
 }
 
-// 在 styles 中添加进度条样式
-.progress-bar {
-  width: 100%;
-  height: 20px;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 10px 0;
-}
-
-.progress-bar-inner {
-  height: 100%;
-  background-color: var(--primary-color);
-  transition: width 0.3s ease;
-  border-radius: 10px;
-}
-
-.progress-text {
-  text-align: center;
-  font-size: 14px;
-  color: #666;
-  margin: 5px 0;
-}
-
-/* 在 styles 中添加更细致的响应式断点 */
-/* 超大屏幕 */
-@media (min-width: 1400px) {
-  .card {
-    min-width: 1200px;
-  }
-}
-
-/* 大屏幕 */
-@media (max-width: 1399px) and (min-width: 1200px) {
-  .card {
-    min-width: 1000px;
-  }
-}
-
-/* 中等屏幕 */
-@media (max-width: 1199px) and (min-width: 992px) {
-  .card {
-    min-width: 900px;
-  }
-}
-
-/* 小屏幕 */
-@media (max-width: 991px) and (min-width: 768px) {
-  .card {
-    min-width: 700px;
-  }
-  
-  .editor-container {
-    height: 500px;
-  }
-}
-
-/* 平板 */
-@media (max-width: 767px) and (min-width: 576px) {
-  .card {
-    min-width: auto;
-    width: 95%;
-    padding: 1.5rem;
-  }
-
-  .editor-container {
-    height: 400px;
-  }
-}
-
-/* 手机横屏 */
-@media (max-width: 575px) and (min-width: 481px) {
-  .card {
-    min-width: auto;
-    width: 95%;
-    padding: 1.2rem;
-  }
-
-  .editor-container {
-    height: 350px;
-  }
-}
-
-/* 手机竖屏 */
-@media (max-width: 480px) {
-  .card {
-    min-width: auto;
-    width: 95%;
-    padding: 1rem;
-  }
-
-  .editor-container {
-    height: 300px;
-  }
-}
-
-/* 确保基础容器在所有尺寸下都能正常工作 */
-.container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: clamp(1rem, 3vw, 2rem);
-}
-
-// 在 styles 中添加
+/* 存储信息组件 */
 .storage-info {
   margin: 1rem 0;
   padding: 1rem;
@@ -1695,6 +1332,7 @@ body {
   border-radius: 10px;
 }
 
+/* 状态类 */
 .storage-progress-inner.warning {
   background-color: #f1c40f;
 }
@@ -1710,7 +1348,7 @@ body {
   color: #666;
 }
 
-// 优化加载状态显示
+/* 加载状态组件 */
 .loading-spinner {
   display: inline-block;
   width: 20px;
@@ -1728,7 +1366,7 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-// 优化按钮点击反馈
+/* 按钮交互效果 */
 .btn {
   position: relative;
   overflow: hidden;
@@ -1767,7 +1405,7 @@ body {
   }
 }
 
-// 优化文件拖放区域反馈
+/* 文件拖放交互 */
 .file-drop {
   transition: all 0.3s ease;
 }
@@ -1777,7 +1415,7 @@ body {
   box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
 }
 
-// 优化复制成功提示样式
+/* 复制成功提示样式 */
 .copy-toast {
   transform: translate(-50%, 20px);
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -1788,7 +1426,7 @@ body {
   opacity: 1;
 }
 
-// 优化输入框焦点状态
+/* 输入框交互 */
 .input-group input:focus,
 .input-group select:focus {
   outline: none;
@@ -1796,7 +1434,7 @@ body {
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
-// 优化错误提示样式
+/* 错误提示样式 */
 .error {
   padding: 0.8rem;
   border-radius: 4px;
@@ -1817,7 +1455,7 @@ body {
   }
 }
 
-// 优化滚动条样式
+/* 滚动条样式 */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -1840,31 +1478,7 @@ body {
   background-clip: padding-box;
 }
 
-/* 文件上传进度条优化 */
-.progress-bar {
-  background: #f0f0f0;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-}
 
-.progress-bar-inner {
-  background-image: linear-gradient(
-    45deg,
-    rgba(255, 255, 255, .15) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, .15) 50%,
-    rgba(255, 255, 255, .15) 75%,
-    transparent 75%,
-    transparent
-  );
-  background-size: 1rem 1rem;
-  animation: progress-bar-stripes 1s linear infinite;
-}
-
-@keyframes progress-bar-stripes {
-  from { background-position: 1rem 0; }
-  to { background-position: 0 0; }
-}
 
 /* 文件拖放提示优化 */
 .file-drop::before {
@@ -1983,7 +1597,7 @@ body {
   margin-right: 0.5rem;
 }
 
-/* 自适应高度的文本框 */
+/* 文本输入增强 */
 .auto-resize-textarea {
   min-height: 100px;
   max-height: 500px;
@@ -2073,33 +1687,7 @@ body {
   100% { background-position: 20px 20px; }
 }
 
-/* 优化文件上传进度显示 */
-.upload-progress {
-  position: relative;
-  height: 24px;
-  background: #f0f0f0;
-  border-radius: 12px;
-  overflow: hidden;
-  margin: 8px 0;
-}
 
-.upload-progress-bar {
-  height: 100%;
-  background: var(--primary-color);
-  transition: width 0.3s ease;
-  position: relative;
-}
-
-.upload-progress-text {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 12px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-  z-index: 1;
-}
 
 /* 优化文件列表项动画 */
 .file-item {
@@ -2270,44 +1858,6 @@ body {
   font-size: 14px;
 }
 
-/* 优化上传进度显示 */
-.upload-progress-container {
-  position: relative;
-  margin: 1rem 0;
-}
-
-.upload-progress-bar {
-  height: 4px;
-  background: var(--primary-color);
-  transition: width 0.3s ease;
-  border-radius: 2px;
-}
-
-.upload-progress-text {
-  position: absolute;
-  right: 0;
-  top: -20px;
-  font-size: 12px;
-  color: #666;
-}
-
-/* 移动端优化 */
-@media (max-width: 480px) {
-  .file-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .file-item .actions {
-    width: 100%;
-    margin-top: 0.5rem;
-  }
-  
-  .file-preview {
-    padding: 0.5rem;
-  }
-}
-
 /* 文件预览样式 */
 .file-preview {
   margin: 1rem 0;
@@ -2346,8 +1896,27 @@ body {
   font-size: 14px;
 }
 
-/* 上传进度条样式 */
+/* 基础进度条组件 */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.progress-bar-inner {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: inherit;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 带动画效果的上传进度条 */
 .upload-progress-wrapper {
+  position: relative;
   margin: 1rem 0;
   padding: 1rem;
   background: #f8f9fa;
@@ -2357,42 +1926,502 @@ body {
 
 .upload-progress-bar {
   width: 100%;
-  height: 8px;
+  height: 6px;
   background: #e9ecef;
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .upload-progress-inner {
   height: 100%;
   background: var(--primary-color);
-  border-radius: 4px;
-  transition: width 0.3s ease;
+  border-radius: inherit;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, .15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, .15) 50%,
+    rgba(255, 255, 255, .15) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 1rem 1rem;
+  animation: progress-bar-stripes 1s linear infinite;
 }
 
 .upload-progress-info {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9rem;
+  align-items: center;
+  font-size: 0.875rem;
   color: #666;
 }
 
-// 在 styles 中添加取消按钮样式
+/* 上传状态文本 */
+.progress-text {
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* 取消按钮 */
 .cancel-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  color: #fff;
   background: #95a5a6;
-  margin-left: 10px;
-  padding: 0.3rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .cancel-btn:hover {
   background: #7f8c8d;
 }
 
-.upload-progress-wrapper {
+.cancel-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* 进度条动画 */
+@keyframes progress-bar-stripes {
+  from { background-position: 1rem 0; }
+  to { background-position: 0 0; }
+}
+
+/* 编辑器组件 */
+.editor {
+  flex: 1;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow-y: auto;
   position: relative;
-  margin: 1rem 0;
-  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;       /* 保留换行符并自动换行 */
+  max-width: 100%;            /*  限制最大宽度 */
+}
+
+/* 添加文本输入框滚动条样式 */
+.editor textarea::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.editor textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editor textarea::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.editor textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* 确保基础容器在所有尺寸下都能正常工作 */
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);  /* 使用 clamp 实现响应式内边距 */
+  min-height: 100vh;                 /* 确保容器至少占满视口高度 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;               /* 内容水平居中 */
+}
+
+/* 响应式布局断点系统 */
+/* 超大屏幕 (≥ 1400px) */
+@media (min-width: 1400px) {
+  .card {
+    min-width: 1200px;
+  }
+}
+
+/* 大屏幕 (1200-1399px) */
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .card {
+    min-width: 1000px;
+  }
+}
+
+/* 中等屏幕 (992-1199px) */
+@media (max-width: 1199px) and (min-width: 992px) {
+  .card {
+    min-width: 900px;
+  }
+}
+
+/* 小屏幕 (768-991px) */
+@media (max-width: 991px) and (min-width: 768px) {
+  .card {
+    min-width: 700px;
+  }
+  
+  .editor-container {
+    height: 500px;
+  }
+}
+
+/* 平板和手机端通用样式 (≤ 768px) */
+@media (max-width: 768px) {
+  /* 容器和卡片样式 */
+  .container {
+    padding: 1rem;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 100%;
+    min-width: auto;
+    padding: 1rem;
+  }
+
+  /* 编辑器相关 */
+  .editor-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 200px;
+    resize: vertical;
+  }
+
+  .editor, .preview {
+    height: 300px;
+    min-width: auto;
+    width: 100%;
+  }
+
+  /* 内容样式 */
+  .content {
+    padding: 1rem;
+  }
+
+  .content pre {
+    padding: 1rem;
+    font-size: 0.85em;
+  }
+
+  .content table {
+    font-size: 0.9em;
+  }
+
+  .content table th,
+  .content table td {
+    padding: 0.6em 0.8em;
+  }
+  
+  .content table th:nth-child(1),
+  .content table td:nth-child(1),
+  .content table th:nth-child(2),
+  .content table td:nth-child(2),
+  .content table th:nth-child(3),
+  .content table td:nth-child(3) {
+    width: auto;
+  }
+
+  /* 其他UI组件 */
+  .settings {
+    grid-template-columns: 1fr;
+  }
+
+  .file-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .file-item .size {
+    margin: 0;
+  }
+
+  .admin-panel {
+    right: 70px;  
+  }
+
+  .admin-content {
+    width: 75%;
+  }
+
+  .share-list {
+    margin-top: 0.8rem;
+  }
+
+  .share-item {
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .share-item .type {
+    font-size: 0.8rem;
+  }
+
+  .share-item .info {
+    font-size: 0.8rem;
+  }
+
+  .share-item .actions {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .share-item .actions button {
+    flex: 1;  /* 平均分配宽度 */
+    padding: 0.4rem;  /* 减小内边距使按钮更紧凑 */
+    font-size: 0.85rem;  /* 稍微减小字体大小 */
+  }
+
+  .link {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .link button {
+    width: 100%;
+  }
+
+  .github-link {
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/* 平板设备 (481-767px) */
+@media (max-width: 767px) and (min-width: 481px) {
+  .card {
+    min-width: auto;
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .editor-container {
+    flex-direction: column;
+    height: 400px;
+    min-height: 300px;  // 可以调整这个值
+  }
+
+  .editor, .preview {
+    height: 400px;     // 可以调整这个值
+    min-width: auto;
+    width: 100%;
+  }
+
+  
+  .admin-content {
+    width: 55%;
+    right: 0;
+    padding: 1rem;
+  }
+
+  .admin-header {
+    margin-bottom: 1rem;
+  }
+
+  .admin-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .storage-stats {
+    padding: 0.8rem;
+  }
+
+  .storage-stats h3 {
+    font-size: 0.9rem;
+  }
+
+  .storage-info {
+    font-size: 0.8rem;
+  }
+
+  .share-list {
+    margin-top: 0.8rem;
+  }
+
+  .share-item {
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .share-item .type {
+    font-size: 0.8rem;
+  }
+
+  .share-item .info {
+    font-size: 0.8rem;
+  }
+
+  .share-item .actions {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .share-item .actions button {
+    flex: 1;  /* 平均分配宽度 */
+    padding: 0.4rem;  /* 减小内边距使按钮更紧凑 */
+    font-size: 0.85rem;  /* 稍微减小字体大小 */
+  }
+}
+
+/* 手机设备 (≤ 480px) */
+@media (max-width: 480px) {
+
+  .content {
+    overflow-x: auto;
+  }
+  
+  .content table {
+    min-width: 100%;
+  }
+
+  /* 卡片样式 */
+  .card {
+    min-width: auto;
+    width: 95%;
+    padding: 0.8rem;
+  }
+
+  /* 编辑器相关 */
+  .editor-container {
+    height: 300px;
+    min-height: 300px;
+  }
+
+  .editor, .preview {
+    height: 300px;
+    min-width: auto;
+  }
+
+  /* 标签页 */
+  .tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .tab {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* 其他UI组件 */
+  .file-drop {
+    padding: 1rem;
+  }
+
+  .admin-content {
+    width: 80%;
+    right: 0;
+    padding: 1rem;
+  }
+
+  .admin-header {
+    margin-bottom: 1rem;
+  }
+
+  .admin-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .upload-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .upload-buttons button {
+    width: 100%;
+    padding: 0.8rem;
+  }
+
+  .refresh-list {
+    padding: 0.8rem;
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .stat-card {
+    padding: 0.8rem;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+
+  .storage-stats {
+    padding: 0.8rem;
+  }
+
+  .storage-stats h3 {
+    font-size: 0.9rem;
+  }
+
+  .storage-info {
+    font-size: 0.8rem;
+  }
+
+  .share-list {
+    margin-top: 0.8rem;
+  }
+
+  .share-item {
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .share-item .type {
+    font-size: 0.8rem;
+  }
+
+  .share-item .info {
+    font-size: 0.8rem;
+  }
+
+  .share-item .actions {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .share-item .actions button {
+    flex: 1;  /* 平均分配宽度 */
+    padding: 0.4rem;  /* 减小内边距使按钮更紧凑 */
+    font-size: 0.85rem;  /* 稍微减小字体大小 */
+  }
+
+  .file-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .file-item .actions {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  .file-preview {
+    padding: 0.5rem;
+  }
 }
 `;
 
@@ -2526,7 +2555,56 @@ createApp({
         
         try {
             isRefreshing.value = true;
-            await fetchShares();
+            
+            // 并行执行两个请求
+            const credentials = localStorage.getItem('adminCredentials');
+            if (!credentials) {
+                throw new Error('未登录');
+            }
+
+            const [sharesResponse, statusResponse] = await Promise.all([
+                // 获取分享列表
+                fetch('/api/admin/shares', {
+                    headers: {
+                        'Authorization': 'Basic ' + credentials
+                    }
+                }),
+                // 获取上传状态
+                fetch('/api/admin/upload-status', {
+                    headers: {
+                        'Authorization': 'Basic ' + credentials
+                    }
+                })
+            ]);
+
+            // 处理分享列表响应
+            if (!sharesResponse.ok) {
+                if (sharesResponse.status === 401) {
+                    isAdmin.value = false;
+                    localStorage.removeItem('adminCredentials');
+                    throw new Error('登录已过期，请重新登录');
+                }
+                throw new Error('获取分享列表失败');
+            }
+            const sharesData = await sharesResponse.json();
+            shares.value = sharesData.shares;
+
+            // 处理上传状态响应
+            if (statusResponse.ok) {
+                const statusData = await statusResponse.json();
+                // 更新按钮状态
+                const adminControls = document.querySelectorAll('.control-btn');
+                adminControls.forEach(btn => {
+                    if (btn.textContent.includes('文本上传')) {
+                        allowTextUpload.value = statusData.textUpload;
+                        btn.classList.toggle('active', statusData.textUpload);
+                    } else if (btn.textContent.includes('文件上传')) {
+                        allowFileUpload.value = statusData.fileUpload;
+                        btn.classList.toggle('active', statusData.fileUpload);
+                    }
+                });
+            }
+
         } catch (err) {
             adminError.value = err.message;
         } finally {
@@ -2535,14 +2613,40 @@ createApp({
     };
 
     // 修改 onMounted，移除自动刷新
-    onMounted(() => {
+    onMounted(async () => {
         const credentials = localStorage.getItem('adminCredentials');
         if (credentials) {
             isAdmin.value = true;
-            refreshShares();// 初始加载一次
-            // 从 localStorage 获取上传控制状态,如果没有存储过就默认为 false
-            allowTextUpload.value = localStorage.getItem('allowTextUpload') === 'true';
-            allowFileUpload.value = localStorage.getItem('allowFileUpload') === 'true';
+            
+            try {
+              // 获取上传状态
+              const response = await fetch('/api/admin/upload-status', {
+                headers: {
+                  'Authorization': 'Basic ' + credentials
+                }
+              });
+              
+              if (response.ok) {
+                const statusData = await response.json();
+                allowTextUpload.value = statusData.textUpload;
+                allowFileUpload.value = statusData.fileUpload;
+                
+                // 更新按钮状态
+                const adminControls = document.querySelectorAll('.control-btn');
+                adminControls.forEach(btn => {
+                  if (btn.textContent.includes('文本上传')) {
+                    btn.classList.toggle('active', statusData.textUpload);
+                  } else if (btn.textContent.includes('文件上传')) {
+                    btn.classList.toggle('active', statusData.fileUpload);
+                  }
+                });
+              }
+              
+              // 获取分享列表
+              await fetchShares();
+            } catch (err) {
+              console.error('Error fetching initial status:', err);
+            }
         }
     });
 
@@ -2569,44 +2673,19 @@ createApp({
 
     // 在 appScript 中修改滚动处理函数
     const handleEditorScroll = (e) => {
-    if (isPreviewScrolling) return;
-    
-    // 使用 requestAnimationFrame 优化性能
     requestAnimationFrame(() => {
-        isEditorScrolling = true;
-        
         const editor = e.target;
         const preview = previewRef.value;
         if (!preview) return;
 
         const percentage = editor.scrollTop / (editor.scrollHeight - editor.clientHeight);
         preview.scrollTop = percentage * (preview.scrollHeight - preview.clientHeight);
-        
-        // 使用 requestAnimationFrame 延迟重置标志
-        requestAnimationFrame(() => {
-        isEditorScrolling = false;
-        });
     });
     };
 
-// 处理预览区域滚动
-    const handlePreviewScroll = (e) => {
-    if (isEditorScrolling) return;
-    
-    requestAnimationFrame(() => {
-        isPreviewScrolling = true;
-        
-        const preview = e.target;
-        const editor = editorRef.value;
-        if (!editor) return;
-
-        const percentage = preview.scrollTop / (preview.scrollHeight - preview.clientHeight);
-        editor.scrollTop = percentage * (editor.scrollHeight - editor.clientHeight);
-        
-        requestAnimationFrame(() => {
-        isPreviewScrolling = false;
-        });
-    });
+    // 处理预览区域滚动
+    const handlePreviewScroll = () => {
+        // 预览框滚动时不做任何处理
     };
 
 
@@ -2671,9 +2750,24 @@ createApp({
           throw new Error(data.message || '登录失败');
         }
 
-        localStorage.setItem('adminCredentials', btoa(adminUsername.value + ':' + adminPassword.value));
+        const credentials = btoa(adminUsername.value + ':' + adminPassword.value);
+        localStorage.setItem('adminCredentials', credentials);
         isAdmin.value = true;
         showAdminLogin.value = false;
+        
+        // 获取上传状态
+        const statusResponse = await fetch('/api/admin/upload-status', {
+          headers: {
+            'Authorization': 'Basic ' + credentials
+          }
+        });
+        
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          allowTextUpload.value = statusData.textUpload;
+          allowFileUpload.value = statusData.fileUpload;
+        }
+        
         await fetchShares();
       } catch (err) {
         adminError.value = err.message;
@@ -2917,7 +3011,8 @@ createApp({
             password: password.value,
             expiresIn: expiresIn.value,
             isMarkdown: isMarkdown.value,
-            customId: customId.value // 添加自定义ID
+            customId: customId.value,
+            maxViews: maxViews.value ? parseInt(maxViews.value) : 0 // 添加这行
           }),
         });
 
@@ -2979,8 +3074,9 @@ createApp({
         if (customId.value) {
           try {
             // 先检查文本分享
-            const pasteCheckResponse = await fetch('/api/paste/' + customId.value);
-            if (pasteCheckResponse.ok) {
+            const pasteResponse = await fetch('/api/paste/' + customId.value);
+            // 修改这里：同时处理 200 和 401 状态码
+            if (pasteResponse.ok || pasteResponse.status === 401) {
               error.value = '该链接后缀已被用于文本分享，请更换一个';
               isUploading.value = false;
               uploadStatus.value = '';
@@ -2989,8 +3085,9 @@ createApp({
             }
             
             // 再检查文件分享
-            const fileCheckResponse = await fetch('/api/file/' + customId.value);
-            if (fileCheckResponse.ok) {
+            const fileResponse = await fetch('/api/file/' + customId.value);
+            // 修改这里：同时处理 200 和 401 状态码
+            if (fileResponse.ok || fileResponse.status === 401) {
               error.value = '该链接后缀已被用于文件分享，请更换一个';
               isUploading.value = false;
               uploadStatus.value = '';
@@ -2999,7 +3096,7 @@ createApp({
             }
           } catch (e) {
             // 如果是404错误，说明ID不存在，可以继续
-            if (e.response && e.response.status !== 404) {
+            if (!e.response || e.response.status !== 404) {
               error.value = '检查链接后缀时出错，请重试';
               isUploading.value = false;
               uploadStatus.value = '';
@@ -3030,6 +3127,7 @@ createApp({
         if (customId.value && files.value.length === 1) {
           formData.append('customId', customId.value);
         }
+        formData.append('maxViews', maxViews.value || '0'); // 添加这行
 
         // 创建 XMLHttpRequest 来监控上传进度
         const xhr = new XMLHttpRequest();
@@ -3178,16 +3276,68 @@ createApp({
     };
 
     // 添加控制函数
-    const toggleTextUpload = () => {
-        allowTextUpload.value = !allowTextUpload.value;
-        // 保存到 localStorage
-        localStorage.setItem('allowTextUpload', allowTextUpload.value);
+    const toggleTextUpload = async () => {
+      try {
+        const newStatus = !allowTextUpload.value;
+        const credentials = localStorage.getItem('adminCredentials');
+        if (credentials) {
+          const response = await fetch('/api/admin/upload-status', {
+            method: 'PUT',
+            headers: {
+              'Authorization': 'Basic ' + credentials,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              textUpload: newStatus,
+              fileUpload: allowFileUpload.value
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error('更新状态失败');
+          }
+          allowTextUpload.value = newStatus;
+          // 更新按钮状态
+          const btn = document.querySelector('.control-btn:nth-child(1)');
+          if (btn) {
+              btn.classList.toggle('active', newStatus);
+          }
+        }
+      } catch (err) {
+        console.error('Error updating text upload status:', err);
+      }
     };
 
-    const toggleFileUpload = () => {
-        allowFileUpload.value = !allowFileUpload.value;
-        // 保存到 localStorage
-        localStorage.setItem('allowFileUpload', allowFileUpload.value);
+    const toggleFileUpload = async () => {
+      try {
+        const newStatus = !allowFileUpload.value;
+        const credentials = localStorage.getItem('adminCredentials');
+        if (credentials) {
+          const response = await fetch('/api/admin/upload-status', {
+            method: 'PUT',
+            headers: {
+              'Authorization': 'Basic ' + credentials,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              textUpload: allowTextUpload.value,
+              fileUpload: newStatus
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error('更新状态失败');
+          }
+          allowFileUpload.value = newStatus;
+          // 更新按钮状态
+          const btn = document.querySelector('.control-btn:nth-child(2)');
+          if (btn) {
+              btn.classList.toggle('active', newStatus);
+          }
+        }
+      } catch (err) {
+        console.error('Error updating file upload status:', err);
+      }
     };
 
     // 添加格式化存储空间的方法
@@ -3324,6 +3474,9 @@ createApp({
     // 在 setup() 中添加 uploadXHR ref
     const uploadXHR = ref(null);
 
+    // 在 Vue 应用的 setup() 函数中添加状态
+    const maxViews = ref(''); // 添加可打开次数的状态
+
     return {
       activeTab,
       content,
@@ -3395,6 +3548,7 @@ createApp({
       abortController,
       cancelUpload,
       uploadXHR,
+      maxViews,
     };
   },
 
@@ -3486,6 +3640,16 @@ createApp({
             多文件上传时不支持自定义链接
           </small>
         </div>
+        <div class="input-group">
+          <label>可打开次数 (0表示无限制)</label>
+          <input 
+            type="number" 
+            v-model="maxViews"
+            min="0"
+            placeholder="0"
+            title="设置分享可以被打开的次数，0或留空表示无限制"
+          >
+        </div>
         </div>
 
         <button class="btn" @click="submitPaste">创建分享</button>
@@ -3565,6 +3729,18 @@ createApp({
               <option value="30d">30天</option>
               <option value="never">永不过期</option>
             </select>
+          </div>
+
+          <!-- 添加可打开次数输入框 -->
+          <div class="input-group">
+            <label>可下载次数 (0表示无限制)</label>
+            <input 
+              type="number" 
+              v-model="maxViews"
+              min="0"
+              placeholder="0"
+              title="设置文件可以被下载的次数，0或留空表示无限制"
+            >
           </div>
         </div>
 
@@ -3740,23 +3916,29 @@ createApp({
 
         <!-- 分享列表 -->
         <div class="share-list">
-            <div v-for="share in filteredShares" :key="share.id" class="share-item">
-                <div class="title">
-                    {{ share.type === 'paste' ? '文本分享' : '文件分享' }}
-                    <span v-if="share.hasPassword" class="badge">密码保护</span>
-                </div>
-                <div class="info">
-                    <div>ID: {{ share.id }}</div>
-                    <div>创建时间: {{ formatDate(share.createdAt) }}</div>
-                    <div>过期时间: {{ share.expiresAt ? formatDate(share.expiresAt) : '永不过期' }}</div>
-                    <div v-if="share.type === 'file'">文件名: {{ share.filename }}</div>
-                </div>
-                <div class="actions">
-                    <button class="btn" @click="copyUrl(share.url)">复制链接</button>
-                    <button class="btn" @click="showChangePassword(share)">修改密码</button>
-                    <button class="btn delete-btn" @click="confirmDelete(share)">删除</button>
-                </div>
+          <div v-for="share in filteredShares" :key="share.id" class="share-item">
+            <div class="title">
+              {{ share.type === 'paste' ? '文本分享' : '文件分享' }}
+              <span v-if="share.hasPassword" class="badge">密码保护</span>
             </div>
+            <div class="info">
+              <div>ID: {{ share.id }}</div>
+              <div>创建时间: {{ formatDate(share.createdAt) }}</div>
+              <div>过期时间: {{ share.expiresAt ? formatDate(share.expiresAt) : '永不过期' }}</div>
+              <div v-if="share.type === 'file'">文件名: {{ share.filename }}</div>
+              <!-- 根据分享类型显示不同的文本 -->
+              <div v-if="share.maxViews > 0">
+                {{ share.type === 'paste' ? '剩余访问次数' : '剩余下载次数' }}: 
+                {{ share.maxViews - share.viewCount }}
+                (已{{ share.type === 'paste' ? '访问' : '下载' }} {{ share.viewCount }} 次)
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" @click="copyUrl(share.url)">复制链接</button>
+              <button class="btn" @click="showChangePassword(share)">修改密码</button>
+              <button class="btn delete-btn" @click="confirmDelete(share)">删除</button>
+            </div>
+          </div>
         </div>
 
         <!-- 添加确认对话框 -->
@@ -4184,6 +4366,11 @@ const shareHtml = `<!DOCTYPE html>
                 <p>文件大小: {{ (fileInfo.size / 1024 / 1024).toFixed(2) }} MB</p>
                 <p>上传时间: {{ new Date(fileInfo.uploadedAt).toLocaleString() }}</p>
                 <p>过期时间: {{ fileInfo.expiresAt ? new Date(fileInfo.expiresAt).toLocaleString() : '永不过期' }}</p>
+                <!-- 添加剩余下载次数显示 -->
+                <p v-if="fileInfo.maxViews > 0">
+                  剩余下载次数: {{ fileInfo.maxViews - fileInfo.viewCount }}
+                  (已下载 {{ fileInfo.viewCount }} 次)
+                </p>
                 <button class="btn" @click="downloadFile" style="margin-top: 1rem;">下载文件</button>
               </div>
               <div v-else class="content">
@@ -4244,7 +4431,7 @@ async function handlePaste(request, env) {
   switch (request.method) {
     case "POST": {
       const data = await request.json();
-      const { content, password: inputPassword, expiresIn, isMarkdown = false, customId = "" } = data;
+      const { content, password: inputPassword, expiresIn, isMarkdown = false, customId = "", maxViews = 0 } = data;
 
       if (!content) {
         return new Response(
@@ -4313,6 +4500,8 @@ async function handlePaste(request, env) {
         isMarkdown,
         createdAt: new Date().toISOString(),
         expiresAt: expiresIn === "never" ? null : utils.calculateExpiryTime(expiresIn)?.toISOString(),
+        maxViews: parseInt(maxViews) || 0, // 添加这行
+        viewCount: 0, // 添加这行
       };
 
       if (inputPassword) {
@@ -4420,6 +4609,32 @@ async function handlePaste(request, env) {
         }
       }
 
+      // 检查访问次数
+      if (paste.maxViews > 0) {
+        paste.viewCount = (paste.viewCount || 0) + 1;
+
+        // 如果达到最大访问次数，删除分享并返回过期信息
+        if (paste.viewCount >= paste.maxViews) {
+          await env.PASTE_STORE.delete(pasteId);
+          return new Response(
+            JSON.stringify({
+              message: "分享已达到最大访问次数",
+              status: "error",
+            }),
+            {
+              status: 404,
+              headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store",
+              },
+            }
+          );
+        }
+
+        // 更新访问次数
+        await env.PASTE_STORE.put(pasteId, JSON.stringify(paste));
+      }
+
       return new Response(
         JSON.stringify({
           content: paste.content,
@@ -4452,7 +4667,7 @@ async function handlePaste(request, env) {
 }
 
 // 处理文件上传和下载
-async function handleFile(request, env) {
+async function handleFile(request, env, ctx) {
   const url = new URL(request.url);
   const pathParts = url.pathname.split("/");
   const fileId = pathParts[pathParts.length - 1];
@@ -4476,6 +4691,7 @@ async function handleFile(request, env) {
 
         const formData = await request.formData();
         const files = formData.getAll("files");
+        const maxViews = parseInt(formData.get("maxViews")) || 0; // 获取最大访问次数
 
         // 计算新文件的总大小
         const newFilesSize = files.reduce((total, file) => total + file.size, 0);
@@ -4648,6 +4864,8 @@ async function handleFile(request, env) {
               size: file.size,
               uploadedAt: new Date().toISOString(),
               expiresAt: expiresIn === "never" ? null : utils.calculateExpiryTime(expiresIn)?.toISOString(),
+              maxViews: maxViews, // 添加最大访问次数
+              viewCount: 0, // 初始化访问计数
             };
 
             if (inputPassword) {
@@ -4679,6 +4897,8 @@ async function handleFile(request, env) {
               fileId: id,
               filename: file.name,
               expiresAt: metadata.expiresAt,
+              maxViews: metadata.maxViews, // 在返回结果中添加最大访问次数
+              viewCount: 0,
               status: "success",
             });
             hasSuccess = true;
@@ -4813,6 +5033,8 @@ async function handleFile(request, env) {
               size: metadata.size,
               uploadedAt: metadata.uploadedAt,
               expiresAt: metadata.expiresAt,
+              maxViews: parseInt(metadata.maxViews) || 0, // 添加这行
+              viewCount: parseInt(metadata.viewCount) || 0, // 添加这行
               status: "success",
             }),
             {
@@ -4825,42 +5047,117 @@ async function handleFile(request, env) {
         }
 
         // 处理文件下载...
-        const stream = file.body;
-        const contentLength = metadata.size;
+        const arrayBuffer = await file.arrayBuffer(); // 先获取文件内容
 
-        // 处理文件名
-        const filename = metadata.filename;
-        const isASCII = /^[\x00-\x7F]*$/.test(filename);
-        let contentDisposition;
+        // 添加: 如果是下载请求，检查并处理下载次数
+        if (isDownload && metadata.maxViews > 0) {
+          const currentCount = parseInt(metadata.viewCount) || 0;
+          const newCount = currentCount + 1;
 
-        if (isASCII) {
-          // ASCII文件名使用简单格式
-          contentDisposition = `attachment; filename="${filename}"`;
+          // 准备更新后的元数据
+          const updatedMetadata = {
+            ...metadata,
+            viewCount: newCount.toString(),
+          };
+
+          // 先准备下载响应
+          const stream = new Response(arrayBuffer).body;
+          const contentLength = metadata.size;
+
+          // 处理文件名
+          const filename = metadata.filename;
+          const isASCII = /^[\x00-\x7F]*$/.test(filename);
+          let contentDisposition;
+
+          if (isASCII) {
+            contentDisposition = `attachment; filename="${filename}"`;
+          } else {
+            const encodedFilename = encodeURIComponent(filename).replace(/['()]/g, escape);
+            contentDisposition = `attachment; filename*=UTF-8''${encodedFilename}`;
+          }
+
+          const progress = new TransformStream({
+            start(controller) {
+              this.loaded = 0;
+            },
+            transform(chunk, controller) {
+              this.loaded += chunk.byteLength;
+              controller.enqueue(chunk);
+            },
+          });
+
+          // 创建响应对象
+          const response = new Response(stream.pipeThrough(progress), {
+            headers: {
+              "Content-Type": metadata.type || "application/octet-stream",
+              "Content-Disposition": contentDisposition,
+              "Content-Length": contentLength,
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Expose-Headers": "Download-Progress",
+            },
+          });
+
+          // 在返回响应之前更新计数
+          if (newCount >= parseInt(metadata.maxViews)) {
+            // 如果这是最后一次下载，设置删除标记
+            ctx.waitUntil(
+              (async () => {
+                // 先更新元数据
+                await env.FILE_STORE.put(fileId, arrayBuffer, {
+                  customMetadata: updatedMetadata,
+                });
+                // 等待一小段时间后删除文件
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                await env.FILE_STORE.delete(fileId);
+              })()
+            );
+          } else {
+            // 如果还有剩余次数，只更新计数
+            ctx.waitUntil(
+              env.FILE_STORE.put(fileId, arrayBuffer, {
+                customMetadata: updatedMetadata,
+              })
+            );
+          }
+
+          return response;
         } else {
-          // 非ASCII文件名使用RFC 5987编码
-          const encodedFilename = encodeURIComponent(filename).replace(/['()]/g, escape);
-          contentDisposition = `attachment; filename*=UTF-8''${encodedFilename}`;
+          // 非下载请求或无下载限制的处理
+          const stream = new Response(arrayBuffer).body;
+          const contentLength = metadata.size;
+
+          // 处理文件名
+          const filename = metadata.filename;
+          const isASCII = /^[\x00-\x7F]*$/.test(filename);
+          let contentDisposition;
+
+          if (isASCII) {
+            contentDisposition = `attachment; filename="${filename}"`;
+          } else {
+            const encodedFilename = encodeURIComponent(filename).replace(/['()]/g, escape);
+            contentDisposition = `attachment; filename*=UTF-8''${encodedFilename}`;
+          }
+
+          const progress = new TransformStream({
+            start(controller) {
+              this.loaded = 0;
+            },
+            transform(chunk, controller) {
+              this.loaded += chunk.byteLength;
+              controller.enqueue(chunk);
+            },
+          });
+
+          return new Response(stream.pipeThrough(progress), {
+            headers: {
+              "Content-Type": metadata.type || "application/octet-stream",
+              "Content-Disposition": contentDisposition,
+              "Content-Length": contentLength,
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Expose-Headers": "Download-Progress",
+            },
+          });
         }
-
-        const progress = new TransformStream({
-          start(controller) {
-            this.loaded = 0;
-          },
-          transform(chunk, controller) {
-            this.loaded += chunk.byteLength;
-            controller.enqueue(chunk);
-          },
-        });
-
-        return new Response(stream.pipeThrough(progress), {
-          headers: {
-            "Content-Type": metadata.type || "application/octet-stream",
-            "Content-Disposition": contentDisposition,
-            "Content-Length": contentLength,
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Expose-Headers": "Download-Progress",
-          },
-        });
       } catch (error) {
         return new Response(
           JSON.stringify({
@@ -4968,6 +5265,63 @@ async function cleanupExpiredContent(env) {
   }
 }
 
+// 在 handleFile 和 handlePaste 函数之间添加新的函数
+async function handleUploadStatus(request, env) {
+  // 验证管理员权限
+  if (!(await verifyAdmin(request, env))) {
+    return new Response(
+      JSON.stringify({
+        status: "error",
+        message: "未授权访问",
+      }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  switch (request.method) {
+    case "GET": {
+      // 获取上传状态
+      const textStatus = (await env.UPLOAD_STATUS.get("textUpload")) || "false";
+      const fileStatus = (await env.UPLOAD_STATUS.get("fileUpload")) || "false";
+
+      return new Response(
+        JSON.stringify({
+          status: "success",
+          textUpload: textStatus === "true",
+          fileUpload: fileStatus === "true",
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    case "PUT": {
+      // 更新上传状态
+      const { textUpload, fileUpload } = await request.json();
+
+      await env.UPLOAD_STATUS.put("textUpload", String(textUpload));
+      await env.UPLOAD_STATUS.put("fileUpload", String(fileUpload));
+
+      return new Response(
+        JSON.stringify({
+          status: "success",
+          message: "上传状态已更新",
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    default:
+      return new Response("Method not allowed", { status: 405 });
+  }
+}
+
 // Worker 导出
 // Worker 导出
 export default {
@@ -5070,6 +5424,8 @@ export default {
                   hasPassword: !!paste.passwordHash,
                   isMarkdown: paste.isMarkdown,
                   url: `${url.origin}/share/paste/${key.name}`,
+                  maxViews: paste.maxViews || 0,
+                  viewCount: paste.viewCount || 0,
                 });
               } catch (e) {
                 console.error("Error processing paste:", key.name, e);
@@ -5110,6 +5466,8 @@ export default {
                   expiresAt: metadata.expiresAt,
                   hasPassword: !!metadata.passwordHash,
                   url: `${url.origin}/share/file/${object.key}`,
+                  maxViews: parseInt(metadata.maxViews) || 0, // 确保转换为数字
+                  viewCount: parseInt(metadata.viewCount) || 0, // 确保转换为数字
                 });
 
                 console.log("Added file share:", object.key);
@@ -5229,10 +5587,12 @@ export default {
           "Access-Control-Allow-Headers": "Content-Type, X-Password, Authorization",
         };
 
-        if (url.pathname.startsWith("/api/paste")) {
+        if (url.pathname === "/api/admin/upload-status") {
+          response = await handleUploadStatus(request, env);
+        } else if (url.pathname.startsWith("/api/paste")) {
           response = await handlePaste(request, env);
         } else if (url.pathname.startsWith("/api/file")) {
-          response = await handleFile(request, env);
+          response = await handleFile(request, env, ctx); // 修改这里，传入 ctx
         } else if (url.pathname.startsWith("/api/admin/")) {
           // 添加对管理员 API 的处理
           if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9-_]+\/password$/)) {
