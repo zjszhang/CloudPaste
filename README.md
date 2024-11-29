@@ -6,9 +6,10 @@
 
 一个基于 Cloudflare Workers 的在线剪贴板和文件分享服务。支持 Markdown、密码保护、文件上传等功能。
 
+
 <table>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/8c2b0ac0-75ca-430d-a9fb-c2b94e00bf3c" width="400"/></td>
+    <td><img src="https://github.com/user-attachments/assets/b3245bf3-976c-43dd-b097-f6a1477abe50" width="400"/></td>
     <td><img src="https://github.com/user-attachments/assets/98b91043-f1e2-4d29-a4c6-3ed53ca37387" width="400"/></td>
   </tr>
   <tr>
@@ -17,7 +18,7 @@
   </tr>
   <tr>
     <td><img src="https://github.com/user-attachments/assets/50460f21-12bb-43cc-9ea3-f6a7b455c314" width="400"/></td>
-    <td><img src="https://github.com/user-attachments/assets/abcf4219-ebde-4630-8666-f7de1834a28d" width="400"/></td>
+    <td><img src="https://github.com/user-attachments/assets/932e940e-1a42-4852-a832-af4349ba66d1" width="400"/></td>
   </tr>
 </table>
 
