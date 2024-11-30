@@ -4612,9 +4612,10 @@ async function handlePaste(request, env) {
       // 检查访问次数
       if (paste.maxViews > 0) {
         paste.viewCount = (paste.viewCount || 0) + 1;
+        await env.PASTE_STORE.put(pasteId, JSON.stringify(paste));
 
         // 如果达到最大访问次数，删除分享并返回过期信息
-        if (paste.viewCount >= paste.maxViews) {
+        if (paste.viewCount > paste.maxViews) {
           await env.PASTE_STORE.delete(pasteId);
           return new Response(
             JSON.stringify({
@@ -4630,9 +4631,6 @@ async function handlePaste(request, env) {
             }
           );
         }
-
-        // 更新访问次数
-        await env.PASTE_STORE.put(pasteId, JSON.stringify(paste));
       }
 
       return new Response(
