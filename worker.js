@@ -62,7 +62,7 @@ const styles = `
   top: 20px;
   right: 20px;
   z-index: 1000;
-  color: #333;
+  color: var(--text-color);  /* 使用主题颜色 */
   transition: color 0.3s ease;
 }
 
@@ -82,6 +82,87 @@ const styles = `
   --primary-color: #3498db;
   --bg-color: #f5f6fa;
   --border-color: #dcdde1;
+  --text-color: #2d3436;
+  --card-bg: white;
+  --error-bg: #ffebee;
+  --error-border: #ef5350;
+  --error-text: #c62828;
+  --code-bg: #f6f8fa;
+  --hover-bg: rgba(0,0,0,0.05);
+  --secondary-bg: #f8f9fa;
+  --secondary-text: #666;
+  --admin-panel-bg: white;
+  --markdown-preview-bg: white;
+  --markdown-code-bg: #f6f8fa;
+  --markdown-blockquote-bg: #f8f9fa;
+  --markdown-blockquote-border: #3498db;
+  --btn-secondary-bg: #95a5a6;
+  --btn-secondary-text: white;
+  --input-bg: white;
+  --input-text: #2d3436;
+  --input-placeholder: #999;
+  --scrollbar-thumb: rgba(0,0,0,0.2);
+  --scrollbar-track: transparent;
+  --markdown-bg: white;
+  --markdown-text: #24292e;
+  --markdown-heading-text: #1a1a1a;
+  --markdown-link: #0366d6;
+  --markdown-link-hover: #0550ae;
+  --markdown-code-bg: #f6f8fa;
+  --markdown-code-text: #24292e;
+  --markdown-code-block-bg: #f8f9fa;
+  --markdown-blockquote-bg: #f8f9fa;
+  --markdown-blockquote-text: #6a737d;
+  --markdown-blockquote-border: #3498db;
+  --markdown-table-border: #dfe2e5;
+  --markdown-table-bg: white;
+  --markdown-table-alt-bg: #f8f9fa;
+  --markdown-hr: #eaecef;
+  --markdown-list-marker: #24292e;
+}
+
+[data-theme="dark"] {
+  --primary-color: #5dade2;
+  --bg-color: #1a1a1a;
+  --border-color: #333;
+  --text-color: #e0e0e0;
+  --card-bg: #242424;
+  --error-bg: #421c1c;
+  --error-border: #b71c1c;
+  --error-text: #ff5252;
+  --code-bg: #2d2d2d;
+  --hover-bg: rgba(255,255,255,0.05);
+  /* 暗色主题特有变量 */
+  --secondary-bg: #2d2d2d;
+  --secondary-text: #aaa;
+  --admin-panel-bg: #242424;
+  --markdown-preview-bg: #2d2d2d;
+  --markdown-code-bg: #363636;
+  --markdown-blockquote-bg: #363636;
+  --markdown-blockquote-border: #5dade2;
+  --btn-secondary-bg: #4a4a4a;
+  --btn-secondary-text: #e0e0e0;
+  --input-bg: #363636;
+  --input-text: #e0e0e0;
+  --input-placeholder: #666;
+  --scrollbar-thumb: rgba(255,255,255,0.2);
+  --scrollbar-track: rgba(255,255,255,0.05);
+  --markdown-bg: #22272e;
+  --markdown-text: #adbac7;
+  --markdown-heading-text: #e6edf3;
+  --markdown-link: #539bf5;
+  --markdown-link-hover: #6cb6ff;
+  --markdown-code-bg: #2d333b;
+  --markdown-code-text: #adbac7;
+  --markdown-code-block-bg: #2d333b;
+  --markdown-blockquote-bg: #2d333b;
+  --markdown-blockquote-text: #768390;
+  --markdown-blockquote-border: #444c56;
+  --markdown-table-border: #444c56;
+  --markdown-table-bg: #22272e;
+  --markdown-table-alt-bg: #2d333b;
+  --markdown-hr: #444c56;
+  --markdown-list-marker: #768390;
 }
 
 * {
@@ -93,12 +174,12 @@ const styles = `
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background: var(--bg-color);
-  color: #2d3436;
+  color: var(--text-color);
   line-height: 1.6;
 }
 
 .card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   padding: 2rem;
@@ -400,7 +481,7 @@ body {
   right: 0;
   bottom: 0;
   width: 350px;
-  background: white;
+  background: var(--admin-panel-bg);
   box-shadow: -2px 0 15px rgba(0,0,0,0.1);
   padding: 1.5rem;
   overflow-y: auto;
@@ -524,7 +605,7 @@ body {
 
 .share-item {
   padding: 1rem;
-  background: #f8f9fa;
+  background: var(--secondary-bg);
   border-radius: 8px;
   margin-bottom: 1rem;
   border: 1px solid var(--border-color);
@@ -538,7 +619,7 @@ body {
 
 .share-item .info {
   font-size: 0.9em;
-  color: #666;
+  color: var(--secondary-text);
   margin-bottom: 0.5rem;
 }
 
@@ -561,7 +642,7 @@ body {
 }
 
 .stat-card {
-  background: #f8f9fa;
+  background: var(--secondary-bg);
   padding: 1rem;
   border-radius: 8px;
   text-align: center;
@@ -575,7 +656,7 @@ body {
 
 .stat-label {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--secondary-text);
 }
 
 /* 筛选和状态 */
@@ -596,8 +677,8 @@ body {
   margin: 1rem 0;
   padding: 0.5rem;
   border-radius: 4px;
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--secondary-bg);
+  color: var(--text-color);
   text-align: center;
 }
 
@@ -661,7 +742,7 @@ body {
 }
 
 .confirm-content {
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
@@ -671,7 +752,7 @@ body {
 
 .confirm-content h3 {
   margin: 0 0 1rem 0;
-  color: #2c3e50;
+  color: var(--text-color);
 }
 
 .confirm-content .warning {
@@ -796,7 +877,7 @@ body {
 
 .editor::-webkit-scrollbar-thumb,
 .preview::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: padding-box;
@@ -804,7 +885,7 @@ body {
 
 .editor::-webkit-scrollbar-thumb:hover,
 .preview::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--scrollbar-thumb);
   border: 2px solid transparent;
   background-clip: padding-box;
 }
@@ -827,7 +908,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.6;
-  color: #2c3e50;
+  color: var(--text-color);
   padding: 2rem;
   max-width: 100%;
   overflow-x: auto;
@@ -976,7 +1057,7 @@ body {
 .content pre {
   margin: 1.5em 0;
   padding: 1.5em;
-  background: #f6f8fa;
+  background: var(--markdown-code-bg);
   border-radius: 6px;
   overflow-x: auto;
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
@@ -1027,8 +1108,8 @@ body {
   margin: 1.5em 0;
   padding: 1em 1.5em;
   color: #6a737d;
-  border-left: 0.25em solid #3498db;
-  background: #f8f9fa;
+  border-left: 0.25em solid var(--markdown-blockquote-border);
+  background: var(--markdown-blockquote-bg);
   border-radius: 0 4px 4px 0;
 }
 
@@ -1041,7 +1122,7 @@ body {
   border-collapse: collapse;
   width: 100%;
   max-width: 100%;
-  border: 1px solid #dfe2e5;
+  border: 1px solid var(--border-color);
   display: table;
   table-layout: fixed;
   font-size: 0.95em;
@@ -1051,7 +1132,7 @@ body {
 .content table th,
 .content table td {
   padding: 0.8em 1em;
-  border: 1px solid #dfe2e5;
+  border: 1px solid var(--border-color);
   text-align: left;
   vertical-align: top;
   line-height: 1.6;
@@ -1077,19 +1158,18 @@ body {
 
 /* 表头样式 */
 .content table th {
-  background-color: #f6f8fa;
-  font-weight: 600;
-  color: #24292e;
+  background: var(--secondary-bg);
+  color: var(--text-color);
 }
 
 /* 表格行样式 */
 .content table tr {
   background-color: #ffffff;
-  border-top: 1px solid #dfe2e5;
+  border-top: 1px solid var(--border-color);
 }
 
 .content table tr:nth-child(2n) {
-  background-color: #f8f9fa;
+  background-color: var(--secondary-bg);
 }
 
 /* 表格单元格内容样式 */
@@ -1107,7 +1187,7 @@ body {
 
 /* 确保表格边框完整性 */
 .content table thead {
-  border-bottom: 2px solid #dfe2e5;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .content table tbody tr:last-child {
@@ -1126,7 +1206,7 @@ body {
 
 /* 链接样式 */
 .content a {
-  color: #3498db;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid transparent;
@@ -1312,7 +1392,7 @@ body {
 .storage-info {
   margin: 1rem 0;
   padding: 1rem;
-  background: #f8f9fa;
+  background: var(--secondary-bg);
   border-radius: 8px;
 }
 
@@ -1466,14 +1546,14 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--scrollbar-thumb);
   border: 2px solid transparent;
   background-clip: padding-box;
 }
@@ -2024,16 +2104,36 @@ body {
 }
 
 .editor textarea::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 .editor textarea::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--scrollbar-thumb);
   border: 2px solid transparent;
   background-clip: padding-box;
+}
+
+/* 添加主题切换按钮样式 */
+.theme-toggle {
+  position: fixed;
+  top: 10px;
+  left: 10px;  /* 改为左侧 */
+  z-index: 1000;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  font-size: 24px;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.theme-toggle:hover {
+  background: var(--hover-bg);
 }
 
 /* 确保基础容器在所有尺寸下都能正常工作 */
@@ -2709,13 +2809,59 @@ createApp({
         const rendered = marked.parse(content.value);
         // 使用 nextTick 确保在 DOM 更新后应用代码高亮和数学公式渲染
         nextTick(() => {
-            // 代码高亮
-            document.querySelectorAll('.preview pre code').forEach((block) => {
-                hljs.highlightBlock(block);
-            });
+            // 获取预览容器
+            const previewContainer = document.querySelector('.preview');
+            if (!previewContainer) return;
+
+            // 检查是否为暗色主题
+            const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
             
-            // 渲染数学公式
-            renderMathInElement(document.querySelector('.preview'), {
+            if (isDarkTheme) {
+                // 暗色主题样式
+                previewContainer.style.background = 'var(--markdown-bg)';
+                previewContainer.style.color = 'var(--markdown-text)';
+            }
+
+            // 代码高亮 - 两种主题都需要
+            previewContainer.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+                const pre = block.parentElement;
+                if (pre) {
+                    pre.style.background = isDarkTheme ? 
+                        'var(--markdown-code-block-bg)' : 
+                        'var(--markdown-code-bg)';
+                }
+                if (isDarkTheme) {
+                    block.style.color = 'var(--markdown-code-text)';
+                }
+            });
+
+            if (isDarkTheme) {
+                // 其他暗色主题特定样式
+                previewContainer.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+                    heading.style.color = 'var(--markdown-heading-text)';
+                });
+
+                previewContainer.querySelectorAll('a').forEach(link => {
+                    link.style.color = 'var(--markdown-link)';
+                });
+
+                previewContainer.querySelectorAll('blockquote').forEach(quote => {
+                    quote.style.background = 'var(--markdown-blockquote-bg)';
+                    quote.style.color = 'var(--markdown-blockquote-text)';
+                    quote.style.borderLeftColor = 'var(--markdown-blockquote-border)';
+                });
+
+                previewContainer.querySelectorAll('table').forEach(table => {
+                    table.style.borderColor = 'var(--markdown-table-border)';
+                    table.querySelectorAll('tr:nth-child(2n)').forEach(row => {
+                        row.style.background = 'var(--markdown-table-alt-bg)';
+                    });
+                });
+            }
+            
+            // 渲染数学公式 - 两种主题都需要
+            renderMathInElement(previewContainer, {
                 delimiters: [
                     {left: "$$", right: "$$", display: true},
                     {left: "$", right: "$", display: false}
@@ -3501,6 +3647,46 @@ createApp({
       }
     };
 
+    // 在 appScript 的 setup 函数中添加，默认主题为light
+    const currentTheme = ref(localStorage.getItem('theme') || 'light'); 
+
+    // 检测系统主题
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // 设置主题的函数
+    const setTheme = (theme) => {
+      if (theme === 'auto') {
+        // 跟随系统
+        document.documentElement.setAttribute('data-theme', 
+          prefersDark.matches ? 'dark' : 'light'
+        );
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+      }
+      localStorage.setItem('theme', theme);
+      currentTheme.value = theme;
+    };
+
+    // 在 onMounted 中初始化主题
+    onMounted(() => {
+      setTheme(currentTheme.value); // 会使用 'light' 作为默认值
+      
+      // 监听系统主题变化
+      prefersDark.addEventListener('change', (e) => {
+        if (currentTheme.value === 'auto') {
+          setTheme('auto');
+        }
+      });
+    });
+
+    // 切换主题的函数
+    const toggleTheme = () => {
+      const themes = ['light', 'dark', 'auto'];
+      const currentIndex = themes.indexOf(currentTheme.value);
+      const nextTheme = themes[(currentIndex + 1) % themes.length];
+      setTheme(nextTheme);
+    };
+
     return {
       activeTab,
       content,
@@ -3574,6 +3760,10 @@ createApp({
       uploadXHR,
       maxViews,
       copyContent, // 添加这行
+      currentTheme,
+      prefersDark,
+      setTheme,
+      toggleTheme,
     };
   },
 
@@ -3589,6 +3779,13 @@ createApp({
     </svg>
   </a>
 
+  <button 
+    class="theme-toggle" 
+    @click="toggleTheme" 
+    :title="'当前主题: ' + currentTheme"
+  >
+    {{ currentTheme === 'auto' ? '🌗' : (currentTheme === 'dark' ? '🌙' : '☀️') }}
+  </button>
 
     <div class="card">
       <!-- 标签页切换 -->
@@ -4080,6 +4277,67 @@ createApp({
     const cancelEdit = () => {
       isEditing.value = false;
       editContent.value = '';
+      
+      // 在取消编辑后重新渲染原始内容
+      setTimeout(() => {
+        const contentContainer = document.querySelector('.content');
+        if (!contentContainer) return;
+        
+        // 检查是否为暗色主题
+        const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+        
+        if (isDarkTheme) {
+          // 在暗色主题下应用样式
+          contentContainer.style.background = 'var(--markdown-bg)';
+          contentContainer.style.color = 'var(--markdown-text)';
+          
+          // 代码高亮
+          contentContainer.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+            const pre = block.parentElement;
+            if (pre) {
+              pre.style.background = 'var(--markdown-code-block-bg)';
+            }
+            block.style.color = 'var(--markdown-code-text)';
+          });
+
+          // 应用其他暗色主题样式
+          contentContainer.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+            heading.style.color = 'var(--markdown-heading-text)';
+          });
+
+          contentContainer.querySelectorAll('a').forEach(link => {
+            link.style.color = 'var(--markdown-link)';
+          });
+
+          contentContainer.querySelectorAll('blockquote').forEach(quote => {
+            quote.style.background = 'var(--markdown-blockquote-bg)';
+            quote.style.color = 'var(--markdown-blockquote-text)';
+            quote.style.borderLeftColor = 'var(--markdown-blockquote-border)';
+          });
+
+          contentContainer.querySelectorAll('table').forEach(table => {
+            table.style.borderColor = 'var(--markdown-table-border)';
+            table.querySelectorAll('tr:nth-child(2n)').forEach(row => {
+              row.style.background = 'var(--markdown-table-alt-bg)';
+            });
+          });
+        } else {
+          // 在亮色主题下只应用基本的代码高亮
+          contentContainer.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+          });
+        }
+        
+        // 重新渲染数学公式
+        renderMathInElement(contentContainer, {
+          delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false}
+          ],
+          throwOnError: false
+        });
+      }, 0);
     };
 
     // 修改 onMounted,添加管理员检查
@@ -4261,14 +4519,58 @@ createApp({
       
       try {
         const rendered = marked.parse(editContent.value);
-        // 使用 nextTick 确保在 DOM 更新后应用代码高亮
         setTimeout(() => {
-          document.querySelectorAll('.preview pre code').forEach((block) => {
-            hljs.highlightBlock(block);
-          });
+          const previewContainer = document.querySelector('.preview');
+          if (!previewContainer) return;
+
+          // 检查是否为暗色主题
+          const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
           
-          // 渲染数学公式
-          renderMathInElement(document.querySelector('.preview'), {
+          if (isDarkTheme) {
+            // 仅在暗色主题下应用这些样式
+            previewContainer.style.background = 'var(--markdown-bg)';
+            previewContainer.style.color = 'var(--markdown-text)';
+            
+            // 代码高亮
+            previewContainer.querySelectorAll('pre code').forEach((block) => {
+              hljs.highlightBlock(block);
+              const pre = block.parentElement;
+              if (pre) {
+                pre.style.background = 'var(--markdown-code-block-bg)';
+              }
+              block.style.color = 'var(--markdown-code-text)';
+            });
+
+            // 应用其他暗色主题样式
+            previewContainer.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+              heading.style.color = 'var(--markdown-heading-text)';
+            });
+
+            previewContainer.querySelectorAll('a').forEach(link => {
+              link.style.color = 'var(--markdown-link)';
+            });
+
+            previewContainer.querySelectorAll('blockquote').forEach(quote => {
+              quote.style.background = 'var(--markdown-blockquote-bg)';
+              quote.style.color = 'var(--markdown-blockquote-text)';
+              quote.style.borderLeftColor = 'var(--markdown-blockquote-border)';
+            });
+
+            previewContainer.querySelectorAll('table').forEach(table => {
+              table.style.borderColor = 'var(--markdown-table-border)';
+              table.querySelectorAll('tr:nth-child(2n)').forEach(row => {
+                row.style.background = 'var(--markdown-table-alt-bg)';
+              });
+            });
+          } else {
+            // 在亮色主题下只应用基本的代码高亮
+            previewContainer.querySelectorAll('pre code').forEach((block) => {
+              hljs.highlightBlock(block);
+            });
+          }
+          
+          // 渲染数学公式（这个功能在两种主题下都需要）
+          renderMathInElement(previewContainer, {
             delimiters: [
               {left: "$$", right: "$$", display: true},
               {left: "$", right: "$", display: false}
@@ -4306,6 +4608,38 @@ createApp({
       }
     };
 
+    // 在 shareAppScript 中也添加相同的主题切换逻辑，默认为light
+    const currentTheme = ref(localStorage.getItem('theme') || 'light');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const setTheme = (theme) => {
+      if (theme === 'auto') {
+        document.documentElement.setAttribute('data-theme', 
+          prefersDark.matches ? 'dark' : 'light'
+        );
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+      }
+      localStorage.setItem('theme', theme);
+      currentTheme.value = theme;
+    };
+
+    const toggleTheme = () => {
+      const themes = ['light', 'dark', 'auto'];
+      const currentIndex = themes.indexOf(currentTheme.value);
+      const nextTheme = themes[(currentIndex + 1) % themes.length];
+      setTheme(nextTheme);
+    };
+
+    onMounted(() => {
+      setTheme(currentTheme.value);
+      prefersDark.addEventListener('change', (e) => {
+        if (currentTheme.value === 'auto') {
+          setTheme('auto');
+        }
+      });
+    });
+
     return {
       content,
       isMarkdown,
@@ -4328,6 +4662,8 @@ createApp({
       editMarkdown,
       editPreview,
       copyContent, // 添加这行
+      currentTheme, // 添加暗色主题相关变量
+      toggleTheme,
     };
   }
 }).mount('#app');
@@ -4392,6 +4728,15 @@ const shareHtml = `<!DOCTYPE html>
 <body>
     <div id="app">
       <div class="container">
+        <!-- 添加主题切换按钮 -->
+        <button 
+          class="theme-toggle" 
+          @click="toggleTheme" 
+          :title="'当前主题: ' + currentTheme"
+        >
+          {{ currentTheme === 'auto' ? '🌗' : (currentTheme === 'dark' ? '🌙' : '☀️') }}
+        </button>
+
         <div class="card">
           <div v-if="loading">加载中...</div>
           <div v-else-if="needPassword">
@@ -5646,141 +5991,47 @@ export default {
       });
     }
 
-      // 处理 API 请求 - 移到前面，优先处理
-      if (url.pathname.startsWith("/api/")) {
-        try {
-          let response;
-          const corsHeaders = {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type, X-Password, Authorization",
-          };
+    // 处理 API 请求 - 移到前面，优先处理
+    if (url.pathname.startsWith("/api/")) {
+      try {
+        let response;
+        const corsHeaders = {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, X-Password, Authorization",
+        };
 
-          if (url.pathname === "/api/admin/upload-status") {
-            response = await handleUploadStatus(request, env);
-          } else if (url.pathname.startsWith("/api/paste")) {
-            response = await handlePaste(request, env);
-          } else if (url.pathname.startsWith("/api/file")) {
-            response = await handleFile(request, env, ctx); // 修改这里，传入 ctx
-          } else if (url.pathname.startsWith("/api/admin/")) {
-            // 添加对管理员 API 的处理
-            if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9-_]+\/password$/)) {
-              if (request.method !== "PUT") {
-                return new Response("Method not allowed", {
-                  status: 405,
-                  headers: corsHeaders,
-                });
-              }
-
-              // 验证管理员权限
-              if (!(await verifyAdmin(request, env))) {
-                return new Response("Unauthorized", {
-                  status: 401,
-                  headers: corsHeaders,
-                });
-              }
-
-              try {
-                const pathParts = url.pathname.split("/");
-                const type = pathParts[pathParts.length - 3];
-                const id = pathParts[pathParts.length - 2];
-                const { password } = await request.json();
-
-                if (type === "paste") {
-                  const storedPaste = await env.PASTE_STORE.get(id);
-                  if (!storedPaste) {
-                    return new Response(
-                      JSON.stringify({
-                        status: "error",
-                        message: "分享不存在",
-                      }),
-                      {
-                        status: 404,
-                        headers: { ...corsHeaders, "Content-Type": "application/json" },
-                      }
-                    );
-                  }
-
-                  const paste = JSON.parse(storedPaste);
-                  if (password) {
-                    paste.passwordHash = await utils.hashPassword(password);
-                  } else {
-                    delete paste.passwordHash;
-                  }
-
-                  await env.PASTE_STORE.put(id, JSON.stringify(paste));
-                } else {
-                  const file = await env.FILE_STORE.get(id);
-                  if (!file) {
-                    return new Response(
-                      JSON.stringify({
-                        status: "error",
-                        message: "分享不存在",
-                      }),
-                      {
-                        status: 404,
-                        headers: { ...corsHeaders, "Content-Type": "application/json" },
-                      }
-                    );
-                  }
-
-                  const metadata = file.customMetadata;
-                  if (password) {
-                    metadata.passwordHash = await utils.hashPassword(password);
-                  } else {
-                    delete metadata.passwordHash;
-                  }
-
-                  await env.FILE_STORE.put(id, await file.arrayBuffer(), {
-                    customMetadata: metadata,
-                  });
-                }
-
-                return new Response(
-                  JSON.stringify({
-                    status: "success",
-                    message: "密码修改成功",
-                  }),
-                  {
-                    headers: { ...corsHeaders, "Content-Type": "application/json" },
-                  }
-                );
-              } catch (error) {
-                return new Response(
-                  JSON.stringify({
-                    status: "error",
-                    message: "修改密码失败",
-                  }),
-                  {
-                    status: 500,
-                    headers: { ...corsHeaders, "Content-Type": "application/json" },
-                  }
-                );
-              }
+        if (url.pathname === "/api/admin/upload-status") {
+          response = await handleUploadStatus(request, env);
+        } else if (url.pathname.startsWith("/api/paste")) {
+          response = await handlePaste(request, env);
+        } else if (url.pathname.startsWith("/api/file")) {
+          response = await handleFile(request, env, ctx); // 修改这里，传入 ctx
+        } else if (url.pathname.startsWith("/api/admin/")) {
+          // 添加对管理员 API 的处理
+          if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9-_]+\/password$/)) {
+            if (request.method !== "PUT") {
+              return new Response("Method not allowed", {
+                status: 405,
+                headers: corsHeaders,
+              });
             }
 
-            // 添加处理更新文本内容的路由
-            if (url.pathname.match(/^\/api\/admin\/paste\/[a-zA-Z0-9-_]+\/content$/)) {
-              if (request.method !== "PUT") {
-                return new Response("Method not allowed", {
-                  status: 405,
-                  headers: corsHeaders,
-                });
-              }
+            // 验证管理员权限
+            if (!(await verifyAdmin(request, env))) {
+              return new Response("Unauthorized", {
+                status: 401,
+                headers: corsHeaders,
+              });
+            }
 
-              // 验证管理员权限
-              if (!(await verifyAdmin(request, env))) {
-                return new Response("Unauthorized", {
-                  status: 401,
-                  headers: corsHeaders,
-                });
-              }
+            try {
+              const pathParts = url.pathname.split("/");
+              const type = pathParts[pathParts.length - 3];
+              const id = pathParts[pathParts.length - 2];
+              const { password } = await request.json();
 
-              try {
-                const pathParts = url.pathname.split("/");
-                const id = pathParts[pathParts.length - 2];
-                const { content, isMarkdown } = await request.json();
-
+              if (type === "paste") {
                 const storedPaste = await env.PASTE_STORE.get(id);
                 if (!storedPaste) {
                   return new Response(
@@ -5796,96 +6047,144 @@ export default {
                 }
 
                 const paste = JSON.parse(storedPaste);
-                paste.content = content;
-                paste.isMarkdown = isMarkdown; // 更新 Markdown 状态
+                if (password) {
+                  paste.passwordHash = await utils.hashPassword(password);
+                } else {
+                  delete paste.passwordHash;
+                }
 
                 await env.PASTE_STORE.put(id, JSON.stringify(paste));
-
-                return new Response(
-                  JSON.stringify({
-                    status: "success",
-                    message: "内容已更新",
-                  }),
-                  {
-                    headers: { ...corsHeaders, "Content-Type": "application/json" },
-                  }
-                );
-              } catch (error) {
-                return new Response(
-                  JSON.stringify({
-                    status: "error",
-                    message: "更新失败",
-                  }),
-                  {
-                    status: 500,
-                    headers: { ...corsHeaders, "Content-Type": "application/json" },
-                  }
-                );
-              }
-            }
-
-            // 在 Worker 中添加一个新的 API 路由来获取存储信息
-            if (url.pathname === "/api/admin/storage") {
-              if (request.method !== "GET") {
-                return new Response("Method not allowed", { status: 405 });
-              }
-
-              try {
-                // 验证管理员权限
-                if (!(await verifyAdmin(request, env))) {
+              } else {
+                const file = await env.FILE_STORE.get(id);
+                if (!file) {
                   return new Response(
                     JSON.stringify({
                       status: "error",
-                      message: "未授权访问",
+                      message: "分享不存在",
                     }),
                     {
-                      status: 401,
-                      headers: {
-                        "Content-Type": "application/json",
-                        "Access-Control-Allow-Origin": "*",
-                      },
+                      status: 404,
+                      headers: { ...corsHeaders, "Content-Type": "application/json" },
                     }
                   );
                 }
 
-                // 计算当前已使用的存储空间
-                let currentStorage = 0;
-                const fileList = await env.FILE_STORE.list();
-                for (const object of fileList.objects || []) {
-                  try {
-                    const file = await env.FILE_STORE.get(object.key);
-                    if (file && file.customMetadata) {
-                      currentStorage += parseInt(file.customMetadata.size) || 0;
-                    }
-                  } catch (e) {
-                    console.error("Error calculating storage for file:", object.key, e);
-                  }
+                const metadata = file.customMetadata;
+                if (password) {
+                  metadata.passwordHash = await utils.hashPassword(password);
+                } else {
+                  delete metadata.passwordHash;
                 }
 
-                return new Response(
-                  JSON.stringify({
-                    status: "success",
-                    storage: {
-                      used: currentStorage,
-                      total: MAX_TOTAL_STORAGE,
-                      percentage: (currentStorage / MAX_TOTAL_STORAGE) *100,
-                    },
-                  }),
-                  {
-                    headers: {
-                      "Content-Type": "application/json",
-                      "Access-Control-Allow-Origin": "*",
-                    },
-                  }
-                );
-              } catch (error) {
+                await env.FILE_STORE.put(id, await file.arrayBuffer(), {
+                  customMetadata: metadata,
+                });
+              }
+
+              return new Response(
+                JSON.stringify({
+                  status: "success",
+                  message: "密码修改成功",
+                }),
+                {
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                }
+              );
+            } catch (error) {
+              return new Response(
+                JSON.stringify({
+                  status: "error",
+                  message: "修改密码失败",
+                }),
+                {
+                  status: 500,
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                }
+              );
+            }
+          }
+
+          // 添加处理更新文本内容的路由
+          if (url.pathname.match(/^\/api\/admin\/paste\/[a-zA-Z0-9-_]+\/content$/)) {
+            if (request.method !== "PUT") {
+              return new Response("Method not allowed", {
+                status: 405,
+                headers: corsHeaders,
+              });
+            }
+
+            // 验证管理员权限
+            if (!(await verifyAdmin(request, env))) {
+              return new Response("Unauthorized", {
+                status: 401,
+                headers: corsHeaders,
+              });
+            }
+
+            try {
+              const pathParts = url.pathname.split("/");
+              const id = pathParts[pathParts.length - 2];
+              const { content, isMarkdown } = await request.json();
+
+              const storedPaste = await env.PASTE_STORE.get(id);
+              if (!storedPaste) {
                 return new Response(
                   JSON.stringify({
                     status: "error",
-                    message: "获取存储信息失败: " + error.message,
+                    message: "分享不存在",
                   }),
                   {
-                    status: 500,
+                    status: 404,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" },
+                  }
+                );
+              }
+
+              const paste = JSON.parse(storedPaste);
+              paste.content = content;
+              paste.isMarkdown = isMarkdown; // 更新 Markdown 状态
+
+              await env.PASTE_STORE.put(id, JSON.stringify(paste));
+
+              return new Response(
+                JSON.stringify({
+                  status: "success",
+                  message: "内容已更新",
+                }),
+                {
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                }
+              );
+            } catch (error) {
+              return new Response(
+                JSON.stringify({
+                  status: "error",
+                  message: "更新失败",
+                }),
+                {
+                  status: 500,
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                }
+              );
+            }
+          }
+
+          // 在 Worker 中添加一个新的 API 路由来获取存储信息
+          if (url.pathname === "/api/admin/storage") {
+            if (request.method !== "GET") {
+              return new Response("Method not allowed", { status: 405 });
+            }
+
+            try {
+              // 验证管理员权限
+              if (!(await verifyAdmin(request, env))) {
+                return new Response(
+                  JSON.stringify({
+                    status: "error",
+                    message: "未授权访问",
+                  }),
+                  {
+                    status: 401,
                     headers: {
                       "Content-Type": "application/json",
                       "Access-Control-Allow-Origin": "*",
@@ -5893,57 +6192,103 @@ export default {
                   }
                 );
               }
-            }
 
-            response = new Response("Not Found", { status: 404 });
+              // 计算当前已使用的存储空间
+              let currentStorage = 0;
+              const fileList = await env.FILE_STORE.list();
+              for (const object of fileList.objects || []) {
+                try {
+                  const file = await env.FILE_STORE.get(object.key);
+                  if (file && file.customMetadata) {
+                    currentStorage += parseInt(file.customMetadata.size) || 0;
+                  }
+                } catch (e) {
+                  console.error("Error calculating storage for file:", object.key, e);
+                }
+              }
+
+              return new Response(
+                JSON.stringify({
+                  status: "success",
+                  storage: {
+                    used: currentStorage,
+                    total: MAX_TOTAL_STORAGE,
+                    percentage: (currentStorage / MAX_TOTAL_STORAGE) * 100,
+                  },
+                }),
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                  },
+                }
+              );
+            } catch (error) {
+              return new Response(
+                JSON.stringify({
+                  status: "error",
+                  message: "获取存储信息失败: " + error.message,
+                }),
+                {
+                  status: 500,
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                  },
+                }
+              );
+            }
           }
 
-          return new Response(response.body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers: { ...Object.fromEntries(response.headers), ...corsHeaders },
-          });
-        } catch (err) {
-          return new Response(
-            JSON.stringify({
-              message: err.message,
-              status: "error",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
+          response = new Response("Not Found", { status: 404 });
         }
-      }
 
-      // 处理分享页面
-      if (url.pathname.startsWith("/share/paste/") || url.pathname.startsWith("/share/file/")) {
-        return new Response(shareHtml, {
-          headers: {
-            "Content-Type": "text/html",
-            "Access-Control-Allow-Origin": "*",
-          },
+        return new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: { ...Object.fromEntries(response.headers), ...corsHeaders },
         });
+      } catch (err) {
+        return new Response(
+          JSON.stringify({
+            message: err.message,
+            status: "error",
+          }),
+          {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       }
+    }
 
-      // 重定向 API 直接访问到分享页面
-      if (url.pathname.match(/^\/paste\/[a-zA-Z0-9]+$/)) {
-        const id = url.pathname.split("/").pop();
-        return Response.redirect(`${url.origin}/share/paste/${id}`, 301);
-      }
-
-      if (url.pathname.match(/^\/file\/[a-zA-Z0-9]+$/)) {
-        const id = url.pathname.split("/").pop();
-        return Response.redirect(`${url.origin}/share/file/${id}`, 301);
-      }
-
-      // 处理主页
-      return new Response(html, {
+    // 处理分享页面
+    if (url.pathname.startsWith("/share/paste/") || url.pathname.startsWith("/share/file/")) {
+      return new Response(shareHtml, {
         headers: {
           "Content-Type": "text/html",
           "Access-Control-Allow-Origin": "*",
         },
       });
-    },
-  };
+    }
+
+    // 重定向 API 直接访问到分享页面
+    if (url.pathname.match(/^\/paste\/[a-zA-Z0-9]+$/)) {
+      const id = url.pathname.split("/").pop();
+      return Response.redirect(`${url.origin}/share/paste/${id}`, 301);
+    }
+
+    if (url.pathname.match(/^\/file\/[a-zA-Z0-9]+$/)) {
+      const id = url.pathname.split("/").pop();
+      return Response.redirect(`${url.origin}/share/file/${id}`, 301);
+    }
+
+    // 处理主页
+    return new Response(html, {
+      headers: {
+        "Content-Type": "text/html",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  },
+};
