@@ -3477,6 +3477,30 @@ createApp({
     // 在 Vue 应用的 setup() 函数中添加状态
     const maxViews = ref(''); // 添加可打开次数的状态
 
+    // 在 shareAppScript 中的 setup() 函数里添加复制功能
+    const copyContent = async () => {
+      try {
+        await navigator.clipboard.writeText(content.value);
+        
+        // 创建提示元素
+        const toast = document.createElement('div');
+        toast.className = 'copy-toast';
+        toast.textContent = '内容已复制到剪贴板';
+        document.body.appendChild(toast);
+        
+        // 显示提示
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        // 2秒后隐藏并移除提示
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => document.body.removeChild(toast), 300);
+        }, 2000);
+      } catch (err) {
+        error.value = '复制失败，请手动复制';
+      }
+    };
+
     return {
       activeTab,
       content,
@@ -3549,6 +3573,7 @@ createApp({
       cancelUpload,
       uploadXHR,
       maxViews,
+      copyContent, // 添加这行
     };
   },
 
@@ -4257,6 +4282,30 @@ createApp({
       }
     });
 
+    // 在 shareAppScript 中的 setup() 函数里添加复制功能
+    const copyContent = async () => {
+      try {
+        await navigator.clipboard.writeText(content.value);
+        
+        // 创建提示元素
+        const toast = document.createElement('div');
+        toast.className = 'copy-toast';
+        toast.textContent = '内容已复制到剪贴板';
+        document.body.appendChild(toast);
+        
+        // 显示提示
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        // 2秒后隐藏并移除提示
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => document.body.removeChild(toast), 300);
+        }, 2000);
+      } catch (err) {
+        error.value = '复制失败，请手动复制';
+      }
+    };
+
     return {
       content,
       isMarkdown,
@@ -4278,6 +4327,7 @@ createApp({
       cancelEdit,
       editMarkdown,
       editPreview,
+      copyContent, // 添加这行
     };
   }
 }).mount('#app');
@@ -4374,15 +4424,36 @@ const shareHtml = `<!DOCTYPE html>
                 <button class="btn" @click="downloadFile" style="margin-top: 1rem;">下载文件</button>
               </div>
               <div v-else class="content">
-                <!-- 修改编辑界面 -->
-                <div v-if="isAdmin && !isFile" class="edit-controls" style="margin-bottom: 1rem;">
-                  <button v-if="!isEditing" class="btn" @click="startEdit">编辑内容</button>
-                  <template v-else>
-                    <button class="btn" @click="saveEdit" style="margin-right: 0.5rem;">保存</button>
-                    <button class="btn" style="background: #95a5a6;" @click="cancelEdit">取消</button>
+                <!-- 添加控制按钮区域 -->
+                <div class="content-controls" style="margin-bottom: 1rem;">
+                  <!-- 复制按钮对所有人可见 -->
+                  <button class="btn" 
+                          @click="copyContent" 
+                          style="margin-right: 0.5rem;"
+                          v-if="!isFile">
+                    复制内容
+                  </button>
+                  <!-- 编辑按钮仅管理员可见 -->
+                  <button v-if="isAdmin && !isFile" 
+                          class="btn" 
+                          @click="startEdit" 
+                          v-show="!isEditing">
+                    编辑内容
+                  </button>
+                  <template v-if="isEditing">
+                    <button class="btn" 
+                            @click="saveEdit" 
+                            style="margin-right: 0.5rem;">
+                      保存
+                    </button>
+                    <button class="btn" 
+                            style="background: #95a5a6;" 
+                            @click="cancelEdit">
+                      取消
+                    </button>
                   </template>
                 </div>
-                
+
                 <div v-if="isEditing">
                   <!-- 添加 Markdown 开关 -->
                   <div class="markdown-toggle" style="margin-bottom: 1rem;">
@@ -5575,47 +5646,141 @@ export default {
       });
     }
 
-    // 处理 API 请求 - 移到前面，优先处理
-    if (url.pathname.startsWith("/api/")) {
-      try {
-        let response;
-        const corsHeaders = {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, X-Password, Authorization",
-        };
+      // 处理 API 请求 - 移到前面，优先处理
+      if (url.pathname.startsWith("/api/")) {
+        try {
+          let response;
+          const corsHeaders = {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, X-Password, Authorization",
+          };
 
-        if (url.pathname === "/api/admin/upload-status") {
-          response = await handleUploadStatus(request, env);
-        } else if (url.pathname.startsWith("/api/paste")) {
-          response = await handlePaste(request, env);
-        } else if (url.pathname.startsWith("/api/file")) {
-          response = await handleFile(request, env, ctx); // 修改这里，传入 ctx
-        } else if (url.pathname.startsWith("/api/admin/")) {
-          // 添加对管理员 API 的处理
-          if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9-_]+\/password$/)) {
-            if (request.method !== "PUT") {
-              return new Response("Method not allowed", {
-                status: 405,
-                headers: corsHeaders,
-              });
+          if (url.pathname === "/api/admin/upload-status") {
+            response = await handleUploadStatus(request, env);
+          } else if (url.pathname.startsWith("/api/paste")) {
+            response = await handlePaste(request, env);
+          } else if (url.pathname.startsWith("/api/file")) {
+            response = await handleFile(request, env, ctx); // 修改这里，传入 ctx
+          } else if (url.pathname.startsWith("/api/admin/")) {
+            // 添加对管理员 API 的处理
+            if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9-_]+\/password$/)) {
+              if (request.method !== "PUT") {
+                return new Response("Method not allowed", {
+                  status: 405,
+                  headers: corsHeaders,
+                });
+              }
+
+              // 验证管理员权限
+              if (!(await verifyAdmin(request, env))) {
+                return new Response("Unauthorized", {
+                  status: 401,
+                  headers: corsHeaders,
+                });
+              }
+
+              try {
+                const pathParts = url.pathname.split("/");
+                const type = pathParts[pathParts.length - 3];
+                const id = pathParts[pathParts.length - 2];
+                const { password } = await request.json();
+
+                if (type === "paste") {
+                  const storedPaste = await env.PASTE_STORE.get(id);
+                  if (!storedPaste) {
+                    return new Response(
+                      JSON.stringify({
+                        status: "error",
+                        message: "分享不存在",
+                      }),
+                      {
+                        status: 404,
+                        headers: { ...corsHeaders, "Content-Type": "application/json" },
+                      }
+                    );
+                  }
+
+                  const paste = JSON.parse(storedPaste);
+                  if (password) {
+                    paste.passwordHash = await utils.hashPassword(password);
+                  } else {
+                    delete paste.passwordHash;
+                  }
+
+                  await env.PASTE_STORE.put(id, JSON.stringify(paste));
+                } else {
+                  const file = await env.FILE_STORE.get(id);
+                  if (!file) {
+                    return new Response(
+                      JSON.stringify({
+                        status: "error",
+                        message: "分享不存在",
+                      }),
+                      {
+                        status: 404,
+                        headers: { ...corsHeaders, "Content-Type": "application/json" },
+                      }
+                    );
+                  }
+
+                  const metadata = file.customMetadata;
+                  if (password) {
+                    metadata.passwordHash = await utils.hashPassword(password);
+                  } else {
+                    delete metadata.passwordHash;
+                  }
+
+                  await env.FILE_STORE.put(id, await file.arrayBuffer(), {
+                    customMetadata: metadata,
+                  });
+                }
+
+                return new Response(
+                  JSON.stringify({
+                    status: "success",
+                    message: "密码修改成功",
+                  }),
+                  {
+                    headers: { ...corsHeaders, "Content-Type": "application/json" },
+                  }
+                );
+              } catch (error) {
+                return new Response(
+                  JSON.stringify({
+                    status: "error",
+                    message: "修改密码失败",
+                  }),
+                  {
+                    status: 500,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" },
+                  }
+                );
+              }
             }
 
-            // 验证管理员权限
-            if (!(await verifyAdmin(request, env))) {
-              return new Response("Unauthorized", {
-                status: 401,
-                headers: corsHeaders,
-              });
-            }
+            // 添加处理更新文本内容的路由
+            if (url.pathname.match(/^\/api\/admin\/paste\/[a-zA-Z0-9-_]+\/content$/)) {
+              if (request.method !== "PUT") {
+                return new Response("Method not allowed", {
+                  status: 405,
+                  headers: corsHeaders,
+                });
+              }
 
-            try {
-              const pathParts = url.pathname.split("/");
-              const type = pathParts[pathParts.length - 3];
-              const id = pathParts[pathParts.length - 2];
-              const { password } = await request.json();
+              // 验证管理员权限
+              if (!(await verifyAdmin(request, env))) {
+                return new Response("Unauthorized", {
+                  status: 401,
+                  headers: corsHeaders,
+                });
+              }
 
-              if (type === "paste") {
+              try {
+                const pathParts = url.pathname.split("/");
+                const id = pathParts[pathParts.length - 2];
+                const { content, isMarkdown } = await request.json();
+
                 const storedPaste = await env.PASTE_STORE.get(id);
                 if (!storedPaste) {
                   return new Response(
@@ -5631,144 +5796,96 @@ export default {
                 }
 
                 const paste = JSON.parse(storedPaste);
-                if (password) {
-                  paste.passwordHash = await utils.hashPassword(password);
-                } else {
-                  delete paste.passwordHash;
-                }
+                paste.content = content;
+                paste.isMarkdown = isMarkdown; // 更新 Markdown 状态
 
                 await env.PASTE_STORE.put(id, JSON.stringify(paste));
-              } else {
-                const file = await env.FILE_STORE.get(id);
-                if (!file) {
-                  return new Response(
-                    JSON.stringify({
-                      status: "error",
-                      message: "分享不存在",
-                    }),
-                    {
-                      status: 404,
-                      headers: { ...corsHeaders, "Content-Type": "application/json" },
-                    }
-                  );
-                }
 
-                const metadata = file.customMetadata;
-                if (password) {
-                  metadata.passwordHash = await utils.hashPassword(password);
-                } else {
-                  delete metadata.passwordHash;
-                }
-
-                await env.FILE_STORE.put(id, await file.arrayBuffer(), {
-                  customMetadata: metadata,
-                });
-              }
-
-              return new Response(
-                JSON.stringify({
-                  status: "success",
-                  message: "密码修改成功",
-                }),
-                {
-                  headers: { ...corsHeaders, "Content-Type": "application/json" },
-                }
-              );
-            } catch (error) {
-              return new Response(
-                JSON.stringify({
-                  status: "error",
-                  message: "修改密码失败",
-                }),
-                {
-                  status: 500,
-                  headers: { ...corsHeaders, "Content-Type": "application/json" },
-                }
-              );
-            }
-          }
-
-          // 添加处理更新文本内容的路由
-          if (url.pathname.match(/^\/api\/admin\/paste\/[a-zA-Z0-9-_]+\/content$/)) {
-            if (request.method !== "PUT") {
-              return new Response("Method not allowed", {
-                status: 405,
-                headers: corsHeaders,
-              });
-            }
-
-            // 验证管理员权限
-            if (!(await verifyAdmin(request, env))) {
-              return new Response("Unauthorized", {
-                status: 401,
-                headers: corsHeaders,
-              });
-            }
-
-            try {
-              const pathParts = url.pathname.split("/");
-              const id = pathParts[pathParts.length - 2];
-              const { content, isMarkdown } = await request.json();
-
-              const storedPaste = await env.PASTE_STORE.get(id);
-              if (!storedPaste) {
+                return new Response(
+                  JSON.stringify({
+                    status: "success",
+                    message: "内容已更新",
+                  }),
+                  {
+                    headers: { ...corsHeaders, "Content-Type": "application/json" },
+                  }
+                );
+              } catch (error) {
                 return new Response(
                   JSON.stringify({
                     status: "error",
-                    message: "分享不存在",
+                    message: "更新失败",
                   }),
                   {
-                    status: 404,
+                    status: 500,
                     headers: { ...corsHeaders, "Content-Type": "application/json" },
                   }
                 );
               }
-
-              const paste = JSON.parse(storedPaste);
-              paste.content = content;
-              paste.isMarkdown = isMarkdown; // 更新 Markdown 状态
-
-              await env.PASTE_STORE.put(id, JSON.stringify(paste));
-
-              return new Response(
-                JSON.stringify({
-                  status: "success",
-                  message: "内容已更新",
-                }),
-                {
-                  headers: { ...corsHeaders, "Content-Type": "application/json" },
-                }
-              );
-            } catch (error) {
-              return new Response(
-                JSON.stringify({
-                  status: "error",
-                  message: "更新失败",
-                }),
-                {
-                  status: 500,
-                  headers: { ...corsHeaders, "Content-Type": "application/json" },
-                }
-              );
-            }
-          }
-
-          // 在 Worker 中添加一个新的 API 路由来获取存储信息
-          if (url.pathname === "/api/admin/storage") {
-            if (request.method !== "GET") {
-              return new Response("Method not allowed", { status: 405 });
             }
 
-            try {
-              // 验证管理员权限
-              if (!(await verifyAdmin(request, env))) {
+            // 在 Worker 中添加一个新的 API 路由来获取存储信息
+            if (url.pathname === "/api/admin/storage") {
+              if (request.method !== "GET") {
+                return new Response("Method not allowed", { status: 405 });
+              }
+
+              try {
+                // 验证管理员权限
+                if (!(await verifyAdmin(request, env))) {
+                  return new Response(
+                    JSON.stringify({
+                      status: "error",
+                      message: "未授权访问",
+                    }),
+                    {
+                      status: 401,
+                      headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*",
+                      },
+                    }
+                  );
+                }
+
+                // 计算当前已使用的存储空间
+                let currentStorage = 0;
+                const fileList = await env.FILE_STORE.list();
+                for (const object of fileList.objects || []) {
+                  try {
+                    const file = await env.FILE_STORE.get(object.key);
+                    if (file && file.customMetadata) {
+                      currentStorage += parseInt(file.customMetadata.size) || 0;
+                    }
+                  } catch (e) {
+                    console.error("Error calculating storage for file:", object.key, e);
+                  }
+                }
+
+                return new Response(
+                  JSON.stringify({
+                    status: "success",
+                    storage: {
+                      used: currentStorage,
+                      total: MAX_TOTAL_STORAGE,
+                      percentage: (currentStorage / MAX_TOTAL_STORAGE) *100,
+                    },
+                  }),
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Access-Control-Allow-Origin": "*",
+                    },
+                  }
+                );
+              } catch (error) {
                 return new Response(
                   JSON.stringify({
                     status: "error",
-                    message: "未授权访问",
+                    message: "获取存储信息失败: " + error.message,
                   }),
                   {
-                    status: 401,
+                    status: 500,
                     headers: {
                       "Content-Type": "application/json",
                       "Access-Control-Allow-Origin": "*",
@@ -5776,103 +5893,57 @@ export default {
                   }
                 );
               }
-
-              // 计算当前已使用的存储空间
-              let currentStorage = 0;
-              const fileList = await env.FILE_STORE.list();
-              for (const object of fileList.objects || []) {
-                try {
-                  const file = await env.FILE_STORE.get(object.key);
-                  if (file && file.customMetadata) {
-                    currentStorage += parseInt(file.customMetadata.size) || 0;
-                  }
-                } catch (e) {
-                  console.error("Error calculating storage for file:", object.key, e);
-                }
-              }
-
-              return new Response(
-                JSON.stringify({
-                  status: "success",
-                  storage: {
-                    used: currentStorage,
-                    total: MAX_TOTAL_STORAGE,
-                    percentage: (currentStorage / MAX_TOTAL_STORAGE) * 100,
-                  },
-                }),
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*",
-                  },
-                }
-              );
-            } catch (error) {
-              return new Response(
-                JSON.stringify({
-                  status: "error",
-                  message: "获取存储信息失败: " + error.message,
-                }),
-                {
-                  status: 500,
-                  headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*",
-                  },
-                }
-              );
             }
+
+            response = new Response("Not Found", { status: 404 });
           }
 
-          response = new Response("Not Found", { status: 404 });
+          return new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: { ...Object.fromEntries(response.headers), ...corsHeaders },
+          });
+        } catch (err) {
+          return new Response(
+            JSON.stringify({
+              message: err.message,
+              status: "error",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
         }
-
-        return new Response(response.body, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: { ...Object.fromEntries(response.headers), ...corsHeaders },
-        });
-      } catch (err) {
-        return new Response(
-          JSON.stringify({
-            message: err.message,
-            status: "error",
-          }),
-          {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
       }
-    }
 
-    // 处理分享页面
-    if (url.pathname.startsWith("/share/paste/") || url.pathname.startsWith("/share/file/")) {
-      return new Response(shareHtml, {
+      // 处理分享页面
+      if (url.pathname.startsWith("/share/paste/") || url.pathname.startsWith("/share/file/")) {
+        return new Response(shareHtml, {
+          headers: {
+            "Content-Type": "text/html",
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
+      }
+
+      // 重定向 API 直接访问到分享页面
+      if (url.pathname.match(/^\/paste\/[a-zA-Z0-9]+$/)) {
+        const id = url.pathname.split("/").pop();
+        return Response.redirect(`${url.origin}/share/paste/${id}`, 301);
+      }
+
+      if (url.pathname.match(/^\/file\/[a-zA-Z0-9]+$/)) {
+        const id = url.pathname.split("/").pop();
+        return Response.redirect(`${url.origin}/share/file/${id}`, 301);
+      }
+
+      // 处理主页
+      return new Response(html, {
         headers: {
           "Content-Type": "text/html",
           "Access-Control-Allow-Origin": "*",
         },
       });
-    }
-
-    // 重定向 API 直接访问到分享页面
-    if (url.pathname.match(/^\/paste\/[a-zA-Z0-9]+$/)) {
-      const id = url.pathname.split("/").pop();
-      return Response.redirect(`${url.origin}/share/paste/${id}`, 301);
-    }
-
-    if (url.pathname.match(/^\/file\/[a-zA-Z0-9]+$/)) {
-      const id = url.pathname.split("/").pop();
-      return Response.redirect(`${url.origin}/share/file/${id}`, 301);
-    }
-
-    // 处理主页
-    return new Response(html, {
-      headers: {
-        "Content-Type": "text/html",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-  },
-};
+    },
+  };
