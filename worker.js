@@ -459,6 +459,83 @@ body {
   font-size: 0.9rem;
 }
 
+/* 二维码弹窗样式 */
+.qr-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.qr-content {
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  width: 90%;
+  text-align: center;
+}
+
+.qr-content h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-color);
+}
+
+.qr-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+/* 链接操作按钮组样式 */
+.link-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.qr-btn {
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.qr-btn:hover {
+  opacity: 1;
+}
+
+.qr-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.qr-content #qr-container {
+  margin: 1rem auto;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-content #qr-container img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* 管理面板组件 */
 .admin-panel {
   position: fixed;
@@ -603,7 +680,9 @@ body {
   margin-top: 1rem;
 }
 
+/* 修改分享项布局 */
 .share-item {
+  position: relative;  /* 添加相对定位 */
   padding: 1rem;
   background: var(--secondary-bg);
   border-radius: 8px;
@@ -615,22 +694,53 @@ body {
   font-weight: 600;
   color: #2c3e50;
   margin-bottom: 0.5rem;
+  padding-right: 2.5rem;  /* 避免与二维码重叠 */
 }
 
 .share-item .info {
   font-size: 0.9em;
   color: var(--secondary-text);
   margin-bottom: 0.5rem;
+  padding-right: 2.5rem;  /* 避免与二维码重叠 */
 }
 
 .share-item .info div {
   margin: 0.25rem 0;
 }
 
+/* 操作按钮组样式 */
 .share-item .actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 二维码按钮样式 */
+.share-item .qr-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.6;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-item .qr-btn:hover {
+  opacity: 1;
+}
+
+.share-item .qr-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* 统计卡片 */
@@ -2523,6 +2633,8 @@ body {
     padding: 0.5rem;
   }
 }
+
+
 `;
 
 // Vue 应用代码
@@ -3687,6 +3799,48 @@ createApp({
       setTheme(nextTheme);
     };
 
+    // 添加二维码相关状态
+    const showQRCode = ref(false);
+    const currentQRUrl = ref('');
+    
+    // 显示二维码的方法
+    const showQR = async (url) => {
+      currentQRUrl.value = url;
+      showQRCode.value = true;
+      
+      // 等待 DOM 更新后生成二维码
+      await nextTick();
+      const qrContainer = document.getElementById('qr-container');
+      if (qrContainer) {
+        // 清空容器
+        qrContainer.innerHTML = '';
+        
+        // 使用 QRCode 构造函数生成二维码
+        new QRCode(qrContainer, {
+          text: url,
+          width: 200,
+          height: 200,
+          colorDark: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
+          colorLight: getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim(),
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+    };
+    
+    // 下载二维码的方法
+    const downloadQR = () => {
+      const qrContainer = document.getElementById('qr-container');
+      if (qrContainer) {
+        const img = qrContainer.querySelector('img');
+        if (img) {
+          const link = document.createElement('a');
+          link.download = 'qrcode.png';
+          link.href = img.src;
+          link.click();
+        }
+      }
+    };
+
     return {
       activeTab,
       content,
@@ -3764,6 +3918,10 @@ createApp({
       prefersDark,
       setTheme,
       toggleTheme,
+      showQRCode,
+      currentQRUrl,
+      showQR,
+      downloadQR,
     };
   },
 
@@ -3996,14 +4154,30 @@ createApp({
           <p>分享链接：</p>
           <div class="link">
             <a :href="result.url" target="_blank">{{ result.url }}</a>
-            <button class="btn" @click="copyUrl(result.url)">复制链接</button>
+            <div class="link-actions">
+              <button class="btn" @click="copyUrl(result.url)">复制链接</button>
+              <button class="qr-btn" @click="showQR(result.url)" title="显示二维码">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3z"/>
+                  <path d="M15 15h2v2h-2zM19 15h2v2h-2zM15 19h2v2h-2zM19 19h2v2h-2z"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
         <div v-else>
           <p>分享链接：</p>
           <div v-for="file in result.files" :key="file.url" class="link">
             <a :href="file.url" target="_blank">{{ file.url }}</a>
-            <button class="btn" @click="copyUrl(file.url)">复制链接</button>
+            <div class="link-actions">
+              <button class="btn" @click="copyUrl(file.url)">复制链接</button>
+              <button class="qr-btn" @click="showQR(file.url)" title="显示二维码">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3z"/>
+                  <path d="M15 15h2v2h-2zM19 15h2v2h-2zM15 19h2v2h-2zM19 19h2v2h-2z"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -4139,6 +4313,14 @@ createApp({
         <!-- 分享列表 -->
         <div class="share-list">
           <div v-for="share in filteredShares" :key="share.id" class="share-item">
+            <!-- 二维码按钮移到这里 -->
+            <button class="qr-btn" @click="showQR(share.url)" title="显示二维码">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3z"/>
+                <path d="M15 15h2v2h-2zM19 15h2v2h-2zM15 19h2v2h-2zM19 19h2v2h-2z"/>
+              </svg>
+            </button>
+            
             <div class="title">
               {{ share.type === 'paste' ? '文本分享' : '文件分享' }}
               <span v-if="share.hasPassword" class="badge">密码保护</span>
@@ -4196,6 +4378,18 @@ createApp({
         <div class="confirm-actions">
           <button class="btn" @click="changePassword">确定</button>
           <button class="btn cancel" @click="showPasswordDialog = false">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 添加二维码弹窗 -->
+    <div v-if="showQRCode" class="qr-dialog" @click.self="showQRCode = false">
+      <div class="qr-content">
+        <h3>扫描二维码访问</h3>
+        <div id="qr-container"></div>
+        <div class="qr-actions">
+          <button class="btn" @click="downloadQR">下载二维码</button>
+          <button class="btn" style="background: var(--btn-secondary-bg)" @click="showQRCode = false">关闭</button>
         </div>
       </div>
     </div>
@@ -4680,6 +4874,7 @@ const html = `<!DOCTYPE html>
     <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/marked/4.0.2/marked.min.js"></script>
     <link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/11.4.0/styles/github.min.css">
     <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/11.4.0/highlight.min.js"></script>
+    <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- 添加 KaTeX 支持 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -5823,87 +6018,91 @@ export default {
 
           const shares = [];
 
-          try {
+          // 并行获取文本和文件分享
+          await Promise.all([
             // 获取文本分享
-            const pasteList = await env.PASTE_STORE.list();
-            for (const key of pasteList.keys) {
+            (async () => {
               try {
-                const paste = JSON.parse(await env.PASTE_STORE.get(key.name));
-                shares.push({
-                  id: key.name,
-                  type: "paste",
-                  content: paste.content?.substring(0, 100) + "...",
-                  createdAt: paste.createdAt,
-                  expiresAt: paste.expiresAt,
-                  hasPassword: !!paste.passwordHash,
-                  isMarkdown: paste.isMarkdown,
-                  url: `${url.origin}/share/paste/${key.name}`,
-                  maxViews: paste.maxViews || 0,
-                  viewCount: paste.viewCount || 0,
+                const pasteList = await env.PASTE_STORE.list();
+                // 并行获取所有文本分享的内容
+                const pastesPromises = pasteList.keys.map(async (key) => {
+                  try {
+                    const paste = JSON.parse(await env.PASTE_STORE.get(key.name));
+                    return {
+                      id: key.name,
+                      type: "paste",
+                      content: paste.content?.substring(0, 100) + "...", // 只获取前100个字符
+                      createdAt: paste.createdAt,
+                      expiresAt: paste.expiresAt,
+                      hasPassword: !!paste.passwordHash,
+                      isMarkdown: paste.isMarkdown,
+                      url: `${url.origin}/share/paste/${key.name}`,
+                      maxViews: paste.maxViews || 0,
+                      viewCount: paste.viewCount || 0,
+                    };
+                  } catch (e) {
+                    console.error("Error processing paste:", key.name, e);
+                    return null; // 返回 null 表示处理失败
+                  }
                 });
-              } catch (e) {
-                console.error("Error processing paste:", key.name, e);
-                continue;
-              }
-            }
-          } catch (e) {
-            console.error("Error listing pastes:", e);
-          }
 
-          try {
+                // 等待所有文本分享处理完成并过滤掉失败的
+                const validPastes = (await Promise.all(pastesPromises)).filter(
+                  (paste) => paste !== null
+                );
+                shares.push(...validPastes);
+              } catch (e) {
+                console.error("Error listing pastes:", e);
+              }
+            })(),
+
             // 获取文件分享
-            const fileList = await env.FILE_STORE.list(); // 获取文件列表
-            console.log("R2 file list:", fileList); // 添加调试日志
-
-            // 遍历所有文件R2 存储桶的列表返回的是 objects 属性
-            for (const object of fileList.objects || []) {
+            (async () => {
               try {
-                // 获取文件的完整信息
-                const file = await env.FILE_STORE.get(object.key);
-                if (!file) {
-                  console.log("File not found:", object.key);
-                  continue;
-                }
+                const fileList = await env.FILE_STORE.list();
+                // 并行处理所有文件
+                const filePromises = (fileList.objects || []).map(async (object) => {
+                  try {
+                    const file = await env.FILE_STORE.get(object.key);
+                    if (!file || !file.customMetadata) return null;
 
-                const metadata = file.customMetadata;
-                if (!metadata) {
-                  console.log("No metadata for file:", object.key);
-                  continue;
-                }
-
-                shares.push({
-                  id: object.key,
-                  type: "file",
-                  filename: metadata.filename || object.key,
-                  size: metadata.size || object.size,
-                  createdAt: metadata.uploadedAt || object.uploaded,
-                  expiresAt: metadata.expiresAt,
-                  hasPassword: !!metadata.passwordHash,
-                  url: `${url.origin}/share/file/${object.key}`,
-                  maxViews: parseInt(metadata.maxViews) || 0, // 确保转换为数字
-                  viewCount: parseInt(metadata.viewCount) || 0, // 确保转换为数字
+                    const metadata = file.customMetadata;
+                    return {
+                      id: object.key,
+                      type: "file",
+                      filename: metadata.filename || object.key,
+                      size: metadata.size || object.size,
+                      createdAt: metadata.uploadedAt || object.uploaded,
+                      expiresAt: metadata.expiresAt,
+                      hasPassword: !!metadata.passwordHash,
+                      url: `${url.origin}/share/file/${object.key}`,
+                      maxViews: parseInt(metadata.maxViews) || 0, // 确保转换为数字
+                      viewCount: parseInt(metadata.viewCount) || 0,
+                    };
+                  } catch (e) {
+                    console.error("Error processing file:", object.key, e);
+                    return null;
+                  }
                 });
 
-                console.log("Added file share:", object.key);
+                // 等待所有文件处理完成并过滤掉失败的
+                const validFiles = (await Promise.all(filePromises)).filter(
+                  (file) => file !== null
+                );
+                shares.push(...validFiles);
               } catch (e) {
-                console.error("Error processing file:", {
-                  key: object.key,
-                  error: e.message,
-                  stack: e.stack,
-                });
+                console.error("Error listing files:", e);
               }
-            }
-          } catch (e) {
-            console.error("Error listing R2 files:", {
-              error: e.message,
-              stack: e.stack,
-            });
-          }
+            })(),
+          ]);
+
+          // 按创建时间排序
+          shares.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
           return new Response(
             JSON.stringify({
               status: "success",
-              shares: shares.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+              shares,
             }),
             {
               headers: {
