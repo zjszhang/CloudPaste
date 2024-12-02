@@ -110,7 +110,7 @@ const styles = `
   --markdown-link-hover: #0550ae;
   --markdown-code-bg: #f6f8fa;
   --markdown-code-text: #24292e;
-  --markdown-code-block-bg: #f8f9fa;
+  --markdown-code-block-bg: #f6f8fa;
   --markdown-blockquote-bg: #f8f9fa;
   --markdown-blockquote-text: #6a737d;
   --markdown-blockquote-border: #3498db;
@@ -137,7 +137,7 @@ const styles = `
   --secondary-text: #aaa;
   --admin-panel-bg: #242424;
   --markdown-preview-bg: #2d2d2d;
-  --markdown-code-bg: #363636;
+  --markdown-code-bg: #2d333b;
   --markdown-blockquote-bg: #363636;
   --markdown-blockquote-border: #5dade2;
   --btn-secondary-bg: #4a4a4a;
@@ -397,6 +397,11 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   line-height: 1.6;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;       /* 保留换行符并自动换行 */
+  max-width: 100%;            /* 限制最大宽度 */
 }
 
 .content input[type="checkbox"] {
@@ -440,6 +445,8 @@ body {
   align-items: flex-start;
   margin: 0.5em 0;
   line-height: 1.6;
+  margin: 1em 0;              /* 增加列表项间距 */
+  display: block;             /* 改为块级显示 */
 }
 
 .content li label {
@@ -452,6 +459,9 @@ body {
 .content p {
   margin: 1em 0;
   line-height: 1.6;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
 .expiry-info {
@@ -1161,6 +1171,7 @@ body {
   font-weight: 600;
   color: #2c3e50;
   display: inline;
+  white-space: normal;       /* 允许正常换行 */
 }
 
 /* 代码块样式 */
@@ -1169,7 +1180,11 @@ body {
   padding: 1.5em;
   background: var(--markdown-code-bg);
   border-radius: 6px;
-  overflow-x: auto;
+  overflow-x: auto;          /* 允许横向滚动 */
+  white-space: pre-wrap;     /* 允许自动换行 */
+  word-wrap: break-word;     /* 允许长单词换行 */
+  word-break: break-all;     /* 允许在任意字符处换行 */
+  max-width: 100%;          /* 限制最大宽度 */
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 0.9em;
   line-height: 1.6;
@@ -1184,7 +1199,10 @@ body {
   border-radius: 0;
   color: inherit;
   font-size: 1em;
-  white-space: pre;
+  white-space: inherit;      /* 继承父元素的 white-space 属性 */
+  word-wrap: inherit;        /* 继承父元素的 word-wrap 属性 */
+  word-break: inherit;       /* 继承父元素的 word-break 属性 */
+  overflow-wrap: inherit;    /* 继承父元素的 overflow-wrap 属性 */
 }
 
 /* 标题样式 */
@@ -2673,7 +2691,7 @@ createApp({
     const deleteTarget = ref(null);
     const isRefreshing = ref(false);  // 添加刷新状态
     const customId = ref(''); // 添加自定义ID输入框的值
-    // 在 setup() 函数中添加新的状态变量
+    // 添加新的状态变量
     const allowTextUpload = ref(false);  // 控制文本上传
     const allowFileUpload = ref(false);  // 控制文件上传
 
@@ -2682,6 +2700,8 @@ createApp({
     const passwordTarget = ref(null);
     const newPassword = ref('');
     const passwordError = ref('');
+    // 添加自动保存的状态和方法
+    const lastSavedContent = ref(''); // 添加最后保存的内容
 
     // 在 setup() 函数中添加新的状态
     const storageInfo = ref({
@@ -2928,28 +2948,26 @@ createApp({
             // 检查是否为暗色主题
             const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
             
-            if (isDarkTheme) {
-                // 暗色主题样式
-                previewContainer.style.background = 'var(--markdown-bg)';
-                previewContainer.style.color = 'var(--markdown-text)';
-            }
+            // 设置预览容器的基本样式
+            previewContainer.style.background = isDarkTheme ? 'var(--markdown-bg)' : 'var(--markdown-preview-bg)';
+            previewContainer.style.color = isDarkTheme ? 'var(--markdown-text)' : 'var(--text-color)';
 
-            // 代码高亮 - 两种主题都需要
-            previewContainer.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightBlock(block);
-                const pre = block.parentElement;
-                if (pre) {
-                    pre.style.background = isDarkTheme ? 
-                        'var(--markdown-code-block-bg)' : 
-                        'var(--markdown-code-bg)';
-                }
-                if (isDarkTheme) {
-                    block.style.color = 'var(--markdown-code-text)';
+            // 代码块样式处理
+            previewContainer.querySelectorAll('pre').forEach(pre => {
+                // 直接设置 pre 元素的背景色
+                pre.style.background = isDarkTheme ? 'var(--markdown-code-block-bg)' : 'var(--markdown-code-bg)';
+                
+                // 处理内部的 code 元素
+                const code = pre.querySelector('code');
+                if (code) {
+                    hljs.highlightBlock(code);
+                    code.style.color = isDarkTheme ? 'var(--markdown-code-text)' : 'var(--text-color)';
+                    code.style.background = 'transparent'; // 确保 code 元素背景是透明的
                 }
             });
 
+            // 其他 Markdown 元素的样式
             if (isDarkTheme) {
-                // 其他暗色主题特定样式
                 previewContainer.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
                     heading.style.color = 'var(--markdown-heading-text)';
                 });
@@ -2971,8 +2989,8 @@ createApp({
                     });
                 });
             }
-            
-            // 渲染数学公式 - 两种主题都需要
+
+            // 渲染数学公式
             renderMathInElement(previewContainer, {
                 delimiters: [
                     {left: "$$", right: "$$", display: true},
@@ -3290,6 +3308,10 @@ createApp({
         if (isAdmin.value) {
           await fetchShares();
         }
+        
+        // 成功提交后清除保存的内容
+        localStorage.removeItem('autosaved_content');
+        lastSavedContent.value = '';
       } catch (err) {
         error.value = err.message;
       }
@@ -3841,6 +3863,65 @@ createApp({
       }
     };
 
+    // 在 setup() 函数中添加一个新的 computed 属性
+    const themeIcon = computed(() => {
+      if (currentTheme.value === 'auto') return '🌗';
+      return currentTheme.value === 'dark' ? '🌙' : '☀️';
+    });
+
+    // 在 setup() 函数中添加一个计算属性来处理 GitHub 图标
+    const githubIconSvg = computed(() => ({
+      __html: '<svg height="32" width="32" viewBox="0 0 16 16" class="github-icon"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>'
+    }));
+    
+    // 添加自动保存方法
+    const autoSave = () => {
+      if (content.value && content.value !== lastSavedContent.value) {
+        try {
+          localStorage.setItem('autosaved_content', content.value);
+          lastSavedContent.value = content.value;
+          console.log('Content auto-saved:', new Date().toLocaleString());
+        } catch (e) {
+          console.error('Auto-save failed:', e);
+        }
+      }
+    };
+
+    // 在组件挂载时检查是否有自动保存的内容
+    onMounted(() => {
+      // 检查是否有保存的内容
+      const savedContent = localStorage.getItem('autosaved_content');
+      if (savedContent) {
+        // 如果有保存的内容，提示用户是否恢复
+        if (confirm('发现未保存的内容，是否恢复？')) {
+          content.value = savedContent;
+        }
+        // 无论是否恢复，都清除保存的内容
+        localStorage.removeItem('autosaved_content');
+      }
+
+      // 添加页面关闭前的保存事件
+      window.addEventListener('beforeunload', saveContent);
+    });
+
+    // 在组件卸载时清理事件监听
+    onUnmounted(() => {
+      window.removeEventListener('beforeunload', saveContent);
+    });
+
+    // 添加保存方法
+    const saveContent = () => {
+      if (content.value && content.value !== lastSavedContent.value) {
+        try {
+          localStorage.setItem('autosaved_content', content.value);
+          lastSavedContent.value = content.value;
+          console.log('Content saved:', new Date().toLocaleString());
+        } catch (e) {
+          console.error('Save failed:', e);
+        }
+      }
+    };
+
     return {
       activeTab,
       content,
@@ -3922,6 +4003,10 @@ createApp({
       currentQRUrl,
       showQR,
       downloadQR,
+      themeIcon,
+      githubIconSvg,
+      lastSavedContent,
+      saveContent,
     };
   },
 
@@ -3931,18 +4016,16 @@ createApp({
   <a href="https://github.com/ling-drag0n/CloudPaste" 
      target="_blank" 
      class="github-link" 
-     title="Visit GitHub">
-    <svg height="32" width="32" viewBox="0 0 16 16" class="github-icon">
-      <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-    </svg>
+     title="Visit GitHub"
+     v-html="githubIconSvg.__html">
   </a>
 
   <button 
     class="theme-toggle" 
     @click="toggleTheme" 
     :title="'当前主题: ' + currentTheme"
+    v-text="themeIcon"
   >
-    {{ currentTheme === 'auto' ? '🌗' : (currentTheme === 'dark' ? '🌙' : '☀️') }}
   </button>
 
     <div class="card">
@@ -4834,6 +4917,12 @@ createApp({
       });
     });
 
+    // 在 shareAppScript 中添加 themeIcon 计算属性
+    const themeIcon = computed(() => {
+      if (currentTheme.value === 'auto') return '🌗';
+      return currentTheme.value === 'dark' ? '🌙' : '☀️';
+    });
+
     return {
       content,
       isMarkdown,
@@ -4855,9 +4944,10 @@ createApp({
       cancelEdit,
       editMarkdown,
       editPreview,
-      copyContent, // 添加这行
+      copyContent, 
       currentTheme, // 添加暗色主题相关变量
       toggleTheme,
+      themeIcon,  // 添加这行
     };
   }
 }).mount('#app');
@@ -4886,10 +4976,8 @@ const html = `<!DOCTYPE html>
        <a href="https://github.com/ling-drag0n/CloudPaste" 
             target="_blank" 
             class="github-link" 
-            title="Visit GitHub">
-            <svg height="32" width="32" viewBox="0 0 16 16" class="github-icon">
-                <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-            </svg>
+            title="Visit GitHub"
+            v-html="githubIconSvg.__html">
         </a>
     </div>
     <script>
@@ -4928,8 +5016,8 @@ const shareHtml = `<!DOCTYPE html>
           class="theme-toggle" 
           @click="toggleTheme" 
           :title="'当前主题: ' + currentTheme"
+          v-text="themeIcon"
         >
-          {{ currentTheme === 'auto' ? '🌗' : (currentTheme === 'dark' ? '🌙' : '☀️') }}
         </button>
 
         <div class="card">
@@ -6047,9 +6135,7 @@ export default {
                 });
 
                 // 等待所有文本分享处理完成并过滤掉失败的
-                const validPastes = (await Promise.all(pastesPromises)).filter(
-                  (paste) => paste !== null
-                );
+                const validPastes = (await Promise.all(pastesPromises)).filter((paste) => paste !== null);
                 shares.push(...validPastes);
               } catch (e) {
                 console.error("Error listing pastes:", e);
@@ -6086,9 +6172,7 @@ export default {
                 });
 
                 // 等待所有文件处理完成并过滤掉失败的
-                const validFiles = (await Promise.all(filePromises)).filter(
-                  (file) => file !== null
-                );
+                const validFiles = (await Promise.all(filePromises)).filter((file) => file !== null);
                 shares.push(...validFiles);
               } catch (e) {
                 console.error("Error listing files:", e);
