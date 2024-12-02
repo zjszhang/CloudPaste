@@ -3331,6 +3331,12 @@ createApp({
       try {
         error.value = null;
         
+        // 添加: 验证自定义ID的格式
+        if (customId.value && !/^[a-zA-Z0-9-_]+$/.test(customId.value)) {
+          error.value = '自定义链接后缀只能包含字母、数字、横线和下划线';
+          return;
+        }
+        
         // 检查文件总大小
         const totalSize = files.value.reduce((sum, file) => sum + file.size, 0);
         if (totalSize > window.APP_CONFIG.MAX_FILE_SIZE) {
@@ -5420,6 +5426,28 @@ async function handleFile(request, env, ctx) {
         const customId = formData.get("customId");
         const expiresIn = formData.get("expiresIn") || "1d";
         const inputPassword = formData.get("password");
+
+        // 验证自定义ID的格式
+        if (customId && !/^[a-zA-Z0-9-_]+$/.test(customId)) {
+          return new Response(
+            JSON.stringify({
+              files: [{
+                filename: files[0].name,
+                error: "自定义链接后缀只能包含字母、数字、横线和下划线",
+                status: "error"
+              }],
+              message: "自定义链接后缀格式不正确",
+              status: "error"
+            }),
+            {
+              status: 400,
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
+              }
+            }
+          );
+        }
 
         // 如果提供了自定义ID，先检查是否存在于文本分享中
         if (customId) {
