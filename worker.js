@@ -396,7 +396,7 @@ body {
   padding: 1rem;
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  line-height: 1.6;
+  line-height: 1.5;  // 减小行高
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-all;
@@ -437,15 +437,15 @@ body {
 .content ul {
   list-style: none;
   padding-left: 0;
-  margin: 1em 0;
+  margin: 0.3em 0;  // 减小列表整体间距
 }
 
 .content li {
   display: flex;
   align-items: flex-start;
-  margin: 0.5em 0;
-  line-height: 1.6;
-  margin: 1em 0;              /* 增加列表项间距 */
+  margin: 0.2em 0;  // 减小列表项间距
+  line-height: 1.5;  // 减小行高
+  margin: 0.5em 0;              /* 增加列表项间距 */
   display: block;             /* 改为块级显示 */
 }
 
@@ -457,8 +457,8 @@ body {
 }
 
 .content p {
-  margin: 1em 0;
-  line-height: 1.6;
+  margin: 0.3em 0;  // 进一步减小段落间距
+  line-height: 1.5;  // 减小行高
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-all;
@@ -1038,13 +1038,13 @@ body {
 .content ul {
   list-style: none;
   padding-left: 2em;
-  margin: 1em 0;
+  margin: 0.2em 0;  // 减小列表整体间距
 }
 
 .content ul li {
   position: relative;
-  margin: 0.5em 0;
-  line-height: 1.8;
+  margin: 0.1em 0;  // 进一步减小列表项间距
+  line-height: 1.5;  // 减小行高
   padding-left: 0.5em;
   display: flex; /* 使用 flex 布局 */
   flex-wrap: wrap; /* 允许内容换行 */
@@ -1061,13 +1061,13 @@ body {
 
 /* 列表项内容样式 */
 .content li > * {
-  margin: 0;
+  margin: 0.1em 0;  // 减小列表项内容间距
   line-height: inherit;
 }
 
 .content li p {
   display: inline;
-  margin: 0;
+  margin: 0.1em 0;  // 减小列表项段落间距
   line-height: inherit;
 }
 
@@ -1134,13 +1134,13 @@ body {
 .content ul {
   list-style: none;
   padding-left: 2em;
-  margin: 1em 0;
+  margin: 0.2em 0;  // 减小列表整体间距
 }
 
 .content ul li {
   position: relative;
-  margin: 0.5em 0;
-  line-height: 1.8;
+  margin: 0.1em 0;  // 进一步减小列表项间距
+  line-height: 1.5;  // 减小行高
   padding-left: 0.5em;
 }
 
@@ -1163,7 +1163,7 @@ body {
 
 .content li > pre {
   display: block;
-  margin: 1em 0;
+  margin: 0.5em 0;  // 减小代码块间距
 }
 
 /* 加粗文本样式 */
@@ -1207,9 +1207,9 @@ body {
 
 /* 标题样式 */
 .content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
-  margin: 2em 0 1em;
+  margin: 0.8em 0 0.2em;  // 减小标题下方间距
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.2;  // 减小标题行高
   color: #1a202c;
 }
 
@@ -1367,21 +1367,21 @@ body {
 .content ul,
 .content ol {
   padding-left: 2em;
-  margin: 1em 0;
+  margin: 0.2em 0;  // 减小列表整体间距
 }
 
 /* 无序列表样式 */
 .content ul {
   list-style: none;
   padding-left: 2em;
-  margin: 1em 0;
+  margin: 0.2em 0;  // 减小列表整体间距
 }
 
 .content ul li {
   position: relative;
   padding-left: 0.5em;
   margin: 0.5em 0;
-  line-height: 1.8;
+  line-height: 1.6;
 }
 
 .content ul li::before {
@@ -1414,7 +1414,7 @@ body {
   position: relative;
   padding-left: 0.5em;
   margin: 0.5em 0;
-  line-height: 1.8;
+  line-height: 1.6;
   counter-increment: item;
 }
 
@@ -1453,6 +1453,62 @@ body {
 .content li p {
   display: inline;
   margin: 0;
+}
+
+/* 代码块复制按钮容器基础样式 */
+.code-block-wrapper {
+  position: relative;
+  margin: 1.5em 0;
+}
+
+.code-block-wrapper pre {
+  margin: 0;
+  position: relative;
+}
+
+/* 复制按钮基础样式 */
+.code-copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  color: #666;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+  z-index: 10;
+}
+
+/* 复制按钮交互状态 */
+.code-block-wrapper:hover .code-copy-btn {
+  opacity: 1;
+}
+
+.code-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.code-copy-btn.copied {
+  color: #2ecc71;
+}
+
+/* 暗色主题样式 */
+[data-theme="dark"] .code-copy-btn {
+  background: rgba(45, 45, 45, 0.8);
+  border-color: #444;
+  color: #eee;
+}
+
+[data-theme="dark"] .code-copy-btn:hover {
+  background: rgba(45, 45, 45, 0.95);
+}
+
+[data-theme="dark"] .code-copy-btn.copied {
+  color: #2ecc71;
 }
 
 /* 管理面板操作按钮 */
@@ -2651,8 +2707,6 @@ body {
     padding: 0.5rem;
   }
 }
-
-
 `;
 
 // Vue 应用代码
@@ -2752,7 +2806,6 @@ createApp({
         if (!credentials) {
           throw new Error('未登录');
         }
-
         const response = await fetch('/api/admin/' + passwordTarget.value.type + '/' + passwordTarget.value.id + '/password', {
           method: 'PUT',
           headers: {
@@ -3805,6 +3858,94 @@ createApp({
       }
       localStorage.setItem('theme', theme);
       currentTheme.value = theme;
+
+      // 主题切换后重新处理代码块
+      setTimeout(() => {
+        // 处理主内容区域的代码块
+        const contentContainer = document.querySelector('.content');
+        if (contentContainer) {
+          contentContainer.querySelectorAll('pre code').forEach((block) => {
+            // 检查是否已经添加了复制按钮
+            if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
+              const wrapper = document.createElement('div');
+              wrapper.className = 'code-block-wrapper';
+              
+              const pre = block.parentElement;
+              pre.parentNode.insertBefore(wrapper, pre);
+              wrapper.appendChild(pre);
+              
+              const copyButton = document.createElement('button');
+              copyButton.className = 'code-copy-btn';
+              copyButton.textContent = '复制';
+              wrapper.appendChild(copyButton);
+              
+              copyButton.addEventListener('click', async () => {
+                try {
+                  await navigator.clipboard.writeText(block.textContent);
+                  copyButton.textContent = '已复制!';
+                  copyButton.classList.add('copied');
+                  
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('copied');
+                  }, 2000);
+                } catch (err) {
+                  console.error('Failed to copy code:', err);
+                  copyButton.textContent = '复制失败';
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                  }, 2000);
+                }
+              });
+            }
+
+            // 应用代码高亮
+            hljs.highlightBlock(block);
+          });
+        }
+
+        // 处理预览区域的代码块
+        const previewContainer = document.querySelector('.preview');
+        if (previewContainer) {
+          previewContainer.querySelectorAll('pre code').forEach((block) => {
+            if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
+              const wrapper = document.createElement('div');
+              wrapper.className = 'code-block-wrapper';
+              
+              const pre = block.parentElement;
+              pre.parentNode.insertBefore(wrapper, pre);
+              wrapper.appendChild(pre);
+              
+              const copyButton = document.createElement('button');
+              copyButton.className = 'code-copy-btn';
+              copyButton.textContent = '复制';
+              wrapper.appendChild(copyButton);
+              
+              copyButton.addEventListener('click', async () => {
+                try {
+                  await navigator.clipboard.writeText(block.textContent);
+                  copyButton.textContent = '已复制!';
+                  copyButton.classList.add('copied');
+                  
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('copied');
+                  }, 2000);
+                } catch (err) {
+                  console.error('Failed to copy code:', err);
+                  copyButton.textContent = '复制失败';
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                  }, 2000);
+                }
+              });
+            }
+
+            // 应用代码高亮
+            hljs.highlightBlock(block);
+          });
+        }
+      }, 0);
     };
 
     // 在 onMounted 中初始化主题
@@ -4561,11 +4702,55 @@ createApp({
       isEditing.value = false;
       editContent.value = '';
       
-      // 在取消编辑后重新渲染原始内容
+      // 在取消编辑后重新处理代码块
       setTimeout(() => {
         const contentContainer = document.querySelector('.content');
         if (!contentContainer) return;
-        
+
+        // 处理代码块
+        contentContainer.querySelectorAll('pre code').forEach((block) => {
+          // 检查是否已经添加了复制按钮
+          if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
+            // 创建包装容器
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+            
+            // 获取 pre 标签
+            const pre = block.parentElement;
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+            
+            // 创建复制按钮
+            const copyButton = document.createElement('button');
+            copyButton.className = 'code-copy-btn';
+            copyButton.textContent = '复制';
+            wrapper.appendChild(copyButton);
+            
+            // 添加复制功能
+            copyButton.addEventListener('click', async () => {
+              try {
+                await navigator.clipboard.writeText(block.textContent);
+                copyButton.textContent = '已复制!';
+                copyButton.classList.add('copied');
+                
+                setTimeout(() => {
+                  copyButton.textContent = '复制';
+                  copyButton.classList.remove('copied');
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy code:', err);
+                copyButton.textContent = '复制失败';
+                setTimeout(() => {
+                  copyButton.textContent = '复制';
+                }, 2000);
+              }
+            });
+          }
+
+          // 应用代码高亮
+          hljs.highlightBlock(block);
+        });
+
         // 检查是否为暗色主题
         const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
         
@@ -4604,11 +4789,6 @@ createApp({
             table.querySelectorAll('tr:nth-child(2n)').forEach(row => {
               row.style.background = 'var(--markdown-table-alt-bg)';
             });
-          });
-        } else {
-          // 在亮色主题下只应用基本的代码高亮
-          contentContainer.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightBlock(block);
           });
         }
         
@@ -4775,19 +4955,100 @@ createApp({
       try {
         const rendered = marked.parse(content.value);
         setTimeout(() => {
-            // 代码高亮
-            document.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightBlock(block);
-            });
+          // 获取内容容器
+          const contentContainer = document.querySelector('.content');
+          if (!contentContainer) return;
+
+          // 代码高亮和添加复制按钮
+          contentContainer.querySelectorAll('pre code').forEach((block) => {
+            // 检查是否已经添加了复制按钮
+            if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
+              // 创建包装容器
+              const wrapper = document.createElement('div');
+              wrapper.className = 'code-block-wrapper';
+              
+              // 获取 pre 标签
+              const pre = block.parentElement;
+              // 将 pre 标签包装在新容器中
+              pre.parentNode.insertBefore(wrapper, pre);
+              wrapper.appendChild(pre);
+              
+              // 创建复制按钮
+              const copyButton = document.createElement('button');
+              copyButton.className = 'code-copy-btn';
+              copyButton.textContent = '复制';
+              wrapper.appendChild(copyButton);
+              
+              // 添加复制功能
+              copyButton.addEventListener('click', async () => {
+                try {
+                  await navigator.clipboard.writeText(block.textContent);
+                  copyButton.textContent = '已复制!';
+                  copyButton.classList.add('copied');
+                  
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('copied');
+                  }, 2000);
+                } catch (err) {
+                  console.error('Failed to copy code:', err);
+                  copyButton.textContent = '复制失败';
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                  }, 2000);
+                }
+              });
+            }
+
+            // 应用代码高亮
+            hljs.highlightBlock(block);
+          });
+
+          // 检查是否为暗色主题
+          const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+          
+          if (isDarkTheme) {
+            contentContainer.style.background = 'var(--markdown-bg)';
+            contentContainer.style.color = 'var(--markdown-text)';
             
-            // 渲染数学公式
-            renderMathInElement(document.querySelector('.content'), {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ],
-                throwOnError: false
+            contentContainer.querySelectorAll('pre code').forEach((block) => {
+              const pre = block.parentElement;
+              if (pre) {
+                pre.style.background = 'var(--markdown-code-block-bg)';
+              }
+              block.style.color = 'var(--markdown-code-text)';
             });
+
+            contentContainer.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+              heading.style.color = 'var(--markdown-heading-text)';
+            });
+
+            contentContainer.querySelectorAll('a').forEach(link => {
+              link.style.color = 'var(--markdown-link)';
+            });
+
+            contentContainer.querySelectorAll('blockquote').forEach(quote => {
+              quote.style.background = 'var(--markdown-blockquote-bg)';
+              quote.style.color = 'var(--markdown-blockquote-text)';
+              quote.style.borderLeftColor = 'var(--markdown-blockquote-border)';
+            });
+
+            contentContainer.querySelectorAll('table').forEach(table => {
+              table.style.borderColor = 'var(--markdown-table-border)';
+              table.querySelectorAll('tr:nth-child(2n)').forEach(row => {
+                row.style.background = 'var(--markdown-table-alt-bg)';
+              });
+            });
+          }
+          
+          // 渲染数学公式
+          renderMathInElement(contentContainer, {
+            delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+          });
         }, 0);
         return rendered;
       } catch (err) {
@@ -4813,18 +5074,57 @@ createApp({
             // 仅在暗色主题下应用这些样式
             previewContainer.style.background = 'var(--markdown-bg)';
             previewContainer.style.color = 'var(--markdown-text)';
+          }
+
+          // 处理代码块
+          previewContainer.querySelectorAll('pre code').forEach((block) => {
+            // 检查是否已经添加了复制按钮
+            if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
+              const wrapper = document.createElement('div');
+              wrapper.className = 'code-block-wrapper';
+              
+              const pre = block.parentElement;
+              pre.parentNode.insertBefore(wrapper, pre);
+              wrapper.appendChild(pre);
+              
+              const copyButton = document.createElement('button');
+              copyButton.className = 'code-copy-btn';
+              copyButton.textContent = '复制';
+              wrapper.appendChild(copyButton);
+              
+              copyButton.addEventListener('click', async () => {
+                try {
+                  await navigator.clipboard.writeText(block.textContent);
+                  copyButton.textContent = '已复制!';
+                  copyButton.classList.add('copied');
+                  
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('copied');
+                  }, 2000);
+                } catch (err) {
+                  console.error('Failed to copy code:', err);
+                  copyButton.textContent = '复制失败';
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                  }, 2000);
+                }
+              });
+            }
+
+            // 应用代码高亮
+            hljs.highlightBlock(block);
             
-            // 代码高亮
-            previewContainer.querySelectorAll('pre code').forEach((block) => {
-              hljs.highlightBlock(block);
+            if (isDarkTheme) {
               const pre = block.parentElement;
               if (pre) {
                 pre.style.background = 'var(--markdown-code-block-bg)';
               }
               block.style.color = 'var(--markdown-code-text)';
-            });
+            }
+          });
 
-            // 应用其他暗色主题样式
+          if (isDarkTheme) {
             previewContainer.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
               heading.style.color = 'var(--markdown-heading-text)';
             });
@@ -4845,14 +5145,9 @@ createApp({
                 row.style.background = 'var(--markdown-table-alt-bg)';
               });
             });
-          } else {
-            // 在亮色主题下只应用基本的代码高亮
-            previewContainer.querySelectorAll('pre code').forEach((block) => {
-              hljs.highlightBlock(block);
-            });
           }
-          
-          // 渲染数学公式（这个功能在两种主题下都需要）
+
+          // 渲染数学公式
           renderMathInElement(previewContainer, {
             delimiters: [
               {left: "$$", right: "$$", display: true},
@@ -4895,6 +5190,7 @@ createApp({
     const currentTheme = ref(localStorage.getItem('theme') || 'light');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
+    // 设置主题的函数
     const setTheme = (theme) => {
       if (theme === 'auto') {
         document.documentElement.setAttribute('data-theme', 
@@ -4907,15 +5203,11 @@ createApp({
       currentTheme.value = theme;
     };
 
-    const toggleTheme = () => {
-      const themes = ['light', 'dark', 'auto'];
-      const currentIndex = themes.indexOf(currentTheme.value);
-      const nextTheme = themes[(currentIndex + 1) % themes.length];
-      setTheme(nextTheme);
-    };
-
+    // 在 onMounted 中初始化主题
     onMounted(() => {
-      setTheme(currentTheme.value);
+      setTheme(currentTheme.value); // 会使用 'light' 作为默认值
+      
+      // 监听系统主题变化
       prefersDark.addEventListener('change', (e) => {
         if (currentTheme.value === 'auto') {
           setTheme('auto');
@@ -4923,10 +5215,62 @@ createApp({
       });
     });
 
+    // 切换主题的函数
+    const toggleTheme = () => {
+      const themes = ['light', 'dark', 'auto'];
+      const currentIndex = themes.indexOf(currentTheme.value);
+      const nextTheme = themes[(currentIndex + 1) % themes.length];
+      setTheme(nextTheme);
+    };
+    
     // 在 shareAppScript 中添加 themeIcon 计算属性
     const themeIcon = computed(() => {
       if (currentTheme.value === 'auto') return '🌗';
       return currentTheme.value === 'dark' ? '🌙' : '☀️';
+    });
+
+    // 添加代码块复制功能 onMounted 
+    onMounted(() => {
+      // 添加代码块复制功能
+      setTimeout(() => {
+        const codeBlocks = document.querySelectorAll('pre code');
+        codeBlocks.forEach(codeBlock => {
+          // 创建包装容器
+          const wrapper = document.createElement('div');
+          wrapper.className = 'code-block-wrapper';
+          
+          // 获取代码块的父元素(pre标签)
+          const pre = codeBlock.parentElement;
+          pre.parentNode.insertBefore(wrapper, pre);
+          wrapper.appendChild(pre);
+          
+          // 创建复制按钮
+          const copyButton = document.createElement('button');
+          copyButton.className = 'code-copy-btn';
+          copyButton.textContent = '复制';
+          wrapper.appendChild(copyButton);
+          
+          // 添加点击事件
+          copyButton.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(codeBlock.textContent);
+              copyButton.textContent = '已复制!';
+              copyButton.classList.add('copied');
+              
+              setTimeout(() => {
+                copyButton.textContent = '复制';
+                copyButton.classList.remove('copied');
+              }, 2000);
+            } catch (err) {
+              console.error('Failed to copy code:', err);
+              copyButton.textContent = '复制失败';
+              setTimeout(() => {
+                copyButton.textContent = '复制';
+              }, 2000);
+            }
+          });
+        });
+      }, 100); // 给一个小延迟确保内容已渲染
     });
 
     return {
@@ -5431,20 +5775,22 @@ async function handleFile(request, env, ctx) {
         if (customId && !/^[a-zA-Z0-9-_]+$/.test(customId)) {
           return new Response(
             JSON.stringify({
-              files: [{
-                filename: files[0].name,
-                error: "自定义链接后缀只能包含字母、数字、横线和下划线",
-                status: "error"
-              }],
+              files: [
+                {
+                  filename: files[0].name,
+                  error: "自定义链接后缀只能包含字母、数字、横线和下划线",
+                  status: "error",
+                },
+              ],
               message: "自定义链接后缀格式不正确",
-              status: "error"
+              status: "error",
             }),
             {
               status: 400,
               headers: {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-              }
+                "Access-Control-Allow-Origin": "*",
+              },
             }
           );
         }
