@@ -597,7 +597,7 @@ body {
   margin: 0;
 }
 
-/* 管理面板控制��钮 */
+/* 管理面板控制按钮 */
 .admin-controls {
   display: flex;
   gap: 0.8rem;
@@ -1038,14 +1038,14 @@ body {
 .content ul {
   list-style: none;
   padding-left: 2em;
-  margin: 0.2em 0;  // 减小列表整体间距
+  margin: 1em 0;
 }
 
 .content ul li {
   position: relative;
-  margin: 0.1em 0;  // 进一步减小列表项间距
-  line-height: 1.5;  // 减小行高
+  margin: 0.5em 0;
   padding-left: 0.5em;
+  line-height: 1.6;
   display: flex; /* 使用 flex 布局 */
   flex-wrap: wrap; /* 允许内容换行 */
   align-items: baseline; /* 基线对齐 */
@@ -1054,9 +1054,8 @@ body {
 .content ul li::before {
   content: "•";
   position: absolute;
-  left: -1em;
-  color: #666;
-  line-height: inherit;
+  left: -1.5em;
+  color: var(--text-color);
 }
 
 /* 列表项内容样式 */
@@ -1134,21 +1133,21 @@ body {
 .content ul {
   list-style: none;
   padding-left: 2em;
-  margin: 0.2em 0;  // 减小列表整体间距
+  margin: 1em 0;
 }
 
 .content ul li {
   position: relative;
-  margin: 0.1em 0;  // 进一步减小列表项间距
-  line-height: 1.5;  // 减小行高
+  margin: 0.5em 0;
   padding-left: 0.5em;
+  line-height: 1.6;
 }
 
 .content ul li::before {
   content: "•";
   position: absolute;
-  left: -1em;
-  color: #666;
+  left: -1.5em;
+  color: var(--text-color);
 }
 
 /* 列表项内容样式 */
@@ -1233,9 +1232,9 @@ body {
 
 /* 引用块样式 */
 .content blockquote {
-  margin: 1.5em 0;
-  padding: 1em 1.5em;
-  color: #6a737d;
+  margin: 0;  /* 移除外边距 */
+  padding: 0.4em 1em;  /* 使用相等的上下内边距 */
+  color: var(--markdown-blockquote-text);
   border-left: 0.25em solid var(--markdown-blockquote-border);
   background: var(--markdown-blockquote-bg);
   border-radius: 0 4px 4px 0;
@@ -1243,6 +1242,23 @@ body {
 
 .content blockquote > :first-child { margin-top: 0; }
 .content blockquote > :last-child { margin-bottom: 0; }
+
+/* 引用块内的段落样式 */
+.content blockquote p {
+  margin: 0;  /* 移除段落边距 */
+  line-height: 1.6;
+}
+
+/* 列表项中的引用块特殊处理 */
+.content li > blockquote {
+  margin: 0.3em 0;  /* 在列表项中添加小的外边距 */
+  width: calc(100% - 1em);
+}
+
+/* 连续引用块的处理 */
+.content blockquote + blockquote {
+  margin-top: 0.2em;  /* 连续引用块之间的间距 */
+}
 
 /* 表格样式优化 */
 .content table {
@@ -2275,6 +2291,67 @@ body {
   line-height: 1.6;
   white-space: pre-wrap;       /* 保留换行符并自动换行 */
   max-width: 100%;            /*  限制最大宽度 */
+}
+
+/* 预览区域的引用块样式 */
+.preview blockquote {
+  margin: 0;  /* 移除外边距 */
+  padding: 0.4em 1em;  /* 使用相等的上下内边距 */
+  color: var(--markdown-blockquote-text);
+  border-left: 0.25em solid var(--markdown-blockquote-border);
+  background: var(--markdown-blockquote-bg);
+  border-radius: 0 4px 4px 0;
+}
+
+.preview blockquote p {
+  margin: 0;  /* 移除段落边距 */
+  line-height: 1.6;
+}
+
+/* 预览区域列表中的引用块 */
+.preview li > blockquote {
+  margin: 0.3em 0;  /* 在列表项中添加小的外边距 */
+  width: calc(100% - 1em);
+}
+
+/* 预览区域连续引用块 */
+.preview blockquote + blockquote {
+  margin-top: 0.2em;
+}
+
+/* 预览区域基础样式 */
+.preview {
+  flex: 1;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow-y: auto;
+  background: var(--markdown-preview-bg);
+  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* 确保预览区域的列表样式正确 */
+.preview ul {
+  list-style: none;
+  padding-left: 2em;
+  margin: 1em 0;
+}
+
+.preview ul li {
+  position: relative;
+  margin: 0.5em 0;
+  padding-left: 0.5em;
+  line-height: 1.6;
+}
+
+.preview ul li::before {
+  content: "•";
+  position: absolute;
+  left: -1.5em;
+  color: var(--text-color);
 }
 
 /* 添加文本输入框滚动条样式 */
@@ -6294,46 +6371,82 @@ async function cleanupExpiredContent(env) {
   try {
     const now = new Date();
     let cleanedCount = 0;
+    const errors = [];
 
-    // 清理过期的文本分享
-    const pasteList = await env.PASTE_STORE.list();
-    for (const key of pasteList.keys) {
-      try {
-        const paste = JSON.parse(await env.PASTE_STORE.get(key.name));
-        if (paste.expiresAt && new Date(paste.expiresAt) < now) {
-          // 添加判断是否有过期时间
-          await env.PASTE_STORE.delete(key.name);
-          cleanedCount++;
-          console.log("Deleted expired paste:", key.name);
+    // 并行处理文本和文件清理
+    const [pasteResults, fileResults] = await Promise.allSettled([
+      // 清理过期的文本分享
+      (async () => {
+        const pasteList = await env.PASTE_STORE.list();
+        let pasteCount = 0;
+        
+        for (const key of pasteList.keys) {
+          try {
+            if (key.name === 'last_cleanup') continue; // 跳过清理记录键
+            
+            const paste = JSON.parse(await env.PASTE_STORE.get(key.name));
+            
+            // 检查过期时间或访问次数限制
+            const isExpired = paste.expiresAt && new Date(paste.expiresAt) < now;
+            const isMaxViewsReached = paste.maxViews > 0 && paste.viewCount >= paste.maxViews;
+            
+            if (isExpired || isMaxViewsReached) {
+              await env.PASTE_STORE.delete(key.name);
+              pasteCount++;
+              console.log(`Deleted expired paste: ${key.name}`);
+            }
+          } catch (e) {
+            errors.push(`Error cleaning paste ${key.name}: ${e.message}`);
+          }
         }
-      } catch (e) {
-        console.error("Error cleaning paste:", key.name, e);
-      }
+        return pasteCount;
+      })(),
+
+      // 清理过期的文件
+      (async () => {
+        const fileList = await env.FILE_STORE.list();
+        let fileCount = 0;
+        
+        for (const object of fileList.objects || []) {
+          try {
+            const file = await env.FILE_STORE.get(object.key);
+            if (!file) continue;
+
+            const metadata = file.customMetadata;
+            if (!metadata) continue;
+
+            // 检查过期时间或下载次数限制
+            const isExpired = metadata.expiresAt && new Date(metadata.expiresAt) < now;
+            const isMaxViewsReached = parseInt(metadata.maxViews) > 0 && 
+                                    parseInt(metadata.viewCount) >= parseInt(metadata.maxViews);
+
+            if (isExpired || isMaxViewsReached) {
+              await env.FILE_STORE.delete(object.key);
+              fileCount++;
+              console.log(`Deleted expired file: ${object.key}`);
+            }
+          } catch (e) {
+            errors.push(`Error cleaning file ${object.key}: ${e.message}`);
+          }
+        }
+        return fileCount;
+      })()
+    ]);
+
+    // 计算总清理数量
+    const pasteCount = pasteResults.status === 'fulfilled' ? pasteResults.value : 0;
+    const fileCount = fileResults.status === 'fulfilled' ? fileResults.value : 0;
+    cleanedCount = pasteCount + fileCount;
+
+    // 记录错误
+    if (errors.length > 0) {
+      console.error('Cleanup errors:', errors);
     }
 
-    // 清理过期的文件
-    const fileList = await env.FILE_STORE.list();
-    for (const object of fileList.objects || []) {
-      try {
-        const file = await env.FILE_STORE.get(object.key);
-        if (!file) continue;
-
-        const metadata = file.customMetadata;
-        if (metadata && metadata.expiresAt && new Date(metadata.expiresAt) < now) {
-          // 添加判断是否有过期时间
-          await env.FILE_STORE.delete(object.key);
-          cleanedCount++;
-          console.log("Deleted expired file:", object.key);
-        }
-      } catch (e) {
-        console.error("Error cleaning file:", object.key, e);
-      }
-    }
-
-    console.log(`Cleanup completed: ${cleanedCount} items removed`);
+    console.log(`Cleanup completed: ${cleanedCount} items removed (${pasteCount} pastes, ${fileCount} files)`);
     return cleanedCount;
   } catch (e) {
-    console.error("Cleanup error:", e);
+    console.error('Cleanup error:', e);
     return 0;
   }
 }
@@ -6401,16 +6514,30 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // 获取当前时间
-    const now = new Date();
-    // 每小时检查一次过期内容（在整点时执行）
-    if (now.getMinutes() === 0) {
-      // 使用 waitUntil 确保清理操作在响应返回后继续执行
-      ctx.waitUntil(
-        cleanupExpiredContent(env).then((count) => {
-          console.log(`Cleaned up ${count} expired items at ${now.toISOString()}`);
-        })
-      );
+    // 修改清理逻辑，使其更可靠
+    try {
+      // 获取上次清理时间
+      const lastCleanup = await env.PASTE_STORE.get('last_cleanup');
+      const now = new Date();
+      
+      // 如果没有上次清理记录，或者距离上次清理已经过去了至少1小时
+      if (!lastCleanup || (now - new Date(lastCleanup)) >= 60 * 60 * 1000) {
+        // 使用 waitUntil 确保清理操作在响应返回后继续执行
+        ctx.waitUntil(
+          (async () => {
+            try {
+              const cleanedCount = await cleanupExpiredContent(env);
+              console.log(`Cleaned up ${cleanedCount} expired items at ${now.toISOString()}`);
+              // 更新最后清理时间
+              await env.PASTE_STORE.put('last_cleanup', now.toISOString());
+            } catch (error) {
+              console.error('Cleanup error:', error);
+            }
+          })()
+        );
+      }
+    } catch (error) {
+      console.error('Error checking cleanup status:', error);
     }
 
     // 处理管理员 API
