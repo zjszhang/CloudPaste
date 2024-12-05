@@ -339,8 +339,13 @@
 3. 监控错误日志
 4. 注意 Worker 使用配额
 5. 直链下载若要在服务器传输文件
-   - # 直接下载 curl -O https://your-domain/download/fileId
-   - # 带密码下载 curl -H "X-Password: your-password" -O https://your-domain/download/fileId
+   ```bash
+   # 直接下载
+   curl -O https://your-domain/download/fileId
+   
+   # 带密码下载
+   curl -H "X-Password: your-password" -O https://your-domain/download/fileId
+   ```
 
 ## 🛠️ 使用
 
