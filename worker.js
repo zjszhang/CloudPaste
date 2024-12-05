@@ -512,6 +512,7 @@ body {
   align-items: center;
 }
 
+/* 修改 qr-btn 样式，使其同时支持 button 和 a 标签 */
 .qr-btn {
   padding: 0.5rem;
   background: none;
@@ -519,16 +520,26 @@ body {
   cursor: pointer;
   color: var(--text-color);
   opacity: 0.7;
-  transition: opacity 0.2s;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .qr-btn:hover {
   opacity: 1;
+  transform: scale(1.1);
 }
 
 .qr-btn svg {
   width: 20px;
   height: 20px;
+}
+
+/* 确保链接形式的 qr-btn 继承颜色 */
+a.qr-btn {
+  color: inherit;
 }
 
 .qr-content #qr-container {
@@ -544,6 +555,31 @@ body {
   max-width: 100%;
   height: auto;
   display: block;
+}
+
+/* 添加直链按钮样式 */
+.direct-link-btn {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  margin-left: 0.5rem;
+}
+
+.direct-link-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  color: var(--primary-color);
+}
+
+.direct-link-btn svg {
+  width: 100%;
+  height: 100%;
 }
 
 /* 管理面板组件 */
@@ -700,11 +736,59 @@ body {
   border: 1px solid var(--border-color);
 }
 
+/* 修改标题样式 */
 .share-item .title {
-  font-weight: 600;
-  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  /* 添加这行，让内容两端对齐 */
   margin-bottom: 0.5rem;
-  padding-right: 2.5rem;  /* 避免与二维码重叠 */
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 统一图标按钮样式 */
+.icon-btn {
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  color: var(--primary-color);
+}
+
+.icon-btn svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整密码保护标签样式 */
+.badge {
+  font-size: 0.8em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--primary-color);
+  color: white;
 }
 
 .share-item .info {
@@ -751,6 +835,11 @@ body {
 .share-item .qr-btn svg {
   width: 18px;
   height: 18px;
+}
+
+/* 确保标题文字不会与图标重叠 */
+.share-item .title-text {
+  margin-right: 80px;  /* 为图标预留空间 */
 }
 
 /* 统计卡片 */
@@ -2784,6 +2873,11 @@ body {
     padding: 0.5rem;
   }
 }
+
+
+
+
+
 `;
 
 // Vue 应用代码
@@ -3621,6 +3715,7 @@ createApp({
                 files: successFiles.map(file => ({
                     url: window.location.origin + '/share/file/' + file.fileId,
                     filename: file.filename,
+                    directDownloadUrl: window.location.origin + '/download/' + file.fileId  // 直链
                 }))
             };
         }
@@ -3641,6 +3736,7 @@ createApp({
             files: successFiles.map(file => ({
                 url: window.location.origin + '/share/file/' + file.fileId,
                 filename: file.filename,
+                directDownloadUrl: window.location.origin + '/download/' + file.fileId  // 直链
             }))
         };
 
@@ -4478,6 +4574,17 @@ createApp({
             <a :href="file.url" target="_blank">{{ file.url }}</a>
             <div class="link-actions">
               <button class="btn" @click="copyUrl(file.url)">复制链接</button>
+              <!-- 修改直链按钮，点击复制直接下载链接 -->
+              <button 
+                class="qr-btn" 
+                @click="copyUrl(file.directDownloadUrl)" 
+                title="复制直接下载链接"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+              </button>
               <button class="qr-btn" @click="showQR(file.url)" title="显示二维码">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3z"/>
@@ -4620,17 +4727,33 @@ createApp({
         <!-- 分享列表 -->
         <div class="share-list">
           <div v-for="share in filteredShares" :key="share.id" class="share-item">
-            <!-- 二维码按钮移到这里 -->
-            <button class="qr-btn" @click="showQR(share.url)" title="显示二维码">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3z"/>
-                <path d="M15 15h2v2h-2zM19 15h2v2h-2zM15 19h2v2h-2zM19 19h2v2h-2z"/>
-              </svg>
-            </button>
-            
             <div class="title">
-              {{ share.type === 'paste' ? '文本分享' : '文件分享' }}
-              <span v-if="share.hasPassword" class="badge">密码保护</span>
+              <div class="title-left">
+                {{ share.type === 'paste' ? '文本分享' : '文件分享' }}
+                <span v-if="share.hasPassword" class="badge">密码保护</span>
+              </div>
+              <div class="title-icons">
+                <!-- 添加直链按钮 -->
+                <button 
+                  v-if="share.type === 'file'" 
+                  class="icon-btn" 
+                  @click="copyUrl(share.directDownloadUrl)" 
+                  title="复制直接下载链接"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                  </svg>
+                </button>
+                
+                <!-- 二维码按钮 -->
+                <button class="icon-btn" @click="showQR(share.url)" title="显示二维码">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3z"/>
+                    <path d="M15 15h2v2h-2zM19 15h2v2h-2zM15 19h2v2h-2zM19 19h2v2h-2z"/>
+                  </svg>
+                </button>
+              </div>
             </div>
             <div class="info">
               <div>ID: {{ share.id }}</div>
@@ -6050,6 +6173,8 @@ async function handleFile(request, env, ctx) {
               maxViews: metadata.maxViews, // 在返回结果中添加最大访问次数
               viewCount: 0,
               status: "success",
+              url: `${url.origin}/share/file/${id}`,
+              directDownloadUrl: `${url.origin}/download/${id}`, // 添加直接下载链接
             });
             hasSuccess = true;
           } catch (uploadError) {
@@ -6183,9 +6308,11 @@ async function handleFile(request, env, ctx) {
               size: metadata.size,
               uploadedAt: metadata.uploadedAt,
               expiresAt: metadata.expiresAt,
-              maxViews: parseInt(metadata.maxViews) || 0, // 添加这行
-              viewCount: parseInt(metadata.viewCount) || 0, // 添加这行
+              maxViews: parseInt(metadata.maxViews) || 0,
+              viewCount: parseInt(metadata.viewCount) || 0,
               status: "success",
+              url: `${url.origin}/share/file/${fileId}`,
+              directDownloadUrl: `${url.origin}/download/${fileId}`, // 添加直接下载链接
             }),
             {
               headers: {
@@ -6379,17 +6506,17 @@ async function cleanupExpiredContent(env) {
       (async () => {
         const pasteList = await env.PASTE_STORE.list();
         let pasteCount = 0;
-        
+
         for (const key of pasteList.keys) {
           try {
-            if (key.name === 'last_cleanup') continue; // 跳过清理记录键
-            
+            if (key.name === "last_cleanup") continue; // 跳过清理记录键
+
             const paste = JSON.parse(await env.PASTE_STORE.get(key.name));
-            
+
             // 检查过期时间或访问次数限制
             const isExpired = paste.expiresAt && new Date(paste.expiresAt) < now;
             const isMaxViewsReached = paste.maxViews > 0 && paste.viewCount >= paste.maxViews;
-            
+
             if (isExpired || isMaxViewsReached) {
               await env.PASTE_STORE.delete(key.name);
               pasteCount++;
@@ -6406,7 +6533,7 @@ async function cleanupExpiredContent(env) {
       (async () => {
         const fileList = await env.FILE_STORE.list();
         let fileCount = 0;
-        
+
         for (const object of fileList.objects || []) {
           try {
             const file = await env.FILE_STORE.get(object.key);
@@ -6417,8 +6544,7 @@ async function cleanupExpiredContent(env) {
 
             // 检查过期时间或下载次数限制
             const isExpired = metadata.expiresAt && new Date(metadata.expiresAt) < now;
-            const isMaxViewsReached = parseInt(metadata.maxViews) > 0 && 
-                                    parseInt(metadata.viewCount) >= parseInt(metadata.maxViews);
+            const isMaxViewsReached = parseInt(metadata.maxViews) > 0 && parseInt(metadata.viewCount) >= parseInt(metadata.maxViews);
 
             if (isExpired || isMaxViewsReached) {
               await env.FILE_STORE.delete(object.key);
@@ -6430,23 +6556,23 @@ async function cleanupExpiredContent(env) {
           }
         }
         return fileCount;
-      })()
+      })(),
     ]);
 
     // 计算总清理数量
-    const pasteCount = pasteResults.status === 'fulfilled' ? pasteResults.value : 0;
-    const fileCount = fileResults.status === 'fulfilled' ? fileResults.value : 0;
+    const pasteCount = pasteResults.status === "fulfilled" ? pasteResults.value : 0;
+    const fileCount = fileResults.status === "fulfilled" ? fileResults.value : 0;
     cleanedCount = pasteCount + fileCount;
 
     // 记录错误
     if (errors.length > 0) {
-      console.error('Cleanup errors:', errors);
+      console.error("Cleanup errors:", errors);
     }
 
     console.log(`Cleanup completed: ${cleanedCount} items removed (${pasteCount} pastes, ${fileCount} files)`);
     return cleanedCount;
   } catch (e) {
-    console.error('Cleanup error:', e);
+    console.error("Cleanup error:", e);
     return 0;
   }
 }
@@ -6517,11 +6643,11 @@ export default {
     // 修改清理逻辑，使其更可靠
     try {
       // 获取上次清理时间
-      const lastCleanup = await env.PASTE_STORE.get('last_cleanup');
+      const lastCleanup = await env.PASTE_STORE.get("last_cleanup");
       const now = new Date();
-      
+
       // 如果没有上次清理记录，或者距离上次清理已经过去了至少1小时
-      if (!lastCleanup || (now - new Date(lastCleanup)) >= 60 * 60 * 1000) {
+      if (!lastCleanup || now - new Date(lastCleanup) >= 60 * 60 * 1000) {
         // 使用 waitUntil 确保清理操作在响应返回后继续执行
         ctx.waitUntil(
           (async () => {
@@ -6529,15 +6655,15 @@ export default {
               const cleanedCount = await cleanupExpiredContent(env);
               console.log(`Cleaned up ${cleanedCount} expired items at ${now.toISOString()}`);
               // 更新最后清理时间
-              await env.PASTE_STORE.put('last_cleanup', now.toISOString());
+              await env.PASTE_STORE.put("last_cleanup", now.toISOString());
             } catch (error) {
-              console.error('Cleanup error:', error);
+              console.error("Cleanup error:", error);
             }
           })()
         );
       }
     } catch (error) {
-      console.error('Error checking cleanup status:', error);
+      console.error("Error checking cleanup status:", error);
     }
 
     // 处理管理员 API
@@ -6665,7 +6791,8 @@ export default {
                       expiresAt: metadata.expiresAt,
                       hasPassword: !!metadata.passwordHash,
                       url: `${url.origin}/share/file/${object.key}`,
-                      maxViews: parseInt(metadata.maxViews) || 0, // 确保转换为数字
+                      directDownloadUrl: `${url.origin}/download/${object.key}`, // 添加直接下载链接
+                      maxViews: parseInt(metadata.maxViews) || 0,
                       viewCount: parseInt(metadata.viewCount) || 0,
                     };
                   } catch (e) {
@@ -7067,6 +7194,16 @@ export default {
     if (url.pathname.match(/^\/file\/[a-zA-Z0-9]+$/)) {
       const id = url.pathname.split("/").pop();
       return Response.redirect(`${url.origin}/share/file/${id}`, 301);
+    }
+
+    // 添加直接下载路由
+    if (url.pathname.match(/^\/download\/[a-zA-Z0-9]+$/)) {
+      const id = url.pathname.split("/").pop();
+      const modifiedRequest = new Request(`${url.origin}/api/file/${id}?download=true`, {
+        method: "GET",
+        headers: request.headers,
+      });
+      return handleFile(modifiedRequest, env, ctx);
     }
 
     // 处理主页
