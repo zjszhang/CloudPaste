@@ -58,7 +58,7 @@
 - 支持取消上传
 - 文件类型图标显示
 - 支持自定义链接后缀（仅单文件上传时可用）
-- 支持二维码分享
+- 支持二维码分享和直链分享
 - 支持设置下载次数限制
 
 ### 👨‍💻 管理功能
@@ -281,6 +281,7 @@
    POST /api/file      # 上传文件
    GET  /api/file/:id  # 获取文件信息
    GET  /api/file/:id?download=true # 下载文件
+   GET /download/:id  # 直接下载文件
    ```
 
 3. 管理相关
@@ -337,6 +338,9 @@
    - 及时清理不需要的内容
 3. 监控错误日志
 4. 注意 Worker 使用配额
+5. 直链下载若要在服务器传输文件
+   - # 直接下载 curl -O https://your-domain/download/fileId
+   - # 带密码下载 curl -H "X-Password: your-password" -O https://your-domain/download/fileId
 
 ## 🛠️ 使用
 
