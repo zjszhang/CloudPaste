@@ -26,6 +26,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: |
+          wrangler telemetry disable
           # 检查 PASTE_STORE
           KV_NAMESPACE="PASTE_STORE"
           echo "Checking for KV namespace: $KV_NAMESPACE"
