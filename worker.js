@@ -5197,10 +5197,22 @@ createApp({
         const pathParts = window.location.pathname.split('/');
         const id = pathParts[pathParts.length - 1];
         
+        // 构建请求头
+        const headers = {};
+        
+        // 如果有密码，添加密码头
+        if (password.value) {
+          headers['X-Password'] = password.value;
+        }
+        
+        // 如果是管理员，添加认证头
+        const credentials = localStorage.getItem('adminCredentials');
+        if (credentials) {
+          headers['Authorization'] = 'Basic ' + credentials;
+        }
+        
         const response = await fetch('/api/file/' + id + '?download=true', {
-          headers: password.value ? {
-            'X-Password': password.value
-          } : {}
+          headers: headers
         });
 
         if (!response.ok) {
