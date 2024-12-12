@@ -1,6 +1,6 @@
 // 在文件开头添加常量声明
 const MAX_FILE_SIZE = 98 * 1024 * 1024; // 文件大小限制 (98MB)
-const MAX_TOTAL_STORAGE = 5 * 1024 * 1024 * 1024; // 总存储限制 (5GB)
+const MAX_TOTAL_STORAGE = 6 * 1024 * 1024 * 1024; // 总存储限制 (5GB)
 
 // 工具函数
 const utils = {
@@ -4994,6 +4994,8 @@ createApp({
     const isFileEditing = ref(false);
     const editFileExpiresIn = ref('1d');
     const editFileMaxViews = ref('0'); // 添加这行，初始化可下载次数
+    // 下载等待状态变量
+    const downloading = ref(false);
 
     // 添加检查管理员状态的方法
     const checkAdmin = () => {
@@ -5193,6 +5195,8 @@ createApp({
     // 添加下载文件的方法
     const downloadFile = async () => {
       try {
+        if (downloading.value) return; // 防止重复点击
+        downloading.value = true;
         error.value = null;
         const pathParts = window.location.pathname.split('/');
         const id = pathParts[pathParts.length - 1];
@@ -5231,6 +5235,8 @@ createApp({
         document.body.removeChild(a);
       } catch (err) {
         error.value = err.message;
+      } finally {
+        downloading.value = false;
       }
     };
 
@@ -5794,6 +5800,7 @@ createApp({
       startFileEdit,
       saveFileEdit,
       cancelFileEdit,
+      downloading, // 下载等待状态
     };
   }
 }).mount('#app');
@@ -5898,7 +5905,12 @@ const shareHtml = `<!DOCTYPE html>
                 
                 <!-- 按钮容器 -->
                 <div class="button-group" style="display: flex; gap: 1rem; margin-top: 1rem;">
-                  <button class="btn" @click="downloadFile">下载文件</button>
+                  <button class="btn" 
+                          @click="downloadFile" 
+                          :disabled="downloading">
+                    <span v-if="downloading" class="loading-spinner"></span>
+                    {{ downloading ? '准备下载中...' : '下载文件' }}
+                  </button>
                   <button v-if="isAdmin && !isFileEditing" 
                           class="btn" 
                           @click="startFileEdit">
@@ -6045,6 +6057,57 @@ const shareHtml = `<!DOCTYPE html>
         </div>
       </div>
     </div>
+    <style>
+      /* 添加加载动画样式 */
+      .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* 优化按钮禁用状态样式 */
+      .btn:disabled {
+        opacity: 0.8;
+        cursor: not-allowed;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn:disabled::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          45deg,
+          rgba(255,255,255,0.1) 25%,
+          transparent 25%,
+          transparent 50%,
+          rgba(255,255,255,0.1) 50%,
+          rgba(255,255,255,0.1) 75%,
+          transparent 75%
+        );
+        background-size: 20px 20px;
+        animation: loading-stripes 1s linear infinite;
+      }
+
+      @keyframes loading-stripes {
+        0% { background-position: 0 0; }
+        100% { background-position: 20px 0; }
+      }
+    </style>
     <script>${shareAppScript}</script>
 </body>
 </html>`;
@@ -6745,6 +6808,7 @@ async function handleFile(request, env, ctx) {
             contentDisposition = `attachment; filename*=UTF-8''${encodedFilename}`;
           }
 
+          // 创建 TransformStream 用于处理下载进度
           const progress = new TransformStream({
             start(controller) {
               this.loaded = 0;
