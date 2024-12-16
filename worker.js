@@ -3553,7 +3553,7 @@ createApp({
             expiresIn: expiresIn.value,
             isMarkdown: isMarkdown.value,
             customId: customId.value,
-            maxViews: parseInt(maxViews.value) || 0 
+            maxViews: maxViews.value ? parseInt(maxViews.value) : 0
           }),
         });
 
