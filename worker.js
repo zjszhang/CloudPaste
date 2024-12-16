@@ -1,6 +1,6 @@
 // 在文件开头添加常量声明
 const MAX_FILE_SIZE = 98 * 1024 * 1024; // 文件大小限制 (98MB)
-const MAX_TOTAL_STORAGE = 6 * 1024 * 1024 * 1024; // 总存储限制 (5GB)
+const MAX_TOTAL_STORAGE = 6 * 1024 * 1024 * 1024; // 总存储限制 (6GB)
 
 // 工具函数
 const utils = {
@@ -3381,7 +3381,7 @@ createApp({
       }
     };
 
-    // 退出登录
+    // 退出登录，待定
     const adminLogout = function() {
       isAdmin.value = false;
       shares.value = [];
@@ -3540,10 +3540,12 @@ createApp({
       }
       try {
         error.value = null;
+        const credentials = localStorage.getItem('adminCredentials'); 
         const response = await fetch('/api/paste', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + credentials  // 认证
           },
           body: JSON.stringify({
             content: content.value,
@@ -3551,7 +3553,7 @@ createApp({
             expiresIn: expiresIn.value,
             isMarkdown: isMarkdown.value,
             customId: customId.value,
-            maxViews: maxViews.value ? parseInt(maxViews.value) : 0 // 添加这行
+            maxViews: parseInt(maxViews.value) || 0 
           }),
         });
 
@@ -3578,11 +3580,7 @@ createApp({
       } catch (err) {
         error.value = err.message;
       }
-    };
-
-
-    
-
+    }
 
     // 上传文件
     const uploadFiles = async () => {
@@ -3727,6 +3725,13 @@ createApp({
           };
           xhr.onerror = () => reject(new Error('Network error'));
           xhr.open('POST', '/api/file');
+
+          // 添加认证头
+          const credentials = localStorage.getItem('adminCredentials');
+          if (credentials) {
+            xhr.setRequestHeader('Authorization', 'Basic ' + credentials);
+          }
+
           xhr.send(formData);
         });
 
@@ -6120,6 +6125,23 @@ async function handlePaste(request, env) {
 
   switch (request.method) {
     case "POST": {
+      // 添加管理员权限验证
+      if (!(await verifyAdmin(request, env))) {
+        return new Response(
+          JSON.stringify({
+            status: "error",
+            message: "未授权访问",
+          }),
+          {
+            status: 401,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
+        );
+      }
+
       const data = await request.json();
       const { content, password: inputPassword, expiresIn, isMarkdown = false, customId = "", maxViews = 0 } = data;
 
@@ -6373,6 +6395,23 @@ async function handleFile(request, env, ctx) {
   switch (request.method) {
     case "POST": {
       try {
+        // 添加管理员权限验证
+        if (!(await verifyAdmin(request, env))) {
+          return new Response(
+            JSON.stringify({
+              status: "error",
+              message: "未授权访问",
+            }),
+            {
+              status: 401,
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          );
+        }
+
         // 计算当前已使用的存储空间
         let currentStorage = 0;
         const fileList = await env.FILE_STORE.list();
