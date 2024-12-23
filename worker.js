@@ -2099,8 +2099,6 @@ a.qr-btn {
   100% { background-position: 20px 20px; }
 }
 
-
-
 /* 优化文件列表项动画 */
 .file-item {
   animation: file-item-in 0.3s ease-out;
@@ -2230,44 +2228,6 @@ a.qr-btn {
     rgba(255,255,255,0.1) 5px,
     rgba(255,255,255,0.1) 10px
   );
-}
-
-/* 文件预览样式 */
-.file-preview {
-  margin: 1rem 0;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-}
-
-.file-preview img {
-  max-width: 100%;
-  max-height: 200px;
-  object-fit: contain;
-  margin: 0 auto;
-  display: block;
-}
-
-.file-preview audio,
-.file-preview video {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  display: block;
-}
-
-/* 文件类型图标 */
-.file-type-icon {
-  width: 24px;
-  height: 24px;
-  margin-right: 0.5rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f1f2f6;
-  border-radius: 4px;
-  font-size: 14px;
 }
 
 /* 文件预览样式 */
@@ -2527,6 +2487,63 @@ a.qr-btn {
 
 .theme-toggle:hover {
   background: var(--hover-bg);
+}
+
+/* 控制按钮区域样式 */
+.content-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.content-controls .left-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.export-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* 统一的select样式 */
+.export-group select,
+.export-controls select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0.5rem 1.5rem 0.5rem 0.5rem;
+  min-width: 120px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.762L10.825 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.export-group select:hover,
+.export-controls select:hover {
+  border-color: var(--primary-color);
+}
+
+.export-group select:focus,
+.export-controls select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+[data-theme="dark"] .export-controls select,
+[data-theme="dark"] .export-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaa' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.762L10.825 4z'/%3E%3C/svg%3E");
 }
 
 /* 确保基础容器在所有尺寸下都能正常工作 */
@@ -3145,9 +3162,6 @@ createApp({
         }
     });
 
-
-
-
     // 确认删除
     const confirmDelete = (share) => {
         deleteTarget.value = share;
@@ -3424,9 +3438,6 @@ createApp({
       return date.toLocaleString();
     };
 
-
-
-
     // 添加 isExpired 函数
     const isExpired = (expiryTime) => {
       return new Date() > new Date(expiryTime);
@@ -3622,7 +3633,7 @@ createApp({
           try {
             // 先检查文本分享
             const pasteResponse = await fetch('/api/paste/' + customId.value);
-            // 修改这里：同时处理 200 和 401 状态码
+            // 同时处理 200 和 401 状态码
             if (pasteResponse.ok || pasteResponse.status === 401) {
               error.value = '该链接后缀已被用于文本分享，请更换一个';
               isUploading.value = false;
@@ -3633,7 +3644,7 @@ createApp({
             
             // 再检查文件分享
             const fileResponse = await fetch('/api/file/' + customId.value);
-            // 修改这里：同时处理 200 和 401 状态码
+            // 同时处理 200 和 401 状态码
             if (fileResponse.ok || fileResponse.status === 401) {
               error.value = '该链接后缀已被用于文件分享，请更换一个';
               isUploading.value = false;
@@ -4033,30 +4044,6 @@ createApp({
     // 在 Vue 应用的 setup() 函数中添加状态
     const maxViews = ref(''); // 添加可打开次数的状态
 
-    // 在 shareAppScript 中的 setup() 函数里添加复制功能
-    const copyContent = async () => {
-      try {
-        await navigator.clipboard.writeText(content.value);
-        
-        // 创建提示元素
-        const toast = document.createElement('div');
-        toast.className = 'copy-toast';
-        toast.textContent = '内容已复制到剪贴板';
-        document.body.appendChild(toast);
-        
-        // 显示提示
-        setTimeout(() => toast.classList.add('show'), 10);
-        
-        // 2秒后隐藏并移除提示
-        setTimeout(() => {
-          toast.classList.remove('show');
-          setTimeout(() => document.body.removeChild(toast), 300);
-        }, 2000);
-      } catch (err) {
-        error.value = '复制失败，请手动复制';
-      }
-    };
-
     // 在 appScript 的 setup 函数中添加，默认主题为light
     const currentTheme = ref(localStorage.getItem('theme') || 'light'); 
 
@@ -4075,94 +4062,115 @@ createApp({
       }
       localStorage.setItem('theme', theme);
       currentTheme.value = theme;
-
-      // 主题切换后重新处理代码块
-      setTimeout(() => {
-        // 处理主内容区域的代码块
+      
+      // 主题切换后重新处理内容
+      nextTick(() => {
         const contentContainer = document.querySelector('.content');
-        if (contentContainer) {
-          contentContainer.querySelectorAll('pre code').forEach((block) => {
-            // 检查是否已经添加了复制按钮
-            if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
-              const wrapper = document.createElement('div');
-              wrapper.className = 'code-block-wrapper';
-              
-              const pre = block.parentElement;
-              pre.parentNode.insertBefore(wrapper, pre);
-              wrapper.appendChild(pre);
-              
-              const copyButton = document.createElement('button');
-              copyButton.className = 'code-copy-btn';
-              copyButton.textContent = '复制';
-              wrapper.appendChild(copyButton);
-              
-              copyButton.addEventListener('click', async () => {
-                try {
-                  await navigator.clipboard.writeText(block.textContent);
-                  copyButton.textContent = '已复制!';
-                  copyButton.classList.add('copied');
-                  
-                  setTimeout(() => {
-                    copyButton.textContent = '复制';
-                    copyButton.classList.remove('copied');
-                  }, 2000);
-                } catch (err) {
-                  console.error('Failed to copy code:', err);
-                  copyButton.textContent = '复制失败';
-                  setTimeout(() => {
-                    copyButton.textContent = '复制';
-                  }, 2000);
-                }
-              });
-            }
-
-            // 应用代码高亮
-            hljs.highlightBlock(block);
-          });
-        }
-
-        // 处理预览区域的代码块
         const previewContainer = document.querySelector('.preview');
+        
+        // 处理主内容区域
+        if (contentContainer) {
+          applyThemeStyles(contentContainer);
+        }
+        
+        // 处理预览区域
         if (previewContainer) {
-          previewContainer.querySelectorAll('pre code').forEach((block) => {
-            if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
-              const wrapper = document.createElement('div');
-              wrapper.className = 'code-block-wrapper';
-              
-              const pre = block.parentElement;
-              pre.parentNode.insertBefore(wrapper, pre);
-              wrapper.appendChild(pre);
-              
-              const copyButton = document.createElement('button');
-              copyButton.className = 'code-copy-btn';
-              copyButton.textContent = '复制';
-              wrapper.appendChild(copyButton);
-              
-              copyButton.addEventListener('click', async () => {
-                try {
-                  await navigator.clipboard.writeText(block.textContent);
-                  copyButton.textContent = '已复制!';
-                  copyButton.classList.add('copied');
-                  
-                  setTimeout(() => {
-                    copyButton.textContent = '复制';
-                    copyButton.classList.remove('copied');
-                  }, 2000);
-                } catch (err) {
-                  console.error('Failed to copy code:', err);
-                  copyButton.textContent = '复制失败';
-                  setTimeout(() => {
-                    copyButton.textContent = '复制';
-                  }, 2000);
-                }
-              });
-            }
+          applyThemeStyles(previewContainer);
+        }
+      });
+    };
 
-            // 应用代码高亮
-            hljs.highlightBlock(block);
+    // 添加应用主题样式的函数
+    const applyThemeStyles = (container) => {
+      const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+      
+      // 处理代码块
+      container.querySelectorAll('pre code').forEach((block) => {
+        // 检查是否已经添加了复制按钮
+        if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'code-block-wrapper';
+          
+          const pre = block.parentElement;
+          pre.parentNode.insertBefore(wrapper, pre);
+          wrapper.appendChild(pre);
+          
+          const copyButton = document.createElement('button');
+          copyButton.className = 'code-copy-btn';
+          copyButton.textContent = '复制';
+          wrapper.appendChild(copyButton);
+          
+          copyButton.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(block.textContent);
+              copyButton.textContent = '已复制!';
+              copyButton.classList.add('copied');
+              
+              setTimeout(() => {
+                copyButton.textContent = '复制';
+                copyButton.classList.remove('copied');
+              }, 2000);
+            } catch (err) {
+              console.error('Failed to copy code:', err);
+              copyButton.textContent = '复制失败';
+              setTimeout(() => {
+                copyButton.textContent = '复制';
+              }, 2000);
+            }
           });
         }
-      }, 0);
+
+        // 应用代码高亮
+        hljs.highlightBlock(block);
+        
+        // 应用主题相关样式
+        if (isDarkTheme) {
+          const pre = block.parentElement;
+          if (pre) {
+            pre.style.background = 'var(--markdown-code-block-bg)';
+          }
+          block.style.color = 'var(--markdown-code-text)';
+        }
+      });
+
+      if (isDarkTheme) {
+        container.style.background = 'var(--markdown-bg)';
+        container.style.color = 'var(--markdown-text)';
+
+        // 处理标题
+        container.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+          heading.style.color = 'var(--markdown-heading-text)';
+        });
+
+        // 处理链接
+        container.querySelectorAll('a').forEach(link => {
+          link.style.color = 'var(--markdown-link)';
+        });
+
+        // 处理引用块
+        container.querySelectorAll('blockquote').forEach(quote => {
+          quote.style.background = 'var(--markdown-blockquote-bg)';
+          quote.style.color = 'var(--markdown-blockquote-text)';
+          quote.style.borderLeftColor = 'var(--markdown-blockquote-border)';
+        });
+
+        // 处理表格
+        container.querySelectorAll('table').forEach(table => {
+          table.style.borderColor = 'var(--markdown-table-border)';
+          table.querySelectorAll('tr:nth-child(2n)').forEach(row => {
+            row.style.background = 'var(--markdown-table-alt-bg)';
+          });
+        });
+      }
+
+      // 渲染数学公式
+      renderMathInElement(container, {
+        delimiters: [
+          {left: "$$", right: "$$", display: true},
+          {left: "$", right: "$", display: false}
+        ],
+        throwOnError: false
+      });
     };
 
     // 在 onMounted 中初始化主题
@@ -4369,6 +4377,129 @@ createApp({
       isFileEditing.value = false;
     };
 
+    // 添加主题变化的监听
+    watch(currentTheme, (newTheme) => {
+      setTheme(newTheme);
+    });
+
+    const renderedContent = computed(() => {
+      if (!content.value) return '';
+      if (!isMarkdown.value) return content.value;
+      try {
+        const rendered = marked.parse(content.value);
+        nextTick(() => {
+          const contentContainer = document.querySelector('.content');
+          if (contentContainer) {
+            applyThemeStyles(contentContainer);
+          }
+        });
+        return rendered;
+      } catch (err) {
+        return '渲染出错: ' + err.message;
+      }
+    });
+
+    const editPreview = computed(() => {
+      if (!editContent.value) return '';
+      if (!editMarkdown.value) return editContent.value;
+      
+      try {
+        const rendered = marked.parse(editContent.value);
+        nextTick(() => {
+          const previewContainer = document.querySelector('.preview');
+          if (!previewContainer) return;
+
+          // 处理代码块
+          previewContainer.querySelectorAll('pre code').forEach((block) => {
+            // 检查是否已经添加了复制按钮
+            if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
+              // 创建包装容器
+              const wrapper = document.createElement('div');
+              wrapper.className = 'code-block-wrapper';
+              
+              // 获取 pre 标签
+              const pre = block.parentElement;
+              pre.parentNode.insertBefore(wrapper, pre);
+              wrapper.appendChild(pre);
+              
+              // 创建复制按钮
+              const copyButton = document.createElement('button');
+              copyButton.className = 'code-copy-btn';
+              copyButton.textContent = '复制';
+              wrapper.appendChild(copyButton);
+              
+              // 添加复制功能
+              copyButton.addEventListener('click', async () => {
+                try {
+                  await navigator.clipboard.writeText(block.textContent);
+                  copyButton.textContent = '已复制!';
+                  copyButton.classList.add('copied');
+                  
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('copied');
+                  }, 2000);
+                } catch (err) {
+                  console.error('Failed to copy code:', err);
+                  copyButton.textContent = '复制失败';
+                  setTimeout(() => {
+                    copyButton.textContent = '复制';
+                  }, 2000);
+                }
+              });
+            }
+
+            // 应用代码高亮
+            hljs.highlightBlock(block);
+          });
+
+          // 检查是否为暗色主题
+          const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+          
+          if (isDarkTheme) {
+            // 应用暗色主题样式
+            previewContainer.style.background = 'var(--markdown-bg)';
+            previewContainer.style.color = 'var(--markdown-text)';
+            
+            previewContainer.querySelectorAll('pre code').forEach((block) => {
+              hljs.highlightBlock(block);
+              const pre = block.parentElement;
+              if (pre) {
+                pre.style.background = 'var(--markdown-code-block-bg)';
+              }
+              block.style.color = 'var(--markdown-code-text)';
+            });
+
+            previewContainer.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+              heading.style.color = 'var(--markdown-heading-text)';
+            });
+
+            previewContainer.querySelectorAll('a').forEach(link => {
+              link.style.color = 'var(--markdown-link)';
+            });
+
+            previewContainer.querySelectorAll('blockquote').forEach(quote => {
+              quote.style.background = 'var(--markdown-blockquote-bg)';
+              quote.style.color = 'var(--markdown-blockquote-text)';
+              quote.style.borderLeftColor = 'var(--markdown-blockquote-border)';
+            });
+          }
+          
+          // 渲染数学公式
+          renderMathInElement(previewContainer, {
+            delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+          });
+        });
+        return rendered;
+      } catch (err) {
+        return '渲染出错: ' + err.message;
+      }
+    });
+
     return {
       activeTab,
       content,
@@ -4441,7 +4572,6 @@ createApp({
       cancelUpload,
       uploadXHR,
       maxViews,
-      copyContent, // 添加这行
       currentTheme,
       prefersDark,
       setTheme,
@@ -4460,6 +4590,8 @@ createApp({
       startFileEdit,
       saveFileEdit,
       cancelFileEdit,
+      renderedContent,
+      editPreview,
     };
   },
 
@@ -4766,7 +4898,7 @@ createApp({
             >
             <button 
               class="password-toggle" 
-              @click="showPassword = !showPassword"
+              @click="showPassword = !showPassword" 
               type="button"
             >
               {{ showPassword ? '👁️' : '👁️‍🗨️' }}
@@ -4971,7 +5103,69 @@ createApp({
 
 // 分享页面的 Vue 应用代码
 const shareAppScript = `
-const { createApp, ref, computed, onMounted } = Vue;
+const { createApp, ref, computed, onMounted, nextTick, watch } = Vue;  // 添加 watch
+
+// 添加 applyThemeStyles 函数定义
+const applyThemeStyles = (container) => {
+  // 检查是否为暗色主题
+  const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+  
+  if (isDarkTheme) {
+    // 在暗色主题下应用样式
+    container.style.background = 'var(--markdown-bg)';
+    container.style.color = 'var(--markdown-text)';
+    
+    // 代码高亮
+    container.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightBlock(block);
+      const pre = block.parentElement;
+      if (pre) {
+        pre.style.background = 'var(--markdown-code-block-bg)';
+      }
+      block.style.color = 'var(--markdown-code-text)';
+    });
+
+    // 应用其他暗色主题样式
+    container.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+      heading.style.color = 'var(--markdown-heading-text)';
+    });
+
+    container.querySelectorAll('a').forEach(link => {
+      link.style.color = 'var(--markdown-link)';
+    });
+
+    container.querySelectorAll('blockquote').forEach(quote => {
+      quote.style.background = 'var(--markdown-blockquote-bg)';
+      quote.style.color = 'var(--markdown-blockquote-text)';
+      quote.style.borderLeftColor = 'var(--markdown-blockquote-border)';
+    });
+
+    container.querySelectorAll('table').forEach(table => {
+      table.style.borderColor = 'var(--markdown-table-border)';
+      table.querySelectorAll('tr:nth-child(2n)').forEach(row => {
+        row.style.background = 'var(--markdown-table-alt-bg)';
+      });
+    });
+  } else {
+    // 在亮色主题下应用样式
+    container.style.background = 'var(--markdown-bg)';
+    container.style.color = 'var(--markdown-text)';
+    
+    // 代码高亮
+    container.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightBlock(block);
+    });
+  }
+
+  // 重新渲染数学公式
+  renderMathInElement(container, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false}
+    ],
+    throwOnError: false
+  });
+};
 
 createApp({
   setup() {
@@ -5195,6 +5389,47 @@ createApp({
     onMounted(() => {
       checkAdmin();
       fetchContent();
+      
+      // 添加代码块复制功能
+      setTimeout(() => {
+        const codeBlocks = document.querySelectorAll('pre code');
+        codeBlocks.forEach(codeBlock => {
+          // 创建包装容器
+          const wrapper = document.createElement('div');
+          wrapper.className = 'code-block-wrapper';
+          
+          // 获取代码块的父元素(pre标签)
+          const pre = codeBlock.parentElement;
+          pre.parentNode.insertBefore(wrapper, pre);
+          wrapper.appendChild(pre);
+          
+          // 创建复制按钮
+          const copyButton = document.createElement('button');
+          copyButton.className = 'code-copy-btn';
+          copyButton.textContent = '复制';
+          wrapper.appendChild(copyButton);
+          
+          // 添加点击事件
+          copyButton.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(codeBlock.textContent);
+              copyButton.textContent = '已复制!';
+              copyButton.classList.add('copied');
+              
+              setTimeout(() => {
+                copyButton.textContent = '复制';
+                copyButton.classList.remove('copied');
+              }, 2000);
+            } catch (err) {
+              console.error('Failed to copy code:', err);
+              copyButton.textContent = '复制失败';
+              setTimeout(() => {
+                copyButton.textContent = '复制';
+              }, 2000);
+            }
+          });
+        });
+      }, 100); // 给一个小延迟确保内容已渲染
     });
 
     // 添加下载文件的方法
@@ -5369,13 +5604,77 @@ createApp({
       if (!isMarkdown.value) return content.value;
       try {
         const rendered = marked.parse(content.value);
-        setTimeout(() => {
-          // 获取内容容器
+        nextTick(() => {
           const contentContainer = document.querySelector('.content');
-          if (!contentContainer) return;
+          if (contentContainer) {
+            applyThemeStyles(contentContainer);
+            
+            // 在内容更新后重新初始化代码块
+            setTimeout(() => {
+              const codeBlocks = contentContainer.querySelectorAll('pre code');
+              codeBlocks.forEach(codeBlock => {
+                // 检查是否已经添加了复制按钮
+                if (!codeBlock.parentElement.parentElement.classList.contains('code-block-wrapper')) {
+                  // 创建包装容器
+                  const wrapper = document.createElement('div');
+                  wrapper.className = 'code-block-wrapper';
+                  
+                  // 获取代码块的父元素(pre标签)
+                  const pre = codeBlock.parentElement;
+                  pre.parentNode.insertBefore(wrapper, pre);
+                  wrapper.appendChild(pre);
+                  
+                  // 创建复制按钮
+                  const copyButton = document.createElement('button');
+                  copyButton.className = 'code-copy-btn';
+                  copyButton.textContent = '复制';
+                  wrapper.appendChild(copyButton);
+                  
+                  // 添加点击事件
+                  copyButton.addEventListener('click', async () => {
+                    try {
+                      await navigator.clipboard.writeText(codeBlock.textContent);
+                      copyButton.textContent = '已复制!';
+                      copyButton.classList.add('copied');
+                      
+                      setTimeout(() => {
+                        copyButton.textContent = '复制';
+                        copyButton.classList.remove('copied');
+                      }, 2000);
+                    } catch (err) {
+                      console.error('Failed to copy code:', err);
+                      copyButton.textContent = '复制失败';
+                      setTimeout(() => {
+                        copyButton.textContent = '复制';
+                      }, 2000);
+                    }
+                  });
+                }
+              });
+            }, 100);
+          }
+        });
+        return rendered;
+      } catch (err) {
+        return '渲染出错: ' + err.message;
+      }
+    });
 
-          // 代码高亮和添加复制按钮
-          contentContainer.querySelectorAll('pre code').forEach((block) => {
+    // 添加编辑预览计算属性
+    const editPreview = computed(() => {
+      if (!editContent.value) return '';
+      if (!editMarkdown.value) return editContent.value;
+      
+      try {
+        const rendered = marked.parse(editContent.value);
+        nextTick(() => {
+          const previewContainer = document.querySelector('.preview');
+          if (!previewContainer) return;
+
+          // 先应用主题样式
+          applyThemeStyles(previewContainer);
+          // 处理代码块
+          previewContainer.querySelectorAll('pre code').forEach((block) => {
             // 检查是否已经添加了复制按钮
             if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
               // 创建包装容器
@@ -5384,7 +5683,6 @@ createApp({
               
               // 获取 pre 标签
               const pre = block.parentElement;
-              // 将 pre 标签包装在新容器中
               pre.parentNode.insertBefore(wrapper, pre);
               wrapper.appendChild(pre);
               
@@ -5423,123 +5721,19 @@ createApp({
           const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
           
           if (isDarkTheme) {
-            contentContainer.style.background = 'var(--markdown-bg)';
-            contentContainer.style.color = 'var(--markdown-text)';
-            
-            contentContainer.querySelectorAll('pre code').forEach((block) => {
-              const pre = block.parentElement;
-              if (pre) {
-                pre.style.background = 'var(--markdown-code-block-bg)';
-              }
-              block.style.color = 'var(--markdown-code-text)';
-            });
-
-            contentContainer.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
-              heading.style.color = 'var(--markdown-heading-text)';
-            });
-
-            contentContainer.querySelectorAll('a').forEach(link => {
-              link.style.color = 'var(--markdown-link)';
-            });
-
-            contentContainer.querySelectorAll('blockquote').forEach(quote => {
-              quote.style.background = 'var(--markdown-blockquote-bg)';
-              quote.style.color = 'var(--markdown-blockquote-text)';
-              quote.style.borderLeftColor = 'var(--markdown-blockquote-border)';
-            });
-
-            contentContainer.querySelectorAll('table').forEach(table => {
-              table.style.borderColor = 'var(--markdown-table-border)';
-              table.querySelectorAll('tr:nth-child(2n)').forEach(row => {
-                row.style.background = 'var(--markdown-table-alt-bg)';
-              });
-            });
-          }
-          
-          // 渲染数学公式
-          renderMathInElement(contentContainer, {
-            delimiters: [
-              {left: "$$", right: "$$", display: true},
-              {left: "$", right: "$", display: false}
-            ],
-            throwOnError: false
-          });
-        }, 0);
-        return rendered;
-      } catch (err) {
-        return '渲染出错: ' + err.message;
-      }
-    });
-
-    // 添加编辑预览计算属性
-    const editPreview = computed(() => {
-      if (!editContent.value) return '';
-      if (!editMarkdown.value) return editContent.value;
-      
-      try {
-        const rendered = marked.parse(editContent.value);
-        setTimeout(() => {
-          const previewContainer = document.querySelector('.preview');
-          if (!previewContainer) return;
-
-          // 检查是否为暗色主题
-          const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
-          
-          if (isDarkTheme) {
-            // 仅在暗色主题下应用这些样式
+            // 应用暗色主题样式
             previewContainer.style.background = 'var(--markdown-bg)';
             previewContainer.style.color = 'var(--markdown-text)';
-          }
-
-          // 处理代码块
-          previewContainer.querySelectorAll('pre code').forEach((block) => {
-            // 检查是否已经添加了复制按钮
-            if (!block.parentElement.parentElement.classList.contains('code-block-wrapper')) {
-              const wrapper = document.createElement('div');
-              wrapper.className = 'code-block-wrapper';
-              
-              const pre = block.parentElement;
-              pre.parentNode.insertBefore(wrapper, pre);
-              wrapper.appendChild(pre);
-              
-              const copyButton = document.createElement('button');
-              copyButton.className = 'code-copy-btn';
-              copyButton.textContent = '复制';
-              wrapper.appendChild(copyButton);
-              
-              copyButton.addEventListener('click', async () => {
-                try {
-                  await navigator.clipboard.writeText(block.textContent);
-                  copyButton.textContent = '已复制!';
-                  copyButton.classList.add('copied');
-                  
-                  setTimeout(() => {
-                    copyButton.textContent = '复制';
-                    copyButton.classList.remove('copied');
-                  }, 2000);
-                } catch (err) {
-                  console.error('Failed to copy code:', err);
-                  copyButton.textContent = '复制失败';
-                  setTimeout(() => {
-                    copyButton.textContent = '复制';
-                  }, 2000);
-                }
-              });
-            }
-
-            // 应用代码高亮
-            hljs.highlightBlock(block);
             
-            if (isDarkTheme) {
+            previewContainer.querySelectorAll('pre code').forEach((block) => {
+              hljs.highlightBlock(block);
               const pre = block.parentElement;
               if (pre) {
                 pre.style.background = 'var(--markdown-code-block-bg)';
               }
               block.style.color = 'var(--markdown-code-text)';
-            }
-          });
+            });
 
-          if (isDarkTheme) {
             previewContainer.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
               heading.style.color = 'var(--markdown-heading-text)';
             });
@@ -5553,15 +5747,8 @@ createApp({
               quote.style.color = 'var(--markdown-blockquote-text)';
               quote.style.borderLeftColor = 'var(--markdown-blockquote-border)';
             });
-
-            previewContainer.querySelectorAll('table').forEach(table => {
-              table.style.borderColor = 'var(--markdown-table-border)';
-              table.querySelectorAll('tr:nth-child(2n)').forEach(row => {
-                row.style.background = 'var(--markdown-table-alt-bg)';
-              });
-            });
           }
-
+          
           // 渲染数学公式
           renderMathInElement(previewContainer, {
             delimiters: [
@@ -5570,36 +5757,12 @@ createApp({
             ],
             throwOnError: false
           });
-        }, 0);
+        });
         return rendered;
       } catch (err) {
         return '渲染出错: ' + err.message;
       }
     });
-
-    // 在 shareAppScript 中的 setup() 函数里添加复制功能
-    const copyContent = async () => {
-      try {
-        await navigator.clipboard.writeText(content.value);
-        
-        // 创建提示元素
-        const toast = document.createElement('div');
-        toast.className = 'copy-toast';
-        toast.textContent = '内容已复制到剪贴板';
-        document.body.appendChild(toast);
-        
-        // 显示提示
-        setTimeout(() => toast.classList.add('show'), 10);
-        
-        // 2秒后隐藏并移除提示
-        setTimeout(() => {
-          toast.classList.remove('show');
-          setTimeout(() => document.body.removeChild(toast), 300);
-        }, 2000);
-      } catch (err) {
-        error.value = '复制失败，请手动复制';
-      }
-    };
 
     // 在 shareAppScript 中也添加相同的主题切换逻辑，默认为light
     const currentTheme = ref(localStorage.getItem('theme') || 'light');
@@ -5770,6 +5933,185 @@ createApp({
       isFileEditing.value = false;
     };
 
+    // 添加导出相关的状态
+    const isExporting = ref(false);
+    const exportFormat = ref('pdf');
+    const exportFormats = [
+      { value: 'pdf', label: 'PDF文档' },
+      { value: 'image', label: '图片(PNG)' }
+    ];
+
+    // 添加导出方法
+    const exportContent = async () => {
+      try {
+        isExporting.value = true;
+        error.value = null;
+        
+        // 直接获取已渲染的内容区域
+        const contentDiv = document.querySelector('.content');
+        if (!contentDiv) {
+          throw new Error('找不到内容区域');
+        }
+        
+        // 获取分享ID作为文件名
+        const pathParts = window.location.pathname.split('/');
+        const shareId = pathParts[pathParts.length - 1] || 'content'; // 添加默认值
+
+        if (exportFormat.value === 'pdf') {
+          // 确保 html2pdf 已加载
+          if (typeof window.html2pdf === 'undefined') {
+            throw new Error('PDF导出工具未加载完成，请稍后重试');
+          }
+
+          const opt = {
+            margin: [10, 10, 10, 10],
+            filename: shareId + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+              scale: 2,
+              useCORS: true,
+              letterRendering: true,
+              backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg'),
+              logging: true,
+              
+            },
+            jsPDF: { 
+              unit: 'mm', 
+              format: 'a4', 
+              orientation: 'portrait',
+            }
+          };
+          // 保存原始样式
+          const originalStyles = {
+            border: contentDiv.style.border,
+            padding: contentDiv.style.padding,
+            margin: contentDiv.style.margin,
+            width: contentDiv.style.width,
+            boxSizing: contentDiv.style.boxSizing,
+          };
+
+          // 直接修改内容样式
+          contentDiv.style.border = '1px solid #ddd';
+          contentDiv.style.borderRadius = '4px';
+          contentDiv.style.padding = '20px';
+          contentDiv.style.margin = '20px auto';
+          contentDiv.style.width = 'calc(100% - 40px)';
+          contentDiv.style.boxSizing = 'border-box';
+
+          // 特别处理表格
+          const tables = contentDiv.querySelectorAll('table');
+          tables.forEach(table => {
+            // 创建表格包装器
+            const tableWrapper = document.createElement('div');
+            tableWrapper.style.pageBreakInside = 'avoid';
+            tableWrapper.style.breakInside = 'avoid';
+            tableWrapper.style.display = 'block';
+            tableWrapper.style.width = '100%';
+            
+            // 设置表格样式
+            table.style.pageBreakInside = 'avoid';
+            table.style.breakInside = 'avoid';
+            table.style.display = 'table';  // 确保表格显示正确
+            table.style.width = '100%';
+            
+            // 处理表格内的所有行
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+              row.style.pageBreakInside = 'avoid';
+              row.style.breakInside = 'avoid';
+            });
+            
+            // 包装表格
+            table.parentNode.insertBefore(tableWrapper, table);
+            tableWrapper.appendChild(table);
+          });
+
+          // 处理其他内容块（代码块、图表等）
+          const otherBlocks = contentDiv.querySelectorAll('pre, .mermaid, img');
+          otherBlocks.forEach(block => {
+            block.style.pageBreakInside = 'avoid';
+            block.style.breakInside = 'avoid';
+            block.style.display = 'block';
+          });
+          
+          // 使用 Promise 包装 html2pdf 调用
+          await new Promise((resolve, reject) => {
+            html2pdf()
+              .from(contentDiv)
+              .set(opt)
+              .save()            // 保存文件
+              .then(() => {
+                console.log('PDF generated successfully');
+                resolve();
+              })
+              .catch(err => {
+                console.error('PDF generation failed:', err);
+                reject(err);
+              });
+          });
+
+        } else if (exportFormat.value === 'image') {
+        const canvas = await window.html2canvas(contentDiv, {
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg')
+          });
+          
+          const link = document.createElement('a');
+          link.download = shareId + '.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        }
+
+        // 创建成功提示
+        const toast = document.createElement('div');
+        toast.className = 'copy-toast';
+        toast.textContent = '导出成功!';
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => document.body.removeChild(toast), 300);
+        }, 2000);
+
+      } catch (err) {
+        error.value = '导出失败: ' + err.message;
+        console.error('Export error:', err);
+      } finally {
+        isExporting.value = false;
+      }
+    };
+
+    // 在 shareAppScript 中找到 setup 函数,在 return 语句前添加:
+    const copyContent = async () => {
+      try {
+        if (!content.value) return;
+        
+        await navigator.clipboard.writeText(content.value);
+        
+        // 创建提示元素
+        const toast = document.createElement('div');
+        toast.className = 'copy-toast';
+        toast.textContent = '已复制到剪贴板!';
+        document.body.appendChild(toast);
+        
+        // 显示提示
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        // 移除提示
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => document.body.removeChild(toast), 300);
+        }, 2000);
+        
+      } catch (err) {
+        console.error('Copy failed:', err);
+        error.value = '复制失败: ' + err.message;
+      }
+    };
+
     return {
       content,
       isMarkdown,
@@ -5791,7 +6133,7 @@ createApp({
       cancelEdit,
       editMarkdown,
       editPreview,
-      copyContent, 
+      copyContent,  // 复制内容按钮
       currentTheme, // 添加暗色主题相关变量
       toggleTheme,
       themeIcon,  // 添加这行
@@ -5806,6 +6148,11 @@ createApp({
       saveFileEdit,
       cancelFileEdit,
       downloading, // 下载等待状态
+      // 添加导出相关的返回值
+      isExporting,
+      exportFormat,
+      exportFormats,
+      exportContent,
     };
   }
 }).mount('#app');
@@ -5828,6 +6175,8 @@ const html = `<!DOCTYPE html>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>${styles}</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 </head>
 <body>
     <div id="app">
@@ -5852,7 +6201,7 @@ const html = `<!DOCTYPE html>
 // 分享页面的 HTML 模板
 const shareHtml = `<!DOCTYPE html>
 <html lang="zh">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CloudPaste - 分享内容</title>
@@ -5865,18 +6214,19 @@ const shareHtml = `<!DOCTYPE html>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>${styles}</style>
-</head>
-<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  </head>
+  <body>
     <div id="app">
       <div class="container">
-        <!-- 添加主题切换按钮 -->
+        <!-- 主题切换按钮 -->
         <button 
           class="theme-toggle" 
           @click="toggleTheme" 
           :title="'当前主题: ' + currentTheme"
           v-text="themeIcon"
-        >
-        </button>
+        ></button>
 
         <div class="card">
           <div v-if="loading">加载中...</div>
@@ -5896,13 +6246,14 @@ const shareHtml = `<!DOCTYPE html>
           <div v-else>
             <div v-if="error" class="error">{{ error }}</div>
             <template v-else>
+              <!-- 文件分享部分 -->
               <div v-if="isFile && fileInfo" class="content">
                 <h3>文件信息</h3>
                 <p>文件名: {{ fileInfo.filename }}</p>
                 <p>文件大小: {{ (fileInfo.size / 1024 / 1024).toFixed(2) }} MB</p>
                 <p>上传时间: {{ new Date(fileInfo.uploadedAt).toLocaleString() }}</p>
                 <p>过期时间: {{ fileInfo.expiresAt ? new Date(fileInfo.expiresAt).toLocaleString() : '永不过期' }}</p>
-                <!-- 添加剩余下载次数显示 -->
+                <!-- 剩余下载次数显示 -->
                 <p v-if="fileInfo.maxViews > 0">
                   剩余下载次数: {{ fileInfo.maxViews - fileInfo.viewCount }}
                   (已下载 {{ fileInfo.viewCount }} 次)
@@ -5910,30 +6261,34 @@ const shareHtml = `<!DOCTYPE html>
                 
                 <!-- 按钮容器 -->
                 <div class="button-group" style="display: flex; gap: 1rem; margin-top: 1rem;">
-                  <button class="btn" 
-                          @click="downloadFile" 
-                          :disabled="downloading">
+                  <button 
+                    class="btn" 
+                    @click="downloadFile" 
+                    :disabled="downloading"
+                  >
                     <span v-if="downloading" class="loading-spinner"></span>
                     {{ downloading ? '准备下载中...' : '下载文件' }}
                   </button>
-                  <button v-if="isAdmin && !isFileEditing" 
-                          class="btn" 
-                          @click="startFileEdit">
+                  <button 
+                    v-if="isAdmin && !isFileEditing" 
+                    class="btn" 
+                    @click="startFileEdit"
+                  >
                     编辑设置
                   </button>
                 </div>
-                  
-                  <template v-if="isFileEditing">
-                    <div class="settings" style="margin: 1rem 0;">
-                      <div class="input-group">
-                        <label>过期时间</label>
-                        <select v-model="editFileExpiresIn" class="form-select">
-                          <option value="1h">1小时</option>
-                          <option value="1d">1天</option>
-                          <option value="7d">7天</option>
-                          <option value="30d">30天</option>
-                          <option value="never">永不过期</option>
-                        </select>
+                
+                <template v-if="isFileEditing">
+                  <div class="settings" style="margin: 1rem 0;">
+                    <div class="input-group">
+                      <label>过期时间</label>
+                      <select v-model="editFileExpiresIn" class="form-select">
+                        <option value="1h">1小时</option>
+                        <option value="1d">1天</option>
+                        <option value="7d">7天</option>
+                        <option value="30d">30天</option>
+                        <option value="never">永不过期</option>
+                      </select>
                     </div>
                     
                     <div class="input-group">
@@ -5945,117 +6300,149 @@ const shareHtml = `<!DOCTYPE html>
                         placeholder="0"
                         title="设置文件可以被下载的次数，0或留空表示无限制"
                       >
+                    </div>
+                  </div>
+                  
+                  <div class="actions" style="margin-top: 1rem;">
+                    <button 
+                      class="btn" 
+                      @click="saveFileEdit" 
+                      style="margin-right: 0.5rem;"
+                    >
+                      保存
+                    </button>
+                    <button 
+                      class="btn" 
+                      style="background: #95a5a6;" 
+                      @click="cancelFileEdit"
+                    >
+                      取消
+                    </button>
+                  </div>
+                </template>
+              </div>
+
+              <!-- 文本分享部分 -->
+              <div v-else>
+                <!-- 控制按钮区域 -->
+                <div class="content-controls">
+                  <div class="left-controls">
+                    <button class="btn" @click="copyContent" v-if="!isEditing">
+                      <span v-if="!copied">复制内容</span>
+                      <span v-else>已复制!</span>
+                    </button>
+                    <button 
+                      v-if="isAdmin" 
+                      class="btn" 
+                      @click="startEdit" 
+                      :disabled="isEditing"
+                    >
+                      编辑内容
+                    </button>
+                  </div>
+                  
+                  <div class="export-group" v-if="!isEditing">
+                    <select v-model="exportFormat">
+                      <option value="pdf">PDF格式</option>
+                      <option value="image">图片(png)</option>
+                    </select>
+                    <button 
+                      class="btn" 
+                      @click="exportContent" 
+                      :disabled="isExporting"
+                    >
+                      {{ isExporting ? '导出中...' : '导出' }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 内容区域 -->
+                <div class="content">
+                  <div v-if="isEditing">
+                    <div class="editor-container"> 
+                      <div class="editor">
+                        <textarea
+                          v-model="editContent"
+                          style="width: 100%; height: 100%; padding: 1rem; border: none; outline: none; resize: none;"
+                        ></textarea>
+              </div>
+                      <!-- Markdown 预览区域 -->
+                      <div 
+                        v-if="editMarkdown" 
+                        class="preview"
+                        v-html="editPreview"
+                      ></div>
+                    </div>
+
+                    <!-- 底部控制区域 -->
+                    <div class="settings" style="margin-top: 1rem;">
+                      <!-- Markdown 开关 -->
+                      <div class="input-group">
+                        <div class="markdown-toggle" style="margin-bottom: 0;">
+                          <input 
+                            type="checkbox" 
+                            id="edit-markdown-toggle" 
+                            v-model="editMarkdown"
+                          >
+                          <label for="edit-markdown-toggle">启用 Markdown</label>
+                        </div>
+                      </div>
+                      
+                      <!-- 过期时间选择框 -->
+                      <div class="input-group">
+                        <label>过期时间</label>
+                        <select v-model="editExpiresIn" class="form-select">
+                          <option value="1h">1小时</option>
+                          <option value="1d">1天</option>
+                          <option value="7d">7天</option>
+                          <option value="30d">30天</option>
+                          <option value="never">永不过期</option>
+                        </select>
+                      </div>
+
+                      <!-- 访问次数输入框 -->
+                      <div class="input-group">
+                        <label>可访问次数</label>
+                        <input 
+                          type="number" 
+                          v-model="editMaxViews"
+                          min="0"
+                          placeholder="0表示无限制"
+                          class="form-input"
+                        >
                       </div>
                     </div>
-                    
+
+                    <!-- 编辑操作按钮 -->
                     <div class="actions" style="margin-top: 1rem;">
-                      <button class="btn" 
-                              @click="saveFileEdit" 
-                              style="margin-right: 0.5rem;">
+                      <button 
+                        class="btn" 
+                        @click="saveEdit" 
+                        style="margin-right: 0.5rem;"
+                      >
                         保存
                       </button>
-                      <button class="btn" 
-                              style="background: #95a5a6;" 
-                              @click="cancelFileEdit">
+                      <button 
+                        class="btn" 
+                        style="background: #95a5a6;" 
+                        @click="cancelEdit"
+                      >
                         取消
                       </button>
                     </div>
-                </template>
-              </div>
-              <div v-else class="content">
-                <!-- 添加控制按钮区域 -->
-                <div class="content-controls" style="margin-bottom: 1rem;">
-                  <!-- 复制按钮对所有人可见 -->
-                  <button class="btn" 
-                          @click="copyContent" 
-                          style="margin-right: 0.5rem;"
-                          v-if="!isFile">
-                    复制内容
-                  </button>
-                  <!-- 编辑按钮仅管理员可见 -->
-                  <button v-if="isAdmin && !isFile" 
-                          class="btn" 
-                          @click="startEdit" 
-                          v-show="!isEditing">
-                    编辑内容
-                  </button>
-                  <template v-if="isEditing">
-                    <button class="btn" 
-                            @click="saveEdit" 
-                            style="margin-right: 0.5rem;">
-                      保存
-                    </button>
-                    <button class="btn" 
-                            style="background: #95a5a6;" 
-                            @click="cancelEdit">
-                      取消
-                    </button>
-                  </template>
-                </div>
-
-                <div v-if="isEditing">
-                  <!-- 添加编辑器容器 -->
-                  <div class="editor-container">
-                    <div class="editor">
-                      <textarea
-                        v-model="editContent"
-                        style="width: 100%; height: 100%; padding: 1rem; border: none; outline: none; resize: none;"
-                      ></textarea>
-                    </div>
-                    <!-- Markdown 预览区域 -->
-                    <div 
-                      v-if="editMarkdown" 
-                      class="preview"
-                      v-html="editPreview"
-                    ></div>
                   </div>
-
-                  <!-- 底部控制区域 -->
-                  <div class="settings" style="margin-top: 1rem;">
-                    <!-- Markdown 开关 -->
-                    <div class="input-group">
-                      <div class="markdown-toggle" style="margin-bottom: 0;">
-                        <input type="checkbox" id="edit-markdown-toggle" v-model="editMarkdown">
-                        <label for="edit-markdown-toggle">启用 Markdown</label>
-                      </div>
-                    </div>
-                    
-                    <!-- 过期时间选择框 -->
-                    <div class="input-group">
-                      <label>过期时间</label>
-                      <select v-model="editExpiresIn" class="form-select">
-                        <option value="1h">1小时</option>
-                        <option value="1d">1天</option>
-                        <option value="7d">7天</option>
-                        <option value="30d">30天</option>
-                        <option value="never">永不过期</option>
-                      </select>
-                    </div>
-
-                    <!-- 访问次数输入框 -->
-                    <div class="input-group">
-                      <label>可访问次数</label>
-                      <input 
-                        type="number" 
-                        v-model="editMaxViews"
-                        min="0"
-                        placeholder="0表示无限制"
-                        class="form-input"
-                      >
-                    </div>
+                  <div v-else>
+                    <div v-if="isMarkdown" v-html="renderedContent"></div>
+                    <pre v-else>{{ content }}</pre>
                   </div>
                 </div>
-                <div v-else>
-                  <div v-if="isMarkdown" v-html="renderedContent"></div>
-                  <pre v-else>{{ content }}</pre>
+                <div class="expiry-info">
+                  <span>{{ formatExpiryTime }}</span>
+                  <span v-if="maxViews > 0" class="view-count-info">
+                    · 剩余访问次数: {{ maxViews - viewCount }}
+                    (已访问 {{ viewCount }} 次)
+                  </span>
                 </div>
-              </div>
-              <div class="expiry-info">
-                <span>{{ formatExpiryTime }}</span>
-                <span v-if="isEditing && maxViews > 0" class="view-count-info">
-                  · 剩余访问次数: {{ maxViews - viewCount }}
-                  (已访问 {{ viewCount }} 次)
-                </span>
               </div>
             </template>
           </div>
@@ -6114,7 +6501,7 @@ const shareHtml = `<!DOCTYPE html>
       }
     </style>
     <script>${shareAppScript}</script>
-</body>
+  </body>
 </html>`;
 
 // 处理粘贴内容
@@ -6187,24 +6574,6 @@ async function handlePaste(request, env) {
               headers: { "Content-Type": "application/json" },
             }
           );
-        }
-
-        // 检查是否存在于文件分享中 - 只在 FILE_STORE 存在时检查
-        if (env.FILE_STORE) {
-          const existingFile = await env.FILE_STORE.get(customId);
-          if (existingFile) {
-            return new Response(
-              JSON.stringify({
-                message: "该链接后缀已被用于文件分享，请更换一个",
-                status: "error",
-                usedBy: "file",
-              }),
-              {
-                status: 400,
-                headers: { "Content-Type": "application/json" },
-              }
-            );
-          }
         }
       }
 
@@ -7414,7 +7783,7 @@ export default {
         } else if (url.pathname.startsWith("/api/paste")) {
           response = await handlePaste(request, env);
         } else if (url.pathname.startsWith("/api/file")) {
-          response = await handleFile(request, env, ctx); // 修改这里，传入 ctx
+          response = await handleFile(request, env, ctx); // 传入 ctx
         } else if (url.pathname.startsWith("/api/admin/")) {
           // 添加对管理员 API 的处理
           if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9-_]+\/password$/)) {
