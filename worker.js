@@ -6577,6 +6577,24 @@ async function handlePaste(request, env) {
         }
       }
 
+      // 检查是否存在于文件分享中 - 只在 FILE_STORE 存在时检查
+      if (env.FILE_STORE) {
+        const existingFile = await env.FILE_STORE.get(customId);
+        if (existingFile) {
+          return new Response(
+            JSON.stringify({
+              message: "该链接后缀已被用于文件分享，请更换一个",
+              status: "error",
+              usedBy: "file",
+            }),
+            {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        }
+      }
+
       const id = customId || utils.generateId();
       const paste = {
         content,
