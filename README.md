@@ -152,7 +152,7 @@
 
 2. **设置 GitHub Secrets**
 
-   在你的 GitHub 仓库中，转到 Settings -> Secrets and variables -> Actions ，添加以下 secrets：
+   在你的 GitHub 仓库中，转到 Settings -> Secrets and variables -> Actions -> New Repository secrets ，添加以下 secrets：
 
    - `CF_API_TOKEN`: Cloudflare API 令牌
 
