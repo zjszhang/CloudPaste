@@ -7729,7 +7729,7 @@ export default {
       }
 
       // 删除分享
-      if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9]+$/)) {
+      if (url.pathname.match(/^\/api\/admin\/(paste|file)\/[a-zA-Z0-9-_]+$/)) {
         if (request.method !== "DELETE") {
           return new Response("Method not allowed", { status: 405 });
         }
@@ -8152,18 +8152,18 @@ export default {
     }
 
     // 重定向 API 直接访问到分享页面
-    if (url.pathname.match(/^\/paste\/[a-zA-Z0-9]+$/)) {
+    if (url.pathname.match(/^\/paste\/[a-zA-Z0-9-_]+$/)) {
       const id = url.pathname.split("/").pop();
       return Response.redirect(`${url.origin}/share/paste/${id}`, 301);
     }
 
-    if (url.pathname.match(/^\/file\/[a-zA-Z0-9]+$/)) {
+    if (url.pathname.match(/^\/file\/[a-zA-Z0-9-_]+$/)) {
       const id = url.pathname.split("/").pop();
       return Response.redirect(`${url.origin}/share/file/${id}`, 301);
     }
 
     // 添加直接下载路由
-    if (url.pathname.match(/^\/download\/[a-zA-Z0-9]+$/)) {
+    if (url.pathname.match(/^\/download\/[a-zA-Z0-9-_]+$/)) {
       const id = url.pathname.split("/").pop();
       const modifiedRequest = new Request(`${url.origin}/api/file/${id}?download=true`, {
         method: "GET",
