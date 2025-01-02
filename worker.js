@@ -1,6 +1,6 @@
 // 在文件开头添加常量声明
-const MAX_FILE_SIZE = 98 * 1024 * 1024; // 文件大小限制 (98MB)
-const MAX_TOTAL_STORAGE = 6 * 1024 * 1024 * 1024; // 总存储限制 (6GB)
+const MAX_FILE_SIZE = 30 * 1024 * 1024; // 文件大小限制 (98MB)
+const MAX_TOTAL_STORAGE = 3 * 1024 * 1024 * 1024; // 总存储限制 (6GB)
 
 // 工具函数
 const utils = {
@@ -249,73 +249,6 @@ body {
   border-radius: 4px;
 }
 
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  background: var(--primary-color);
-  color: white;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn:hover {
-  opacity: 0.9;
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-.btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
-  transform-origin: 50% 50%;
-}
-
-.btn:active::after {
-  animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(40, 40);
-    opacity: 0;
-  }
-}
-
-.file-drop {
-  border: 2px dashed var(--border-color);
-  border-radius: 4px;
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.file-drop.dragging {
-  border-color: var(--primary-color);
-  background: rgba(52, 152, 219, 0.1);
-  transform: scale(1.02);
-  box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
-}
-
 .file-list {
   margin-top: 1rem;
 }
@@ -357,27 +290,6 @@ body {
   border-radius: 4px;
 }
 
-.error {
-  color: #e74c3c;
-  padding: 0.8rem;
-  border-radius: 4px;
-  background: #ffebee;
-  border-left: 4px solid #ef5350;
-  margin: 1rem 0;
-  animation: error-in 0.3s ease-out;
-}
-
-@keyframes error-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .link {
   display: flex;
   align-items: center;
@@ -388,79 +300,6 @@ body {
 .link a {
   color: var(--primary-color);
   text-decoration: none;
-  word-break: break-all;
-}
-
-.content {
-  margin-bottom: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  line-height: 1.5;  // 减小行高
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-all;
-  white-space: pre-wrap;       /* 保留换行符并自动换行 */
-  max-width: 100%;            /* 限制最大宽度 */
-}
-
-.content input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--primary-color);
-  border-radius: 3px;
-  margin: 0;
-  position: relative;
-  top: 3px;
-  margin-right: 8px;
-  cursor: pointer;
-  vertical-align: top;
-}
-
-.content input[type="checkbox"]:checked {
-  background-color: var(--primary-color);
-}
-
-.content input[type="checkbox"]:checked::after {
-  content: "✓";
-  color: white;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 12px;
-  line-height: 1;
-}
-
-.content ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0.3em 0;  // 减小列表整体间距
-}
-
-.content li {
-  display: flex;
-  align-items: flex-start;
-  margin: 0.2em 0;  // 减小列表项间距
-  line-height: 1.5;  // 减小行高
-  margin: 0.5em 0;              /* 增加列表项间距 */
-  display: block;             /* 改为块级显示 */
-}
-
-.content li label {
-  display: inline-flex;
-  align-items: flex-start;
-  margin: 0;
-  cursor: pointer;
-}
-
-.content p {
-  margin: 0.3em 0;  // 进一步减小段落间距
-  line-height: 1.5;  // 减小行高
-  overflow-wrap: break-word;
-  word-wrap: break-word;
   word-break: break-all;
 }
 
@@ -639,39 +478,6 @@ a.qr-btn {
   gap: 0.8rem;
   align-items: center;
   flex-wrap: wrap;
-}
-
-.control-btn {
-  min-width: 100px;
-  height: 32px;
-  padding: 0 0.8rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background: white;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  white-space: nowrap;
-}
-
-.control-btn.active {
-  background: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-}
-
-.control-btn:hover {
-  border-color: var(--primary-color);
-  color: var(--primary-color);
-}
-
-.control-btn.active:hover {
-  opacity: 0.9;
-  color: white;
 }
 
 .refresh-btn {
@@ -1027,12 +833,14 @@ a.qr-btn {
   background: #95a5a6;
 }
 
+/* 删除按钮默认样式 */
 .delete-btn {
-  background: #e74c3c;
+  background-color: #e74c3c !important; /* 使用 !important 确保覆盖其他样式 */
 }
 
+/* 删除按钮悬停样式 */
 .delete-btn:hover {
-  background: #c0392b;
+  background-color: #c0392b !important;
 }
 
 
@@ -1115,31 +923,85 @@ a.qr-btn {
   border-radius: 0 0 4px 0;
 }
 
-/* 优化滚动条样式 */
-.editor::-webkit-scrollbar,
-.preview::-webkit-scrollbar {
-  width: 12px;  
-  height: 12px;  
+/* 编辑器预览区域的列表样式 */
+.editor-container .preview ol {
+  list-style: none;
+  counter-reset: preview-item;
+  padding-left: 2em;
+  margin: 0.2em 0;
 }
 
-.editor::-webkit-scrollbar-track,
-.preview::-webkit-scrollbar-track {
-  background: transparent;
+.editor-container .preview ol > li {
+  counter-increment: preview-item;
+  position: relative;
+  margin: 0.2em 0;
+  padding-left: 0.3em;
 }
 
-.editor::-webkit-scrollbar-thumb,
-.preview::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 6px;  
-  border: 3px solid transparent;  
-  background-clip: padding-box;
+.editor-container .preview ol > li::before {
+  content: counter(preview-item) ".";
+  position: absolute;
+  left: -2em;
+  width: 1.5em;
+  text-align: right;
+  color: #3498db;
+  font-weight: 600;
 }
 
-.editor::-webkit-scrollbar-thumb:hover,
-.preview::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb);
-  border: 3px solid transparent;  
-  background-clip: padding-box;
+/* 编辑器预览区域的嵌套列表样式 */
+.editor-container .preview ol ol {
+  counter-reset: preview-subitem;
+  margin: 0.2em 0;
+  padding-left: 1.5em;
+}
+
+.editor-container .preview ol ol > li {
+  counter-increment: preview-subitem;
+}
+
+.editor-container .preview ol ol > li::before {
+  content: counter(preview-subitem) ".";
+}
+
+/* 编辑器预览区域的无序列表样式 */
+.editor-container .preview ul {
+  list-style: none;
+  padding-left: 2em;
+  margin: 0.2em 0;
+}
+
+.editor-container .preview ul > li {
+  position: relative;
+  margin: 0.2em 0;
+  padding-left: 0.3em;
+}
+
+.editor-container .preview ul > li::before {
+  content: "•";
+  position: absolute;
+  left: -1.5em;
+  width: 1em;
+  text-align: center;
+  color: var(--text-color);
+}
+
+/* 编辑器预览区域的有序列表中的无序列表 */
+.editor-container .preview ol > li > ul {
+  padding-left: 1.5em;
+  margin: 0.2em 0;
+}
+
+.editor-container .preview ol > li > ul > li {
+  counter-increment: none;
+}
+
+.editor-container .preview ol > li > ul > li::before {
+  content: "•";
+  left: -1.5em;
+  width: 1em;
+  text-align: center;
+  color: var(--text-color);
+  font-weight: normal;
 }
 
 /* 防止文本选择时的闪烁 */
@@ -1164,48 +1026,165 @@ a.qr-btn {
   padding: 2rem;
   max-width: 100%;
   overflow-x: auto;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap; /* 保留换行符并自动换行 */
 }
 
-/* 列表样式优化 */
-.content ul {
-  list-style: none;
-  padding-left: 2em;
-  margin: 1em 0;
+/* 段落样式 */
+.content p {
+  margin: 0.3em 0; /* 进一步减小段落间距 */
+  line-height: 1.5; /* 减小行高 */
 }
 
-.content ul li {
-  position: relative;
-  margin: 0.5em 0;
-  padding-left: 0.5em;
+/* 链接样式 */
+.content a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.content a:hover {
+  border-bottom-color: #3498db;
+}
+
+/* 图片样式 */
+.content img {
+  max-width: 100%;
+  height: auto;
+  margin: 1.5em auto;
+  display: block;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 水平线样式 */
+.content hr {
+  height: 2px;
+  margin: 2.5em 0;
+  background-color: #eaecef;
+  border: none;
+}
+
+/* 代码块样式 */
+.content pre {
+  margin: 1.5em 0;
+  padding: 1.5em;
+  background: var(--markdown-code-bg);
+  border-radius: 6px;
+  overflow-x: auto; /* 允许横向滚动 */
+  white-space: pre-wrap; /* 允许自动换行 */
+  word-wrap: break-word; /* 允许长单词换行 */
+  word-break: break-all; /* 允许在任意字符处换行 */
+  max-width: 100%; /* 限制最大宽度 */
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9em;
   line-height: 1.6;
-  display: flex; /* 使用 flex 布局 */
-  flex-wrap: wrap; /* 允许内容换行 */
-  align-items: baseline; /* 基线对齐 */
+  position: relative;
+  border: 1px solid #eaecef;
 }
 
-.content ul li::before {
-  content: "•";
-  position: absolute;
-  left: -1.5em;
-  color: var(--text-color);
+.content pre code {
+  padding: 0;
+  margin: 0;
+  background: none;
+  border-radius: 0;
+  color: inherit;
+  font-size: 1em;
+  white-space: inherit; /* 继承父元素的 white-space 属性 */
+  word-wrap: inherit; /* 继承父元素的 word-wrap 属性 */
+  word-break: inherit; /* 继承父元素的 word-break 属性 */
+  overflow-wrap: inherit; /* 继承父元素的 overflow-wrap 属性 */
 }
 
-/* 列表项内容样式 */
-.content li > * {
-  margin: 0.1em 0;  // 减小列表项内容间距
-  line-height: inherit;
+.content li pre {
+  width: 100%; /* 确保代码块占满宽度 */
+  margin: 1em 0;
+  display: block;
 }
 
-.content li p {
+.content li > pre {
+  display: block;
+  margin: 0.5em 0; /* 减小代码块间距 */
+}
+
+/* 行内代码样式优化 */
+.content code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 0.9em;
+  background-color: rgba(27, 31, 35, 0.05);
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: #476582;
+  vertical-align: baseline; /* 确保行内代码垂直对齐 */
+}
+
+/* 标题样式 */
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+  margin: 0.8em 0 0.2em; /* 减小标题下方间距 */
+  font-weight: 600;
+  line-height: 1.2; /* 减小标题行高 */
+  color: #1a202c;
+}
+
+.content h1 {
+  font-size: 2em;
+  border-bottom: 2px solid #eaecef;
+  padding-bottom: 0.5em;
+  margin-top: 1em;
+}
+
+.content h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.4em;
+}
+
+.content h3 {
+  font-size: 1.25em;
+}
+
+.content h4 {
+  font-size: 1em;
+}
+
+.content h5 {
+  font-size: 0.875em;
+}
+
+.content h6 {
+  font-size: 0.85em;
+  color: #6a737d;
+}
+
+/* 加粗文本样式 */
+.content strong {
+  font-weight: 600;
+  color: #2c3e50;
   display: inline;
-  margin: 0.1em 0;  // 减小列表项段落间距
-  line-height: inherit;
+  white-space: normal; /* 允许正常换行 */
 }
 
 .content li strong {
   font-weight: 600;
   color: #2c3e50;
   margin-right: 0.25em; /* 加粗文本右侧添加小间距 */
+}
+
+.content li strong:last-child {
+  margin-right: 0;
 }
 
 /* 标点符号样式优化 */
@@ -1221,70 +1200,16 @@ a.qr-btn {
   text-justify: inter-ideograph;
 }
 
-/* 代码块在列表项中的样式 */
-.content li pre {
-  width: 100%; /* 确保代码块占满宽度 */
-  margin: 1em 0;
-  display: block;
-}
-
-/* 行内代码样式优化 */
-.content code {
-  padding: 0.2em 0.4em;
-  margin: 0;
-  font-size: 0.9em;
-  background-color: rgba(27,31,35,0.05);
-  border-radius: 3px;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  color: #476582;
-  vertical-align: baseline; /* 确保行内代码垂直对齐 */
-}
-
-/* 标点符号和特殊字符对齐 */
-.content li strong:last-child {
-  margin-right: 0;
-}
-
-.content li > p:first-child {
-  margin-right: 0;
-}
-
-/* 确保列表项内的所有元素垂直对齐 */
-.content li * {
-  vertical-align: baseline;
-}
-
-/* 优化中文冒号对齐 */
 .content li:lang(zh) strong + :not(pre):not(ul):not(ol)::before {
   content: "";
   white-space: normal;
   display: inline;
 }
 
-/* 列表样式优化 */
-.content ul {
-  list-style: none;
-  padding-left: 2em;
-  margin: 1em 0;
-}
-
-.content ul li {
-  position: relative;
-  margin: 0.5em 0;
-  padding-left: 0.5em;
-  line-height: 1.6;
-}
-
-.content ul li::before {
-  content: "•";
-  position: absolute;
-  left: -1.5em;
-  color: var(--text-color);
-}
-
-/* 列表项内容样式 */
+/* 确保列表项内容对齐 */
 .content li > * {
-  margin: 0.5em 0;
+  margin: 0;
+  line-height: inherit;
 }
 
 .content li p {
@@ -1292,104 +1217,40 @@ a.qr-btn {
   margin: 0;
 }
 
-.content li > pre {
-  display: block;
-  margin: 0.5em 0;  // 减小代码块间距
+.content li * {
+  vertical-align: baseline;
 }
-
-/* 加粗文本样式 */
-.content strong {
-  font-weight: 600;
-  color: #2c3e50;
-  display: inline;
-  white-space: normal;       /* 允许正常换行 */
-}
-
-/* 代码块样式 */
-.content pre {
-  margin: 1.5em 0;
-  padding: 1.5em;
-  background: var(--markdown-code-bg);
-  border-radius: 6px;
-  overflow-x: auto;          /* 允许横向滚动 */
-  white-space: pre-wrap;     /* 允许自动换行 */
-  word-wrap: break-word;     /* 允许长单词换行 */
-  word-break: break-all;     /* 允许在任意字符处换行 */
-  max-width: 100%;          /* 限制最大宽度 */
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-size: 0.9em;
-  line-height: 1.6;
-  position: relative;
-  border: 1px solid #eaecef;
-}
-
-.content pre code {
-  padding: 0;
-  margin: 0;
-  background: none;
-  border-radius: 0;
-  color: inherit;
-  font-size: 1em;
-  white-space: inherit;      /* 继承父元素的 white-space 属性 */
-  word-wrap: inherit;        /* 继承父元素的 word-wrap 属性 */
-  word-break: inherit;       /* 继承父元素的 word-break 属性 */
-  overflow-wrap: inherit;    /* 继承父元素的 overflow-wrap 属性 */
-}
-
-/* 标题样式 */
-.content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
-  margin: 0.8em 0 0.2em;  // 减小标题下方间距
-  font-weight: 600;
-  line-height: 1.2;  // 减小标题行高
-  color: #1a202c;
-}
-
-.content h1 { 
-  font-size: 2em; 
-  border-bottom: 2px solid #eaecef; 
-  padding-bottom: 0.5em;
-  margin-top: 1em;
-}
-
-.content h2 { 
-  font-size: 1.5em; 
-  border-bottom: 1px solid #eaecef; 
-  padding-bottom: 0.4em;
-}
-
-.content h3 { font-size: 1.25em; }
-.content h4 { font-size: 1em; }
-.content h5 { font-size: 0.875em; }
-.content h6 { font-size: 0.85em; color: #6a737d; }
 
 /* 引用块样式 */
 .content blockquote {
-  margin: 0;  /* 移除外边距 */
-  padding: 0.4em 1em;  /* 使用相等的上下内边距 */
+  margin: 0; /* 移除外边距 */
+  padding: 0.4em 1em; /* 使用相等的上下内边距 */
   color: var(--markdown-blockquote-text);
   border-left: 0.25em solid var(--markdown-blockquote-border);
   background: var(--markdown-blockquote-bg);
   border-radius: 0 4px 4px 0;
 }
 
-.content blockquote > :first-child { margin-top: 0; }
-.content blockquote > :last-child { margin-bottom: 0; }
+.content blockquote > :first-child {
+  margin-top: 0;
+}
 
-/* 引用块内的段落样式 */
+.content blockquote > :last-child {
+  margin-bottom: 0;
+}
+
 .content blockquote p {
-  margin: 0;  /* 移除段落边距 */
+  margin: 0; /* 移除段落边距 */
   line-height: 1.6;
 }
 
-/* 列表项中的引用块特殊处理 */
 .content li > blockquote {
-  margin: 0.3em 0;  /* 在列表项中添加小的外边距 */
+  margin: 0.3em 0; /* 在列表项中添加小的外边距 */
   width: calc(100% - 1em);
 }
 
-/* 连续引用块的处理 */
 .content blockquote + blockquote {
-  margin-top: 0.2em;  /* 连续引用块之间的间距 */
+  margin-top: 0.2em; /* 连续引用块之间的间距 */
 }
 
 /* 表格样式优化 */
@@ -1416,7 +1277,6 @@ a.qr-btn {
   overflow-wrap: break-word;
 }
 
-/* 设置列宽比例 */
 .content table th:nth-child(1),
 .content table td:nth-child(1) {
   width: 15%;
@@ -1480,81 +1340,16 @@ a.qr-btn {
   text-decoration: underline;
 }
 
-/* 链接样式 */
-.content a {
-  color: var(--primary-color);
-  text-decoration: none;
-  font-weight: 500;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
-}
-
-.content a:hover {
-  border-bottom-color: #3498db;
-}
-
-/* 图片样式 */
-.content img {
-  max-width: 100%;
-  height: auto;
-  margin: 1.5em auto;
-  display: block;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* 水平线样式 */
-.content hr {
-  height: 2px;
-  margin: 2.5em 0;
-  background-color: #eaecef;
-  border: none;
-}
-
 /* 列表基础样式优化 */
 .content ul,
 .content ol {
-  padding-left: 2em;
-  margin: 0.2em 0;  // 减小列表整体间距
-}
-
-/* 无序列表样式 */
-.content ul {
   list-style: none;
-  padding-left: 2em;
-  margin: 0.2em 0;  // 减小列表整体间距
-}
-
-.content ul li {
-  position: relative;
-  padding-left: 0.5em;
-  margin: 0.5em 0;
-  line-height: 1.6;
-}
-
-.content ul li::before {
-  content: "•";
-  position: absolute;
-  left: -1em;
-  color: #2c3e50;
-}
-
-/* 二级无序列表样式 */
-.content ul ul {
-  margin: 0.5em 0;
-  padding-left: 1.5em;
-}
-
-.content ul ul li::before {
-  content: "•";
-  font-size: 0.85em;
-  left: -1.2em;
-  top: 0.1em;
+  padding-left: 1.2em; /* 统一列表基础内边距 */
+  margin: 0.2em 0; /* 减小列表整体间距 */
 }
 
 /* 有序列表样式 */
 .content ol {
-  list-style: none;
   counter-reset: item;
 }
 
@@ -1569,8 +1364,8 @@ a.qr-btn {
 .content ol li::before {
   content: counter(item) ".";
   position: absolute;
-  left: -2em;
-  width: 1.5em;
+  left: -2.2em;
+  width: 2em;
   text-align: right;
   color: #3498db;
   font-weight: 600;
@@ -1580,6 +1375,7 @@ a.qr-btn {
 .content ol ol {
   counter-reset: subitem;
   margin: 0.5em 0;
+  padding-left: 1em; /* 统一嵌套列表内边距 */
 }
 
 .content ol ol li {
@@ -1592,6 +1388,63 @@ a.qr-btn {
   color: #666;
 }
 
+/* 无序列表样式 */
+.content ul li {
+  position: relative;
+  padding-left: 0.5em;
+  margin: 0.5em 0;
+  line-height: 1.6;
+}
+
+.content ul li::before {
+  content: "•";
+  position: absolute;
+  left: -1em;
+  width: 1em;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.content ul ul {
+  margin: 0.3em 0 0.3em 1em; /* 调整嵌套列表的间距 */
+  padding-left: 1em; /* 调整嵌套列表的内边距 */
+}
+
+.content ul ul li::before {
+  content: "•";
+  font-size: 0.85em;
+  left: -1.2em;
+  top: 0.1em;
+}
+
+/* 有序列表中的无序列表 */
+.content ol li ul,
+.content ol li ol,
+.content ul li ul,
+.content ul li ol {
+  margin: 0.3em 0;
+  padding-left: 1em;
+}
+
+.content ol li ul li,
+.content ul li ul li {
+  counter-increment: none;
+}
+
+.content.ol li ul li::before,
+.content.ul li ul li::before {
+  content: "•";
+  position: absolute;
+  left: -1.5em;
+  color: var(--text-color);
+  font-weight: normal;
+}
+
+.content.ul li ol li::before {
+  left: -2.2em;
+  width: 2em;
+}
+
 /* 确保列表项内容对齐 */
 .content li > * {
   margin: 0;
@@ -1601,6 +1454,36 @@ a.qr-btn {
 .content li p {
   display: inline;
   margin: 0;
+}
+
+.content input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--primary-color);
+  border-radius: 3px;
+  margin: 0;
+  position: relative;
+  top: 3px;
+  margin-right: 8px;
+  cursor: pointer;
+  vertical-align: top;
+}
+
+.content input[type="checkbox"]:checked {
+  background-color: var(--primary-color);
+}
+
+.content input[type="checkbox"]:checked::after {
+  content: "✓";
+  color: white;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  line-height: 1;
 }
 
 /* 代码块复制按钮容器基础样式 */
@@ -1666,21 +1549,37 @@ a.qr-btn {
     align-items: center;
 }
 
-/* 控制按钮基础样式 */
 .control-btn {
-    padding: 0.4rem 0.8rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: white;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s;
+  min-width: 100px;
+  height: 32px;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  white-space: nowrap;
 }
 
 .control-btn.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.control-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.control-btn.active:hover {
+  opacity: 0.9;
+  color: white;
 }
 
 /* 上传禁用状态 */
@@ -1695,29 +1594,6 @@ a.qr-btn {
 .upload-disabled p {
     margin: 0;
     font-size: 1.1rem;
-}
-
-/* 复制提示样式 */
-.copy-toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  z-index: 1000;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  transform: translate(-50%, 20px);
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.copy-toast.show {
-  opacity: 1;
-  transform: translate(-50%, 0);
 }
 
 /* 存储信息组件 */
@@ -1780,8 +1656,19 @@ a.qr-btn {
 
 /* 按钮交互效果 */
 .btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
   position: relative;
   overflow: hidden;
+}
+
+.btn:hover {
+  opacity: 0.9;
 }
 
 .btn:active {
@@ -1817,25 +1704,26 @@ a.qr-btn {
   }
 }
 
-/* 文件拖放交互 */
-.file-drop {
-  transition: all 0.3s ease;
-}
-
-.file-drop.dragging {
-  transform: scale(1.02);
-  box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
-}
 
 /* 复制成功提示样式 */
 .copy-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
   transform: translate(-50%, 20px);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 1000;
+  opacity: 0;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .copy-toast.show {
-  transform: translate(-50%, 0);
   opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 /* 输入框交互 */
@@ -1844,16 +1732,6 @@ a.qr-btn {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
-/* 错误提示样式 */
-.error {
-  padding: 0.8rem;
-  border-radius: 4px;
-  background: #ffebee;
-  border-left: 4px solid #ef5350;
-  margin: 1rem 0;
-  animation: error-in 0.3s ease-out;
 }
 
 @keyframes error-in {
@@ -1867,7 +1745,7 @@ a.qr-btn {
   }
 }
 
-/* 滚动条样式 */
+/* 全局滚动条样式 */
 ::-webkit-scrollbar {
   width: 12px;  
   height: 12px;  
@@ -1888,25 +1766,6 @@ a.qr-btn {
   background: var(--scrollbar-thumb);
   border: 3px solid transparent;  
   background-clip: padding-box;
-}
-
-
-
-/* 文件拖放提示优化 */
-.file-drop::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 2px dashed var(--border-color);
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.file-drop.dragging::before {
-  opacity: 1;
-  animation: border-dance 1s linear infinite;
 }
 
 @keyframes border-dance {
@@ -2025,6 +1884,12 @@ a.qr-btn {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f2f6;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
 .file-type-icon.image { background-image: url('data:image/svg+xml,...'); }
@@ -2066,10 +1931,42 @@ a.qr-btn {
 }
 
 /* 添加文件上传拖拽时的动画效果 */
+/* 文件拖放交互 */
 .file-drop {
+  border: 2px dashed var(--border-color);
+  border-radius: 4px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
+
+.file-drop.dragging {
+  border-color: var(--primary-color);
+  background: rgba(52, 152, 219, 0.1);
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
+}
+
+/* 文件拖放提示优化 */
+.file-drop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px dashed var(--border-color);
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.file-drop.dragging::before {
+  opacity: 1;
+  animation: border-dance 1s linear infinite;
+}
+
 
 .file-drop::after {
   content: '';
@@ -2140,16 +2037,6 @@ a.qr-btn {
   opacity: 1;
 }
 
-/* 优化密码输入框切换按钮 */
-.password-toggle {
-  opacity: 0.6;
-  transition: opacity 0.2s;
-}
-
-.password-toggle:hover {
-  opacity: 1;
-}
-
 /* 优化标签切换动画 */
 .tab {
   position: relative;
@@ -2171,10 +2058,16 @@ a.qr-btn {
   width: 100%;
 }
 
-/* 优化错误提示动画 */
+/* 错误提示样式 */
 .error {
+  color: #e74c3c;
+  background: #ffebee;
+  border-left: 4px solid #ef5350;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
   animation: error-in 0.3s ease-out;
-}
+} 
 
 @keyframes error-in {
   from {
@@ -2253,19 +2146,6 @@ a.qr-btn {
   max-width: 500px;
   margin: 0 auto;
   display: block;
-}
-
-/* 文件类型图标 */
-.file-type-icon {
-  width: 24px;
-  height: 24px;
-  margin-right: 0.5rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f1f2f6;
-  border-radius: 4px;
-  font-size: 14px;
 }
 
 /* 基础进度条组件 */
@@ -2446,27 +2326,44 @@ a.qr-btn {
   color: var(--text-color);
 }
 
-/* 添加文本输入框滚动条样式 */
-.editor textarea::-webkit-scrollbar {
-  width: 12px;  
-  height: 12px;  
+
+/* 有序列表样式 */
+.preview ol {
+    list-style: none;
+    counter-reset: section;
+    padding-left: 2em;
+    margin: 0.5em 0;
 }
 
-.editor textarea::-webkit-scrollbar-track {
-  background: transparent;
+.preview ol li {
+    position: relative;
+    padding-left: 0.5em;
+    margin: 0.5em 0;
 }
 
-.editor textarea::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 6px;  
-  border: 3px solid transparent;  
-  background-clip: padding-box;
+/* 一级列表 */
+.preview ol > li {
+    counter-increment: section;
 }
 
-.editor textarea::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb);
-  border: 3px solid transparent;  
-  background-clip: padding-box;
+.preview ol > li::before {
+    content: counter(section) ".";
+    position: absolute;
+    left: -2em;
+    width: 1.5em;
+    text-align: right;
+    color: var(--text-color);
+}
+
+/* 二级和三级列表 */
+.preview ol ol {
+    margin-left: 0.5em;
+}
+
+/* 自动重置计数器并设置正确的编号 */
+.preview ol ol,
+.preview ol ol ol {
+    counter-reset: section;
 }
 
 /* 添加主题切换按钮样式 */
@@ -3215,12 +3112,28 @@ createApp({
     if (!isMarkdown.value) return content.value;
     
     try {
+        // 配置 marked 选项
+        marked.setOptions({
+            gfm: true,
+            breaks: true,
+            headerIds: true,
+            listNesting: true,  // 启用列表嵌套
+            // 自定义列表渲染
+            renderer: new marked.Renderer()
+        });
+        
         const rendered = marked.parse(content.value);
-        // 使用 nextTick 确保在 DOM 更新后应用代码高亮和数学公式渲染
+        
+        // 使用 nextTick 确保在 DOM 更新后应用样式
         nextTick(() => {
-            // 获取预览容器
             const previewContainer = document.querySelector('.preview');
             if (!previewContainer) return;
+
+            // 设置 data-markdown 属性
+            const contentDiv = document.querySelector('.content');
+            if (contentDiv) {
+              contentDiv.setAttribute('data-markdown', content.value);
+            }
 
             // 检查是否为暗色主题
             const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -3241,6 +3154,17 @@ createApp({
                     code.style.color = isDarkTheme ? 'var(--markdown-code-text)' : 'var(--text-color)';
                     code.style.background = 'transparent'; // 确保 code 元素背景是透明的
                 }
+            });
+
+            // 添加列表样式处理
+            previewContainer.querySelectorAll('ol').forEach(ol => {
+                // 移除默认的 start 属性设置，让 CSS 计数器处理
+                ol.removeAttribute('start');
+                
+                // 确保列表项正确对齐
+                ol.querySelectorAll('li').forEach(li => {
+                    li.style.position = 'relative';
+                });
             });
 
             // 其他 Markdown 元素的样式
@@ -5938,27 +5862,29 @@ createApp({
     const exportFormat = ref('pdf');
     const exportFormats = [
       { value: 'pdf', label: 'PDF文档' },
+      { value: 'docx', label: 'Word文档' },
       { value: 'image', label: '图片(PNG)' }
     ];
 
     // 添加导出方法
     const exportContent = async () => {
       try {
-        isExporting.value = true;
-        error.value = null;
-        
-        // 直接获取已渲染的内容区域
+        isExporting.value = true; // 标记正在导出
+        error.value = null; // 重置错误状态
+
+        // 获取内容区域
         const contentDiv = document.querySelector('.content');
         if (!contentDiv) {
           throw new Error('找不到内容区域');
         }
-        
-        // 获取分享ID作为文件名
+
+        // 获取分享ID作为文件名，如果没有则使用默认值 'content'
         const pathParts = window.location.pathname.split('/');
-        const shareId = pathParts[pathParts.length - 1] || 'content'; // 添加默认值
+        const shareId = pathParts[pathParts.length - 1] || 'content';      
 
         if (exportFormat.value === 'pdf') {
-          // 确保 html2pdf 已加载
+          // PDF 导出逻辑
+          // 确保 html2pdf 库已加载
           if (typeof window.html2pdf === 'undefined') {
             throw new Error('PDF导出工具未加载完成，请稍后重试');
           }
@@ -5973,7 +5899,6 @@ createApp({
               letterRendering: true,
               backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg'),
               logging: true,
-              
             },
             jsPDF: { 
               unit: 'mm', 
@@ -5981,7 +5906,8 @@ createApp({
               orientation: 'portrait',
             }
           };
-          // 保存原始样式
+
+          // 保存原始样式以便恢复（可选）
           const originalStyles = {
             border: contentDiv.style.border,
             padding: contentDiv.style.padding,
@@ -5990,7 +5916,7 @@ createApp({
             boxSizing: contentDiv.style.boxSizing,
           };
 
-          // 直接修改内容样式
+          // 修改内容样式以适应 PDF 导出
           contentDiv.style.border = '1px solid #ddd';
           contentDiv.style.borderRadius = '4px';
           contentDiv.style.padding = '20px';
@@ -5998,7 +5924,7 @@ createApp({
           contentDiv.style.width = 'calc(100% - 40px)';
           contentDiv.style.boxSizing = 'border-box';
 
-          // 特别处理表格
+          // 特别处理表格，避免分页中断
           const tables = contentDiv.querySelectorAll('table');
           tables.forEach(table => {
             // 创建表格包装器
@@ -6007,69 +5933,630 @@ createApp({
             tableWrapper.style.breakInside = 'avoid';
             tableWrapper.style.display = 'block';
             tableWrapper.style.width = '100%';
-            
+                        
             // 设置表格样式
             table.style.pageBreakInside = 'avoid';
             table.style.breakInside = 'avoid';
-            table.style.display = 'table';  // 确保表格显示正确
+            table.style.display = 'table';  // 确保表格正确显示
             table.style.width = '100%';
-            
-            // 处理表格内的所有行
+                        
+            // 处理表格内的所有行，避免分页中断
             const rows = table.querySelectorAll('tr');
             rows.forEach(row => {
               row.style.pageBreakInside = 'avoid';
               row.style.breakInside = 'avoid';
             });
-            
-            // 包装表格
+                        
+            // 将表格包装起来
             table.parentNode.insertBefore(tableWrapper, table);
             tableWrapper.appendChild(table);
           });
 
-          // 处理其他内容块（代码块、图表等）
+          // 处理其他内容块（代码块、图表等），避免分页中断
           const otherBlocks = contentDiv.querySelectorAll('pre, .mermaid, img');
           otherBlocks.forEach(block => {
             block.style.pageBreakInside = 'avoid';
             block.style.breakInside = 'avoid';
             block.style.display = 'block';
           });
-          
-          // 使用 Promise 包装 html2pdf 调用
+                      
+          // 使用 Promise 包装 html2pdf 调用，以便 await 等待其完成
           await new Promise((resolve, reject) => {
             html2pdf()
               .from(contentDiv)
               .set(opt)
-              .save()            // 保存文件
+              .save() // 保存文件
               .then(() => {
-                console.log('PDF generated successfully');
+                console.log('PDF生成成功');
                 resolve();
               })
               .catch(err => {
-                console.error('PDF generation failed:', err);
+                console.error('PDF生成失败:', err);
                 reject(err);
               });
           });
 
+        } else if (exportFormat.value === 'docx') {
+          // DOCX 导出逻辑
+          // 检查 docx 库是否已加载
+          if (typeof window.docx === 'undefined') {
+            if (typeof docx === 'undefined') {
+              throw new Error('Word导出工具未加载完成，请稍后重试');
+            }
+            window.docx = docx;
+          }
+
+          try {
+            // 获取原始 Markdown 内容
+            let markdown = contentDiv.getAttribute('data-markdown');
+            if (!markdown) {
+              // 如果 data-markdown 未设置，尝试使用 content.value
+              markdown = content.value;
+            }
+            // 配置 marked 解析器（支持勾选框）
+            marked.use({
+              extensions: [{
+                name: 'checkbox',
+                level: 'inline',
+                start(src) {
+                  if (src.startsWith('[')) {
+                    const secondChar = src[1];
+                    const thirdChar = src[2];
+                    if ((secondChar === ' ' || secondChar === 'x' || secondChar === '-') && thirdChar === ']') {
+                      return 0;
+                    }
+                  }
+                  return undefined;
+                },
+                tokenizer(src) {
+                  if (src.length < 3) return false;
+                  
+                  const marker = src.slice(0, 3);
+                  if (marker[0] !== '[' || marker[2] !== ']') return false;
+                  
+                  const checkChar = marker[1];
+                  if (checkChar !== ' ' && checkChar !== 'x' && checkChar !== '-') return false;
+                  
+                  const text = src.slice(3).trim();
+                  
+                  const token = {
+                    type: 'checkbox',
+                    raw: marker + (text ? ' ' + text : ''),
+                    checked: checkChar === 'x',
+                    disabled: checkChar === '-',
+                    text: text
+                  };
+                  console.log('Created checkbox token:', token); // 调试信息
+                  return token;
+                },
+                renderer(token) {
+                  const checkbox = token.checked ? '☑' : '☐';
+                  return checkbox + 'token.text';
+                }
+              }]
+            });
+            if (!markdown) {
+              throw new Error('未找到原始 Markdown 内容');
+            }
+                        
+            // 使用 marked 解析 Markdown
+            const tokens = marked.lexer(markdown);
+
+            // 构建 docx 文档的子元素
+            const docChildren = [];
+
+            // 定义编号和项目符号样式，支持多级列表
+            const numbering = {
+              config: [
+                {
+                  reference: "my-numbering",
+                  levels: [
+                    { level: 0, format: docx.NumberFormat.DECIMAL, text: "%1.", alignment: docx.AlignmentType.LEFT, style: { paragraph: { indent: { left: 720, hanging: 360 } } } },
+                    { level: 1, format: docx.NumberFormat.DECIMAL, text: "%1.%2.", alignment: docx.AlignmentType.LEFT, style: { paragraph: { indent: { left: 1440, hanging: 360 } } } },
+                    { level: 2, format: docx.NumberFormat.DECIMAL, text: "%1.%2.%3.", alignment: docx.AlignmentType.LEFT, style: { paragraph: { indent: { left: 2160, hanging: 360 } } } },
+                    { level: 3, format: docx.NumberFormat.DECIMAL, text: "%1.%2.%3.%4.", alignment: docx.AlignmentType.LEFT, style: { paragraph: { indent: { left: 2880, hanging: 360 } } } }
+                  ]
+                },
+                {
+                  reference: "my-bullets",
+                  levels: [
+                    { level: 0, format: docx.NumberFormat.BULLET, text: "•", alignment: docx.AlignmentType.LEFT, style: { paragraph: { indent: { left: 720, hanging: 360 } } } },
+                    { level: 1, format: docx.NumberFormat.BULLET, text: "○", alignment: docx.AlignmentType.LEFT, style: { paragraph: { indent: { left: 1440, hanging: 360 } } } },
+                    { level: 2, format: docx.NumberFormat.BULLET, text: "▪", alignment: docx.AlignmentType.LEFT, style: { paragraph: { indent: { left: 2160, hanging: 360 } } } },
+                    { level: 3, format: docx.NumberFormat.BULLET, text: "▫", alignment: docx.AlignmentType.LEFT, style: { paragraph: { indent: { left: 2880, hanging: 360 } } } }
+                  ]
+                }
+              ]
+            };
+
+            // 处理内联标记（如加粗、斜体、下划线等）
+            const processInlineTokens = (inlineTokens) => {
+              const runs = [];
+              inlineTokens.forEach(token => {
+                if (!token) {
+                  console.warn('遇到未定义的内联标记:', token);
+                  return;
+                }
+                try {
+                  switch (token.type) {
+                    case 'text':
+                      runs.push(new docx.TextRun(token.text || ''));
+                      break;
+                    case 'strong':
+                      runs.push(new docx.TextRun({
+                        text: token.text || '',
+                        bold: true
+                      }));
+                      break;
+                    case 'em':
+                      runs.push(new docx.TextRun({
+                        text: token.text || '',
+                        italics: true
+                      }));
+                      break;
+                    case 'codespan':
+                      runs.push(new docx.TextRun({
+                        text: token.text || '',
+                        font: "Courier New",
+                        color: "666666"
+                      }));
+                      break;
+                    case 'del':
+                      runs.push(new docx.TextRun({
+                        text: token.text || '',
+                        strike: true
+                      }));
+                      break;
+                    case 'underline':
+                      runs.push(new docx.TextRun({
+                        text: token.text || '',
+                        underline: {}
+                      }));
+                      break;
+
+                    case 'list_item':
+                      // 检查是否包含勾选框
+                      if (token.task) {
+                        const checkboxChar = token.checked ? '☑' : '☐';
+                        runs.push(new docx.TextRun({
+                          text: checkboxChar + ' ',
+                          font: "Segoe UI Symbol",
+                          size: 24
+                        }));
+                        
+                        // 添加任务文本
+                        if (token.text) {
+                          runs.push(new docx.TextRun({
+                            text: token.text,
+                            color: "000000"
+                          }));
+                        }
+                      } else {
+                        // 普通列表项处理
+                        runs.push(new docx.TextRun(token.text || ''));
+                      }
+                      break;
+
+
+                    case 'checkbox':
+                      const checkboxChar = token.checked ? '☑' : '☐';
+                      runs.push(new docx.TextRun({
+                        text: checkboxChar + ' ',
+                        font: "Segoe UI Symbol",
+                        size: 24
+                      }));
+                      
+                      if (token.text) {
+                        runs.push(new docx.TextRun({
+                          text: token.text,
+                          color: token.disabled ? "808080" : "000000"
+                        }));
+                      }
+                      break;                   
+                    case 'link':
+                      if (token.href && token.text) {
+                        runs.push(new docx.ExternalHyperlink({
+                          children: [new docx.TextRun({
+                            text: token.text,
+                            style: "Hyperlink"
+                          })],
+                          link: token.href
+                        }));
+                      } else {
+                        console.warn('无效的链接标记:', token);
+                      }
+                      break;
+                    // 根据需要添加更多内联标记处理
+                    default:
+                      runs.push(new docx.TextRun(token.text || ''));
+                      break;
+                  }
+                } catch (e) {
+                  console.error('处理内联标记时出错:', token, e);
+                }
+              });
+              return runs;
+            };
+
+            // 递归处理列表，支持多级列表
+            const processList = (token, parentLevel = 0) => {
+              token.items.forEach(item => {
+                // 检查是否是任务列表项
+                if (item.task) {
+                  const paragraph = new docx.Paragraph({
+                    children: [
+                      new docx.TextRun({
+                        text: item.checked ? '☑' : '☐',
+                        font: "Segoe UI Symbol",
+                        size: 24
+                      }),
+                      new docx.TextRun({
+                        text: ' ' + item.text,
+                        color: "000000"
+                      })
+                    ],
+                    numbering: {
+                      reference: token.ordered ? "my-numbering" : "my-bullets",
+                      level: parentLevel
+                    },
+                    spacing: {
+                      before: 100,
+                      after: 100
+                    }
+                  });
+                  docChildren.push(paragraph);
+                } else {
+                  // 原有的列表项处理逻辑
+                  const paragraph = new docx.Paragraph({
+                    children: processInlineTokens(item.tokens || [{ type: 'text', text: item.text || '' }]),
+                    numbering: {
+                      reference: token.ordered ? "my-numbering" : "my-bullets",
+                      level: parentLevel
+                    },
+                    spacing: {
+                      before: 100,
+                      after: 100
+                    }
+                  });
+                  docChildren.push(paragraph);
+                }
+
+                // 处理子列表
+                const childLists = item.tokens.filter(t => t.type === 'list');
+                childLists.forEach(childList => {
+                  processList(childList, parentLevel + 1);
+                });
+              });
+            };
+
+            // 逐个处理 Markdown 解析得到的 token
+            tokens.forEach(token => {
+              try {
+                switch (token.type) {
+                  case 'heading':
+                    // 映射标题级别
+                    const headingLevelMap = {
+                      1: docx.HeadingLevel.HEADING_1,
+                      2: docx.HeadingLevel.HEADING_2,
+                      3: docx.HeadingLevel.HEADING_3,
+                      4: docx.HeadingLevel.HEADING_4,
+                      5: docx.HeadingLevel.HEADING_5,
+                      6: docx.HeadingLevel.HEADING_6
+                    };
+                                
+                    const headingLevel = headingLevelMap[token.depth] || docx.HeadingLevel.HEADING_1;
+                                
+                    // 创建标题段落
+                    docChildren.push(new docx.Paragraph({
+                      children: processInlineTokens(token.tokens || [{ type: 'text', text: token.text || '' }]),
+                      heading: headingLevel,
+                      spacing: {
+                        before: 200,
+                        after: 200
+                      }
+                    }));
+                    break;
+                                
+                  case 'paragraph':
+                    // 创建普通段落
+                    docChildren.push(new docx.Paragraph({
+                      children: processInlineTokens(token.tokens || [{ type: 'text', text: token.text || '' }]),
+                      spacing: {
+                        before: 120,
+                        after: 120
+                      }
+                    }));
+                    break;
+                                
+                  case 'list':
+                    // 处理列表项，支持多级
+                    processList(token, 0);
+                    break;
+                                
+                  case 'code':
+                    // 处理代码块
+                    if (token.text) {
+                      // 使用 String.prototype.split 配合空格来处理代码行
+                      const processCodeBlock = (codeText) => {
+                        // 获取每一行代码(使用 String.prototype.split)
+                        const lines = String(codeText).split(String.fromCharCode(10));
+                        
+                        // 创建代码块容器
+                        const codeContainer = new docx.Paragraph({
+                          style: "CodeBlock",
+                          children: [],
+                          spacing: {
+                            before: 240,
+                            after: 240
+                          },
+                          border: {
+                            top: { style: docx.BorderStyle.SINGLE, size: 1, color: "E1E4E8" },
+                            bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "E1E4E8" },
+                            left: { style: docx.BorderStyle.SINGLE, size: 1, color: "E1E4E8" },
+                            right: { style: docx.BorderStyle.SINGLE, size: 1, color: "E1E4E8" }
+                          },
+                          shading: {
+                            type: docx.ShadingType.CLEAR,
+                            fill: "F6F8FA"
+                          }
+                        });
+
+                        // 处理每一行代码
+                        lines.forEach((line, index) => {
+                          // 添加代码行
+                          codeContainer.addChildElement(
+                            new docx.TextRun({
+                              text: line,
+                              font: "Consolas",
+                              size: 20,
+                              break: 1 // 添加换行
+                            })
+                          );
+                        });
+
+                        return codeContainer;
+                      };
+
+                      // 处理代码块并添加到文档
+                      docChildren.push(processCodeBlock(token.text));
+                    }
+                    break;
+                                
+                  case 'blockquote':
+                    // 创建引用块段落
+                    docChildren.push(new docx.Paragraph({
+                      children: processInlineTokens(token.tokens || [{ type: 'text', text: token.text || '' }]),
+                      indent: {
+                        left: 400 // 设置缩进
+                      },
+                      spacing: {
+                        before: 200,
+                        after: 200  
+                      },
+                      italics: true // 使用斜体表示引用
+                    }));
+                    break;
+                                
+                  case 'table':
+                    try {
+                      // 创建表格行数组
+                      const tableRows = [];
+                      
+                      // 添加表头行
+                      if (token.header) {
+                        const headerRow = new docx.TableRow({
+                          tableHeader: true,
+                          children: token.header.map(text => 
+                            new docx.TableCell({
+                              children: [new docx.Paragraph({
+                                children: [new docx.TextRun({
+                                  text: text || '',
+                                  bold: true,
+                                  size: 24,
+                                })],
+                                alignment: docx.AlignmentType.CENTER,
+                              })],
+                              shading: {
+                                fill: "E7E7E7",
+                                type: docx.ShadingType.CLEAR,
+                              },
+                              margins: {
+                                top: 100,
+                                bottom: 100,
+                                left: 150,
+                                right: 150,
+                              },
+                            })
+                          ),
+                        });
+                        tableRows.push(headerRow);
+                      }
+                      
+                      // 添加数据行
+                      if (token.rows) {
+                        token.rows.forEach(row => {
+                          const tableRow = new docx.TableRow({
+                            children: row.map(cell => 
+                              new docx.TableCell({
+                                children: [new docx.Paragraph({
+                                  children: [new docx.TextRun({
+                                    text: cell || '',
+                                    size: 24,
+                                  })],
+                                  alignment: docx.AlignmentType.CENTER,
+                                })],
+                                margins: {
+                                  top: 100,
+                                  bottom: 100,
+                                  left: 150,
+                                  right: 150,
+                                },
+                              })
+                            ),
+                          });
+                          tableRows.push(tableRow);
+                        });
+                      }
+                      
+                      // 创建表格
+                      const table = new docx.Table({
+                        rows: tableRows,
+                        width: {
+                          size: 100,
+                          type: docx.WidthType.PERCENTAGE,
+                        },
+                        borders: {
+                          top: { style: docx.BorderStyle.SINGLE, size: 1, color: "666666" },
+                          bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "666666" },
+                          left: { style: docx.BorderStyle.SINGLE, size: 1, color: "666666" },
+                          right: { style: docx.BorderStyle.SINGLE, size: 1, color: "666666" },
+                          insideHorizontal: { style: docx.BorderStyle.SINGLE, size: 1, color: "666666" },
+                          insideVertical: { style: docx.BorderStyle.SINGLE, size: 1, color: "666666" }
+                        },
+                        // 设置列宽平均分配
+                        columnWidths: Array(token.header.length).fill(100 / token.header.length),
+                      });
+                      
+                      docChildren.push(table);
+                      
+                      // 在表格后添加空行
+                      docChildren.push(
+                        new docx.Paragraph({
+                          spacing: { after: 200 },
+                        })
+                      );
+                    } catch (err) {
+                      console.error('处理表格时出错:', err);
+                    }
+                    break;
+                                
+                  case 'hr':
+                    // 创建水平分割线段落
+                    docChildren.push(new docx.Paragraph({
+                      border: {
+                        bottom: {
+                          color: "auto",
+                          space: 1,
+                          value: "single",
+                          size: 6
+                        }
+                      },
+                      spacing: {
+                        before: 200,
+                        after: 200
+                      }
+                    }));
+                    break;
+                                
+                  // 根据需要添加更多块级元素处理
+                                
+                  default:
+                    // 处理其他类型的内容，如纯文本
+                    if(token.text) {
+                      docChildren.push(new docx.Paragraph({
+                        children: processInlineTokens([{ type: 'text', text: token.text || '' }])
+                      }));
+                    }
+                    break;
+                }
+              } catch (e) {
+                console.error('处理块级标记时出错:', token.type, token, e);
+              }
+            });
+
+            // 创建 DOCX 文档
+            const doc = new docx.Document({
+              numbering: numbering, // 正确传递包含 config 的对象
+              styles: {
+                paragraphStyles: [
+                  {
+                    id: "CodeBlock",
+                    name: "Code Block",
+                    basedOn: "Normal",
+                    next: "Normal",
+                    quickFormat: true,
+                    run: {
+                      font: "Consolas",
+                      size: 20,
+                      color: "333333"
+                    },
+                    paragraph: {
+                      spacing: {
+                        before: 240,
+                        after: 240,
+                        line: 360,
+                        lineRule: docx.LineRuleType.AUTO
+                      },
+                      indent: {
+                        left: 720,
+                        right: 720
+                      }
+                    }
+                  },
+                  {
+                    id: "Checkbox",
+                    name: "Checkbox",
+                    basedOn: "Normal",
+                    next: "Normal",
+                    quickFormat: true,
+                    run: {
+                      font: "Segoe UI Symbol",
+                      size: 24
+                    }
+                  }                 
+                ]
+              },
+              sections: [{
+                properties: {
+                  page: {
+                    margin: {
+                      top: 1000,
+                      right: 1000,
+                      bottom: 1000,
+                      left: 1000
+                    }
+                  }
+                },
+                children: docChildren // 添加所有构建好的文档子元素
+              }]
+            });
+
+            // 生成并下载 DOCX 文档
+            docx.Packer.toBlob(doc).then(blob => {
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = shareId + '.docx';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url); // 释放 URL 对象
+            });
+
+          } catch (err) {
+            throw new Error('Word文档生成失败: ' + err.message);
+          }
         } else if (exportFormat.value === 'image') {
-        const canvas = await window.html2canvas(contentDiv, {
+          // 图片导出逻辑
+          const canvas = await window.html2canvas(contentDiv, {
             scale: 2,
             useCORS: true,
             letterRendering: true,
             backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card-bg')
           });
-          
+                      
           const link = document.createElement('a');
           link.download = shareId + '.png';
           link.href = canvas.toDataURL('image/png');
           link.click();
         }
 
-        // 创建成功提示
+        // 创建导出成功提示
         const toast = document.createElement('div');
         toast.className = 'copy-toast';
         toast.textContent = '导出成功!';
         document.body.appendChild(toast);
-        
+                    
         setTimeout(() => toast.classList.add('show'), 10);
         setTimeout(() => {
           toast.classList.remove('show');
@@ -6077,10 +6564,11 @@ createApp({
         }, 2000);
 
       } catch (err) {
+        // 处理导出过程中遇到的错误
         error.value = '导出失败: ' + err.message;
         console.error('Export error:', err);
       } finally {
-        isExporting.value = false;
+        isExporting.value = false; // 重置导出状态
       }
     };
 
@@ -6216,9 +6704,11 @@ const shareHtml = `<!DOCTYPE html>
     <style>${styles}</style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- 修改 docx.js 的加载方式 -->
+    <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
   </head>
   <body>
-    <div id="app">
+    <div id="app" v-cloak>
       <div class="container">
         <!-- 主题切换按钮 -->
         <button 
@@ -6229,7 +6719,10 @@ const shareHtml = `<!DOCTYPE html>
         ></button>
 
         <div class="card">
-          <div v-if="loading">加载中...</div>
+          <div v-if="loading" class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>正在加载内容，请稍候...</p>
+          </div>
           <div v-else-if="needPassword">
             <div class="input-group">
               <label>此内容需要密码访问：</label>
@@ -6344,6 +6837,7 @@ const shareHtml = `<!DOCTYPE html>
                   <div class="export-group" v-if="!isEditing">
                     <select v-model="exportFormat">
                       <option value="pdf">PDF格式</option>
+                      <option value="docx">Word文档</option>
                       <option value="image">图片(png)</option>
                     </select>
                     <button 
@@ -6450,21 +6944,9 @@ const shareHtml = `<!DOCTYPE html>
       </div>
     </div>
     <style>
-      /* 添加加载动画样式 */
-      .loading-spinner {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid rgba(255,255,255,0.3);
-        border-radius: 50%;
-        border-top-color: #fff;
-        animation: spin 1s ease-in-out infinite;
-        margin-right: 8px;
-        vertical-align: middle;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
+      /* 隐藏 v-cloak 初始化之前会隐藏模板内容 */
+      [v-cloak] {
+        display: none;
       }
 
       /* 优化按钮禁用状态样式 */
@@ -6499,6 +6981,47 @@ const shareHtml = `<!DOCTYPE html>
         0% { background-position: 0 0; }
         100% { background-position: 20px 0; }
       }
+
+      /* 添加加载状态样式 */
+      .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .loading-state p {
+        margin-top: 1rem;
+        color: #666;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top-color: #3498db;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* 错误提示样式 */
+      .error {
+        color: #e74c3c;
+        background: #ffebee;
+        border-left: 4px solid #ef5350;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 4px;
+        animation: error-in 0.3s ease-out;
+      } 
     </style>
     <script>${shareAppScript}</script>
   </body>
